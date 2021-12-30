@@ -6,21 +6,21 @@ import javax.swing.tree.TreeNode
 
 //https://kotlinlang.org/docs/reference/inline-functions.html#reified-type-parameters
 
-fun <T> TreeNode.findParentOfType(clazz: Class<T>): T? {
+fun <T> TreeNode.findParentOfType(clazz: Class<T>): T {
     var p = parent
     while (p != null && !clazz.isInstance(p)) {
         p = p.parent
     }
     @Suppress("UNCHECKED_CAST")
-    return p as T?
+    return p as T
 }
 
-inline fun <reified T> TreeNode.findParentOfType(): T? {
+inline fun <reified T> TreeNode.findParentOfType(): T {
     var p = parent
     while (p != null && p !is T) {
         p = p.parent
     }
-    return p as T?
+    return p as T
 }
 
 fun main(s: Array<String>) {

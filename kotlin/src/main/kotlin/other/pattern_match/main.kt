@@ -15,7 +15,7 @@ fun main() {
         b == c -> doSomethingElse()
         1 -> print("x == 1")
         2 -> print("x == 2")
-        3, 4 -> print("x == 0 or x == 1")
+        3, 4 -> print("x == 3 or x == 4")
         in 1..10 -> print("in range")
         is String -> print("I guess it's not even a number")
         is Number -> print("I guess it's not even a string")
