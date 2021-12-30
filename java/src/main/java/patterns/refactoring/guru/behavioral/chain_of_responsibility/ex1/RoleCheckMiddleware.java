@@ -4,6 +4,7 @@ package patterns.refactoring.guru.behavioral.chain_of_responsibility.ex1;
  * Конкретный элемент цепи обрабатывает запрос по-своему.
  */
 public class RoleCheckMiddleware extends Middleware {
+
     public boolean check(String email, String password) {
         if (email.equals("admin@example.com")) {
             System.out.println("Hello, admin!");

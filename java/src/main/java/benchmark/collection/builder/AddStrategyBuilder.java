@@ -43,8 +43,8 @@ public class AddStrategyBuilder<E> {
                 this.collectionClass,
                 this.collectionSupplier,
                 this.addByIndexStep.getAddByIndex(),
-                this.addByIndexStep.getIndex(),
-                this.addByIndexStep.getElement());
+                this.addByIndexStep.getIndexSupplier(),
+                this.addByIndexStep.getElementSupplier());
         }
 
         if (addElementStep != null) {
@@ -52,7 +52,7 @@ public class AddStrategyBuilder<E> {
                 this.collectionClass,
                 this.collectionSupplier,
                 this.addElementStep.getAddElement(),
-                this.addElementStep.getElement());
+                this.addElementStep.getElementSupplier());
         }
 
         throw new RuntimeException("Index and element should not be null both");

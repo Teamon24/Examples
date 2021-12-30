@@ -3,10 +3,12 @@ package benchmark.collection.utils;
 import benchmark.collection.pojo.AveragedMethodResult;
 import benchmark.collection.pojo.Histogram;
 import benchmark.collection.pojo.MethodType;
-import thread.ex1.IntegerUtils;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -19,11 +21,12 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public final class HistogramUtils {
+public abstract class HistogramUtils {
 
-    private static LinkedList<String> marks = new LinkedList<>();
+    static LinkedList<String> marks = new LinkedList<>();
+    static HashMap<String, String> usedMarks = new HashMap<>();
 
-    private static final double HISTOGRAM_COLUMN_LIMIT = 30.0;
+    static double maxHistogramColumnLength = 40;
 
     static {
         marks.add("*");
@@ -36,139 +39,115 @@ public final class HistogramUtils {
         marks.add("0");
     }
 
-    public static void printHistogramForLists(List<AveragedMethodResult> results) {
-        Set<String> collectionTypes = StreamUtils.getUniques(results, AveragedMethodResult::getCollectionClass);
-        checkSize(collectionTypes);
-
-        HashMap<String, String> collectionTypeAndMark = mapTypesToMarks(collectionTypes);
-
-
-        Double minAverageTime = filterNotZeroAndFindBy(Stream::min, results, AveragedMethodResult::getAverageExecutionTime);
-        Double maxAverageTime = filterNotZeroAndFindBy(Stream::max, results, AveragedMethodResult::getAverageExecutionTime);
-        List<Histogram> histograms = createHistogramsObjects(collectionTypeAndMark, results, minAverageTime, maxAverageTime);
-
-        Integer lengthOfMaxIndex = getLengthOfMaxIndex(results);
-        Integer lengthOfLongestCollectionName = MaxUtils.getLongestCollectionName(collectionTypes).length();
-        int lengthOfLongestHistogram = MaxUtils.getLongestHistogramColumn(histograms).length();
-        Set<MethodType> methodTypes = StreamUtils.getUniques(results, AveragedMethodResult::getMethodType);
-        int lengthOfLongestMethodName = MaxUtils.getLongestMethodName(methodTypes).length();
-
-        int count = 2 * (
-                lengthOfLongestMethodName +
-                lengthOfMaxIndex +
-                lengthOfLongestCollectionName +
-                lengthOfLongestCollectionName);
-
-        StringBuilder builder = new StringBuilder();
-        groupByMethod(histograms)
-            .forEach(histogramsByMethod -> {
-                final StringBuilder builderForMethod = new StringBuilder();
-                appendFirstLine(count, builderForMethod);
-                groupByIndex(histogramsByMethod)
-                    .forEach(histogramsByIndex -> {
-                        final StringBuilder builderForIndex = new StringBuilder();
-
-                        for (Histogram histogram : histogramsByIndex.getValue()) {
-                            Integer index = histogramsByIndex.getKey();
-                            appendHistogram(
-                                builderForIndex, index, histogram,
-                                lengthOfMaxIndex,
-                                lengthOfLongestCollectionName,
-                                lengthOfLongestHistogram,
-                                lengthOfLongestMethodName);
-                        }
-
-                        appendIndexGroup(builderForMethod, builderForIndex, lengthOfLongestMethodName);
-                    });
-                appendMethodGroup(builder, builderForMethod);});
-
-        System.out.println(builder);
-    }
-
-    private static void appendIndexGroup(final StringBuilder builderForMethod,
-                                         final StringBuilder builderForIndex,
-                                         final int lengthOfLongestMethodName) {
-        builderForMethod
-            .append(builderForIndex)
-            .append(getSeparationLine("-", lengthOfLongestMethodName))
-            .append("\n");
-    }
-
-    private static void appendMethodGroup(final StringBuilder builder, final StringBuilder builderForMethod) {
-        builder
-            .append(builderForMethod)
-            .append("\n");
-    }
-
-    private static void appendFirstLine(final int count, final StringBuilder builderForMethod) {
-        builderForMethod.append(getSeparationLine("-", count)).append("\n");
-    }
-
-    private static void appendHistogram(final StringBuilder builderForIndex,
-                                        final Integer index,
-                                        final Histogram histogram,
-                                        final Integer lengthOfMaxIndex,
-                                        final Integer lengthOfLongestCollectionName,
-                                        final int lengthOfLongestHistogram,
-                                        final int lengthOfLongestMethodName)
-    {
-        int counter = 0;
-        String collectionType = histogram.getCollectionType();
-        String methodTypeName = histogram.getMethodType().getValue();
-        String histogramColumnIndent = getHistogramColumnIndent(histogram, lengthOfLongestHistogram);
-        String collectionTypeIndent = getCollectionTypeIndent(collectionType, lengthOfLongestCollectionName);
-        String indexIndent;
-        if (counter == 0) {
-            builderForIndex
-                .append(" ".repeat(lengthOfLongestMethodName - methodTypeName.length()))
-                .append(methodTypeName)
-                .append(" ");
-
-            indexIndent = getIndexIndent(lengthOfMaxIndex, index) + index;
-            counter++;
-        } else {
-            builderForIndex.append(" ".repeat(lengthOfLongestMethodName)).append(" ");
-            indexIndent = " ".repeat(lengthOfMaxIndex);
+    public static void checkSize(final Set<String> collectionTypes) {
+        HashSet<String> restCollectionTypes = new HashSet<>(collectionTypes);
+        restCollectionTypes.removeAll(usedMarks.keySet());
+        int resultsSize = restCollectionTypes.size();
+        int marksSize = marks.size();
+        if (resultsSize > marksSize) {
+            String template = "Not enough marks for collection types: marks amount - %s, but collection amount - %s";
+            String message = String.format(template, marksSize, resultsSize);
+            throw new RuntimeException(message);
         }
-        appendIndexLine(builderForIndex, histogram, indexIndent, collectionTypeIndent, histogramColumnIndent);
-        builderForIndex.append("\n");
     }
 
-    private static String getHistogramColumnIndent(final Histogram histogram, final int lengthOfLongestHistogram) {
+    public static HashMap<String, String> mapTypesToMarks(Set<String> collectionTypes){
+        HashMap<String, String> classToSign = new LinkedHashMap<>();
+
+        Iterator<String> iterator = collectionTypes.iterator();
+        for (int i = 0; iterator.hasNext();) {
+            String collectionType = iterator.next();
+            String mark = usedMarks.get(collectionType);
+            if (mark == null) {
+                String value = marks.get(i);
+                usedMarks.put(collectionType, value);
+                classToSign.put(collectionType, value);
+                marks.remove(i);
+            } else {
+                classToSign.put(collectionType, mark);
+            }
+        }
+        return classToSign;
+    }
+
+    public static List<Histogram> getHistograms(final List<AveragedMethodResult> results,
+                                                final HashMap<String, String> collectionTypeAndMark)
+    {
+        Double minAverageTime = results.stream()
+            .map(it -> getDigitsAfterDot(it.getAverageExecutionTime()))
+            .filter(it -> it != 0)
+            .min(Double::compareTo).orElseGet( () ->
+                filterNotZeroAndFindBy(Stream::min, results, AveragedMethodResult::getAverageExecutionTime)
+            );
+
+        Double maxRelationAverageToMin = results.stream().map(it -> it.getAverageExecutionTime()/minAverageTime).max(Double::compareTo).get();
+        List<Histogram> histograms = createHistogramsObjects(collectionTypeAndMark, results, minAverageTime, maxRelationAverageToMin);
+        return histograms;
+    }
+
+    public static String getHistogramColumnIndent(final Histogram histogram, final int lengthOfLongestHistogram) {
         return " ".repeat(lengthOfLongestHistogram - histogram.getHistogramColumn().length());
     }
 
-    private static String getCollectionTypeIndent(final String collectionType, final Integer lengthOfLongestCollectionName) {
+    public static String getCollectionTypeIndent(final String collectionType, final Integer lengthOfLongestCollectionName) {
         return " ".repeat(lengthOfLongestCollectionName - collectionType.length());
     }
 
-    private static Integer getLengthOfMaxIndex(final List<AveragedMethodResult> results) {
-        Integer maximalIndex = results.stream().max(Comparator.comparing(AveragedMethodResult::getIndex)).get().getIndex();
-        Integer lengthOfMaxIndex = IntegerUtils.countDigits(maximalIndex);
-        return lengthOfMaxIndex;
+    public static List<Histogram> createHistogramsObjects(final HashMap<String, String> collectionTypeAndMark,
+                                                          final List<AveragedMethodResult> groupedByMethod,
+                                                          final Double minAverageTime,
+                                                          final Double maxRelationAverageToMin)
+    {
+        List<Histogram> histograms = groupedByMethod.stream().map(result -> {
+            String collectionClass = result.getCollectionClass();
+            Double averageExecutionTime = result.getAverageExecutionTime();
+            return new Histogram(
+                collectionClass,
+                result.getMethodType(),
+                result.getIndex(),
+                getHistogramColumn(collectionClass, collectionTypeAndMark, averageExecutionTime, minAverageTime, maxRelationAverageToMin),
+                averageExecutionTime);
+        }).collect(Collectors.toList());
+        return histograms;
     }
 
-    private static String getSeparationLine(String separationSymbol, int count) {
+    public static String getHistogramColumn(final String collectionClass,
+                                            final HashMap<String, String> collectionTypeAndMark,
+                                            final Double averageExecutionTime,
+                                            final Double minAverageTime,
+                                            final Double maxRelationAverageToMin)
+    {
+        String mark = collectionTypeAndMark.get(collectionClass);
+        if (averageExecutionTime == 0) return "";
+        double v = maxHistogramColumnLength * (averageExecutionTime / minAverageTime) / maxRelationAverageToMin;
+        if (v < 1 && v != 0) v = 1;
+        int rounded = Math.round((int) v);
+        return mark.repeat(rounded);
+    }
+
+    public static double getDigitsAfterDot(double d) {
+        BigDecimal bd = new BigDecimal(d - Math.floor(d));
+        bd = bd.setScale(4, RoundingMode.HALF_DOWN);
+        return bd.doubleValue();
+    }
+
+    public static double getDigitsBeforeDot(double d) {
+        BigDecimal bd = new BigDecimal(d - Math.floor(d));
+        bd = bd.setScale(4, RoundingMode.HALF_DOWN);
+        return bd.doubleValue();
+    }
+
+    public static String getSeparationLine(String separationSymbol, int count) {
         return separationSymbol.repeat(count);
     }
 
-    private static StringBuilder appendIndexLine(final StringBuilder builderForIndex,
-                                                 final Histogram it,
-                                                 final String indexIndent,
-                                                 final String collectionTypeIndent,
-                                                 final String histogramColumnIndent) {
-        return builderForIndex
-            .append(indexIndent).append(" ")
-            .append(collectionTypeIndent).append(it.getCollectionType()).append(" ")
-            .append(it.getHistogramColumn()).append(histogramColumnIndent).append(" ")
-            .append(it.getAverageExecutionTime()).append(" ");
+
+    public static Stream<Map.Entry<MethodType, List<Histogram>>> groupByMethod(final List<Histogram> histograms) {
+        return histograms.stream()
+            .collect(Collectors.groupingBy(Histogram::getMethodType)).entrySet().stream();
     }
 
-    private static String getIndexIndent(final Integer lengthOfMaxIndex, final Integer index) {
-        return " ".repeat(lengthOfMaxIndex - IntegerUtils.countDigits(index));
-    }
-
-    private static <E> Double filterNotZeroAndFindBy(BiFunction<Stream<E>, Comparator<? super E>, Optional<E>> function,
+    public static <E> Double filterNotZeroAndFindBy(BiFunction<Stream<E>, Comparator<? super E>, Optional<E>> function,
                                                      final List<E> list,
                                                      Function<E, Double> fieldExtractor)
     {
@@ -179,68 +158,4 @@ public final class HistogramUtils {
         return fieldExtractor.apply(e);
     }
 
-    private static List<Histogram> createHistogramsObjects(final HashMap<String, String> collectionTypeAndMark,
-                                                           final List<AveragedMethodResult> groupedByMethod,
-                                                           final Double minAverageTime,
-                                                           final Double maxAverageTime)
-    {
-        List<Histogram> histograms = groupedByMethod.stream().map(result -> {
-            String collectionClass = result.getCollectionClass();
-            Double averageExecutionTime = result.getAverageExecutionTime();
-            return new Histogram(
-                collectionClass,
-                result.getMethodType(),
-                result.getIndex(),
-                getHistogramColumn(collectionClass, collectionTypeAndMark, averageExecutionTime, minAverageTime, maxAverageTime),
-                averageExecutionTime);
-        }).collect(Collectors.toList());
-        return histograms;
-    }
-
-    private static Stream<Map.Entry<Integer, List<Histogram>>> groupByIndex(final Map.Entry<MethodType, List<Histogram>> histogramByIndex) {
-        return histogramByIndex.getValue().stream().collect(Collectors.groupingBy(Histogram::getIndex))
-            .entrySet().stream().sorted(Map.Entry.comparingByKey());
-    }
-
-    private static Stream<Map.Entry<MethodType, List<Histogram>>> groupByMethod(final List<Histogram> histograms) {
-        return histograms.stream()
-            .collect(Collectors.groupingBy(Histogram::getMethodType)).entrySet().stream();
-    }
-
-    private static String getHistogramColumn(final String collectionClass,
-                                             final HashMap<String, String> collectionTypeAndMark,
-                                             final Double averageExecutionTime,
-                                             final Double minAverageTime,
-                                             final Double maxAverageTime)
-    {
-        String mark = collectionTypeAndMark.get(collectionClass);
-        if (averageExecutionTime == 0) return "";
-
-        if (maxAverageTime / (minAverageTime / 2) > HISTOGRAM_COLUMN_LIMIT) {
-            double v = HISTOGRAM_COLUMN_LIMIT / maxAverageTime * averageExecutionTime;
-            return mark.repeat((int)Math.round(v));
-        }
-
-        return mark.repeat((int)(averageExecutionTime / minAverageTime));
-    }
-
-    private static HashMap<String, String> mapTypesToMarks(Set<String> collectionTypes){
-        HashMap<String, String> classToSign = new LinkedHashMap<>();
-
-        Iterator<String> iterator = collectionTypes.iterator();
-        for (int i = 0; i < marks.size() && iterator.hasNext(); i++) {
-            classToSign.put(iterator.next(), marks.get(i));
-        }
-        return classToSign;
-    }
-
-    private static void checkSize(final Set<String> averagedMethodResults) {
-        int resultsSize = averagedMethodResults.size();
-        int marksSize = marks.size();
-        if (resultsSize > marksSize) {
-            String template = "Not enough marks for collection types: marks amount - %s, but collection amount - %s";
-            String.format(template, marksSize, resultsSize);
-            throw new RuntimeException(template);
-        }
-    }
 }

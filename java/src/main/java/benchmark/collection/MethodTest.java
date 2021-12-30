@@ -11,9 +11,9 @@ import java.util.List;
 public class MethodTest {
 
     private final List<MethodResult> testResults = new ArrayList<>();
-    private int testsAmount;
-    private MethodStrategy methodStrategy;
-    private TimeMeasureStrategy timeMeasureStrategy;
+    private final int testsAmount;
+    private final MethodStrategy methodStrategy;
+    private final TimeMeasureStrategy timeMeasureStrategy;
 
     public MethodTest(int testsAmount,
                       MethodStrategy methodStrategy,
@@ -24,9 +24,7 @@ public class MethodTest {
         this.timeMeasureStrategy = timeMeasureStrategy;
     }
 
-    public MethodTest(int testsAmount,
-                      MethodStrategy methodStrategy)
-    {
+    public MethodTest(int testsAmount, MethodStrategy methodStrategy) {
         this(testsAmount, methodStrategy, System::currentTimeMillis);
     }
 

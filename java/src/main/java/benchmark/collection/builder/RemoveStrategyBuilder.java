@@ -42,7 +42,7 @@ public class RemoveStrategyBuilder<E> {
                 this.collectionClass,
                 this.collectionSupplier,
                 this.removeByIndexStep.getRemoveByIndex(),
-                this.removeByIndexStep.getIndex());
+                this.removeByIndexStep.getIndexSupplier());
         }
 
         if (removeElementStep != null) {
@@ -50,7 +50,7 @@ public class RemoveStrategyBuilder<E> {
                 this.collectionClass,
                 this.collectionSupplier,
                 this.removeElementStep.getRemoveElement(),
-                this.removeElementStep.getElement());
+                this.removeElementStep.getElementSupplier());
         }
 
         throw new RuntimeException("Index and element should not be null both");

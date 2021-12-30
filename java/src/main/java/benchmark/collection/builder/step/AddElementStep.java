@@ -4,12 +4,14 @@ import benchmark.collection.builder.AddStrategyBuilder;
 
 import java.util.Collection;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class AddElementStep<E> {
 
     private AddStrategyBuilder<E> addStrategyBuilder;
     private BiConsumer<Collection<E>, E> addElement;
-    private E element;
+    private Supplier<E> elementSupplier;
 
     public AddElementStep(final AddStrategyBuilder<E> addStrategyBuilder,
                           final BiConsumer<Collection<E>, E> addElement)
@@ -19,8 +21,8 @@ public class AddElementStep<E> {
     }
 
 
-    public AddStrategyBuilder<E> element(final E element) {
-        this.element = element;
+    public AddStrategyBuilder<E> element(final Supplier<E> elementSupplier) {
+        this.elementSupplier = elementSupplier;
         return this.addStrategyBuilder;
     }
 
@@ -28,7 +30,7 @@ public class AddElementStep<E> {
         return addElement;
     }
 
-    public E getElement() {
-        return element;
+    public Supplier<E> getElementSupplier() {
+        return elementSupplier;
     }
 }

@@ -17,4 +17,6 @@ public class MethodResult extends Result {
     public Long getExecutionTime() {
         return executionTime;
     }
+
+
 }

@@ -4,6 +4,7 @@ import benchmark.collection.pojo.MethodType;
 import benchmark.collection.utils.TriConsumer;
 
 import java.util.Collection;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class SetStrategy<E> extends AddByIndexStrategy<E> {
@@ -11,10 +12,10 @@ public class SetStrategy<E> extends AddByIndexStrategy<E> {
     public SetStrategy(final Class collectionClass,
                        final Supplier<Collection<E>> collectionSupplier,
                        final TriConsumer<Collection<E>, Integer, E> addByIndex,
-                       final Integer index,
-                       final E element)
+                       Function<Collection<E>, Integer> indexSupplier,
+                       Supplier<E> elementSupplier)
     {
-        super(collectionClass, collectionSupplier, addByIndex, index, element);
+        super(collectionClass, collectionSupplier, addByIndex, indexSupplier, elementSupplier);
     }
 
     @Override

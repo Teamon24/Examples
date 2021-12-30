@@ -4,12 +4,14 @@ import benchmark.collection.builder.RemoveStrategyBuilder;
 
 import java.util.Collection;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class RemoveElementStep<E> {
 
     private RemoveStrategyBuilder<E> removeStrategyBuilder;
     private BiConsumer<Collection<E>, E> removeElement;
-    private E element;
+    private Supplier<E> elementSupplier;
 
     public RemoveElementStep(final RemoveStrategyBuilder<E> removeStrategyBuilder,
                              final BiConsumer<Collection<E>, E> removeElement) {
@@ -18,8 +20,8 @@ public class RemoveElementStep<E> {
     }
 
 
-    public RemoveStrategyBuilder<E> element(final E element) {
-        this.element = element;
+    public RemoveStrategyBuilder<E> element(final Supplier<E> element) {
+        this.elementSupplier = element;
         return this.removeStrategyBuilder;
     }
 
@@ -27,7 +29,7 @@ public class RemoveElementStep<E> {
         return removeElement;
     }
 
-    public E getElement() {
-        return element;
+    public Supplier<E> getElementSupplier() {
+        return elementSupplier;
     }
 }

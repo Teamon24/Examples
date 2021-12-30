@@ -4,13 +4,15 @@ import benchmark.collection.builder.AddStrategyBuilder;
 import benchmark.collection.utils.TriConsumer;
 
 import java.util.Collection;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class AddByIndexStep<E> {
 
     private final AddStrategyBuilder<E> addStrategyBuilder;
     private final TriConsumer<Collection<E>, Integer, E> addByIndex;
-    private Integer index;
-    private E element;
+    private Function<Collection<E>, Integer> indexSupplier;
+    private Supplier<E> elementSupplier;
 
     public AddByIndexStep(final AddStrategyBuilder<E> addStrategyBuilder,
                           final TriConsumer<Collection<E>, Integer, E> addByIndex)
@@ -19,9 +21,11 @@ public class AddByIndexStep<E> {
         this.addByIndex = addByIndex;
     }
 
-    public AddStrategyBuilder<E> index(Integer index, E element) {
-        this.index = index;
-        this.element = element;
+    public AddStrategyBuilder<E> index(Function<Collection<E>, Integer> indexSupplier,
+                                       Supplier<E> elementSupplier)
+    {
+        this.indexSupplier = indexSupplier;
+        this.elementSupplier = elementSupplier;
         return this.addStrategyBuilder;
     }
 
@@ -29,11 +33,11 @@ public class AddByIndexStep<E> {
         return addByIndex;
     }
 
-    public Integer getIndex() {
-        return index;
+    public Function<Collection<E>, Integer> getIndexSupplier() {
+        return indexSupplier;
     }
 
-    public E getElement() {
-        return element;
+    public Supplier<E> getElementSupplier() {
+        return elementSupplier;
     }
 }

@@ -4,18 +4,14 @@ package patterns.refactoring.guru.behavioral.chain_of_responsibility.ex1;
  * Конкретный элемент цепи обрабатывает запрос по-своему.
  */
 public class UserExistsMiddleware extends Middleware {
-    private Server server;
-
-    public UserExistsMiddleware(Server server) {
-        this.server = server;
-    }
+    private final UserService userService = new UserService();
 
     public boolean check(String email, String password) {
-        if (!server.hasEmail(email)) {
+        if (!userService.hasEmail(email)) {
             System.out.println("This email is not registered!");
             return false;
         }
-        if (!server.isValidPassword(email, password)) {
+        if (!userService.isValidPassword(email, password)) {
             System.out.println("Wrong password!");
             return false;
         }

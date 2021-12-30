@@ -25,12 +25,12 @@ public final class StreamUtils {
         return stream;
     }
 
-    static <T, E> Set<T> getUniques(final List<E> averagedMethodResults,
-                                 final Function<E, T> getCollectionClass)
+    public static <T, E> Set<T> getUniques(final List<E> list,
+                                           final Function<E, T> uniqueFieldExtractor)
     {
-        Set<T> collectionTypes = averagedMethodResults
+        Set<T> collectionTypes = list
             .stream()
-            .map(getCollectionClass)
+            .map(uniqueFieldExtractor)
             .collect(Collectors.toSet());
         return collectionTypes;
     }

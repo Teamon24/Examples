@@ -6,43 +6,60 @@ import benchmark.collection.strategy.MethodStrategy;
 import benchmark.collection.strategy.SetStrategy;
 
 import java.util.Collection;
+import java.util.function.Function;
 import java.util.function.Supplier;
+
+import static benchmark.collection.utils.IndexSuppliers.firstIndex;
+import static benchmark.collection.utils.IndexSuppliers.lastIndex;
+import static benchmark.collection.utils.IndexSuppliers.middleIndex;
 
 public class SetStrategies {
 
-    public static <E> MethodStrategy setFirstStrategy(Collection<E> collection, final E element) {
-        Supplier<Collection<E>> collectionSupplier = CollectionSuppliers.getSameCollectionSupplier(collection);
+    public static <E> MethodStrategy setFirstStrategy(
+        final Collection<E> collection,
+        final Function<Collection<E>, Supplier<Collection<E>>> collectionSupplierGetter,
+        final Supplier<E> elementSupplier)
+    {
+        Supplier<Collection<E>> collectionSupplier = CollectionSuppliers.sameCollection(collection);
 
         return new SetStrategy<>(
             collection.getClass(),
             collectionSupplier,
             ListMethods.setter(),
-            1,
-            element
+            firstIndex(),
+            elementSupplier
         );
     }
 
-    public static <E> MethodStrategy setMiddleStrategy(Collection<E> collection, final E element) {
-        Supplier<Collection<E>> collectionSupplier = CollectionSuppliers.getSameCollectionSupplier(collection);
+    public static <E> MethodStrategy setMiddleStrategy(
+        final Collection<E> collection,
+        final Function<Collection<E>, Supplier<Collection<E>>> collectionSupplierGetter,
+        final Supplier<E> elementSupplier)
+    {
+        Supplier<Collection<E>> collectionSupplier = CollectionSuppliers.sameCollection(collection);
 
         return new SetStrategy<>(
             collection.getClass(),
             collectionSupplier,
             ListMethods.setter(),
-            collection.size() / 2,
-            element
+            middleIndex(),
+            elementSupplier
         );
     }
 
-    public static <E> MethodStrategy setLastStrategy(Collection<E> collection, final E element) {
-        Supplier<Collection<E>> collectionSupplier = CollectionSuppliers.getSameCollectionSupplier(collection);
+    public static <E> MethodStrategy setLastStrategy(
+        final Collection<E> collection,
+        final Function<Collection<E>, Supplier<Collection<E>>> collectionSupplierGetter,
+        final Supplier<E> elementSupplier)
+    {
+        Supplier<Collection<E>> collectionSupplier = CollectionSuppliers.sameCollection(collection);
 
         return new SetStrategy<>(
             collection.getClass(),
             collectionSupplier,
             ListMethods.setter(),
-            collection.size() - 1,
-            element
+            lastIndex(),
+            elementSupplier
         );
     }
 }

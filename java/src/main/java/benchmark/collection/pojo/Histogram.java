@@ -41,4 +41,8 @@ public class Histogram {
     public Double getAverageExecutionTime() {
         return averageExecutionTime;
     }
+
+    public void setHistogramColumn(final String histogramColumn) {
+        this.histogramColumn = histogramColumn;
+    }
 }

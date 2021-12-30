@@ -11,7 +11,7 @@ import java.util.TreeSet;
 import java.util.function.Supplier;
 
 public final class CollectionSuppliers {
-    public static <E> Supplier<Collection<E>> getNewCollectionSupplier(Collection<E> collection) {
+    public static <E> Supplier<Collection<E>> newCollection(Collection<E> collection) {
         Class<? extends Collection> collectionClass = collection.getClass();
         if (collectionClass.equals(LinkedList.class)) {
             return () -> {
@@ -44,7 +44,7 @@ public final class CollectionSuppliers {
         throw new RuntimeException("Unexpected class: " + collectionClass.getSimpleName());
     }
 
-    public static <E> Supplier<Collection<E>> getSameCollectionSupplier(Collection<E> collection) {
+    public static <E> Supplier<Collection<E>> sameCollection(Collection<E> collection) {
         return () -> collection;
     }
 }
