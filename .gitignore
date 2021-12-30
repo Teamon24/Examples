@@ -1,6 +1,7 @@
 /.gradle
 /build
 /out
+/.idea
 
 /java/build
 /java/out
