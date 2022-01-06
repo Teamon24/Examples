@@ -1,6 +1,7 @@
 package core.collection.benchmark.utils;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
@@ -22,10 +23,10 @@ public final class StreamUtils {
         return stream;
     }
 
-    public static <T, E> Set<T> getUniques(final List<E> list,
+    public static <T, E> Set<T> getUniques(final Collection<E> collection,
                                            final Function<E, T> uniqueFieldExtractor)
     {
-        Set<T> collectionTypes = list
+        Set<T> collectionTypes = collection
             .stream()
             .map(uniqueFieldExtractor)
             .collect(Collectors.toSet());

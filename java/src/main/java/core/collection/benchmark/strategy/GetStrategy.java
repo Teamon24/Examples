@@ -1,7 +1,7 @@
 package core.collection.benchmark.strategy;
 
 import core.collection.benchmark.pojo.MethodType;
-
+import core.collection.benchmark.strategy.abstrct.ByIndexStrategy;
 
 import java.util.Collection;
 import java.util.function.BiConsumer;

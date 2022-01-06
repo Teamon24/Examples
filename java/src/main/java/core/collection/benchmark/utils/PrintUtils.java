@@ -10,6 +10,7 @@ import java.util.List;
 public final class PrintUtils {
 
     public static void printTable(List<AveragedMethodResult> results) {
+        if (results.isEmpty()) System.out.println("Empty table");
 
         HashMap<String, Integer> titlesAndIndent = new LinkedHashMap<>() {{
             put("TYPE", 16);

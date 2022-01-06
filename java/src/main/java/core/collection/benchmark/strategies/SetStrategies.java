@@ -1,24 +1,35 @@
 package core.collection.benchmark.strategies;
 
-import core.collection.benchmark.utils.CollectionSuppliers;
-import core.collection.benchmark.utils.ListMethods;
-import core.collection.benchmark.strategy.MethodStrategy;
+import core.collection.benchmark.strategy.abstrct.MethodStrategy;
 import core.collection.benchmark.strategy.SetStrategy;
 import core.collection.benchmark.utils.IndexSuppliers;
+import core.collection.benchmark.utils.ListMethods;
 
 import java.util.Collection;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class SetStrategies {
+import static core.collection.benchmark.utils.CollectionSuppliers.sameCollection;
 
-    public static <E> MethodStrategy setFirstStrategy(
+public final class SetStrategies {
+
+    public static <E> MethodStrategy<E> setFirstStrategy(final Collection<E> collection, final Supplier<E> elementSupplier) {
+        return setFirstStrategy(collection, sameCollection(collection), elementSupplier);
+    }
+
+    public static <E> MethodStrategy<E> setMiddleStrategy(final Collection<E> collection, final Supplier<E> elementSupplier) {
+        return setMiddleStrategy(collection, sameCollection(collection), elementSupplier);
+    }
+
+    public static <E> MethodStrategy<E> setLastStrategy(final Collection<E> collection, final Supplier<E> elementSupplier) {
+        return setLastStrategy(collection, sameCollection(collection), elementSupplier);
+    }
+
+    public static <E> MethodStrategy<E> setFirstStrategy(
         final Collection<E> collection,
-        final Function<Collection<E>, Supplier<Collection<E>>> collectionSupplierGetter,
+        final Supplier<Collection<E>> collectionSupplier,
         final Supplier<E> elementSupplier)
     {
-        Supplier<Collection<E>> collectionSupplier = CollectionSuppliers.sameCollection(collection);
-
         return new SetStrategy<>(
             collection.getClass(),
             collectionSupplier,
@@ -28,13 +39,11 @@ public class SetStrategies {
         );
     }
 
-    public static <E> MethodStrategy setMiddleStrategy(
+    public static <E> MethodStrategy<E> setMiddleStrategy(
         final Collection<E> collection,
-        final Function<Collection<E>, Supplier<Collection<E>>> collectionSupplierGetter,
+        final Supplier<Collection<E>> collectionSupplier,
         final Supplier<E> elementSupplier)
     {
-        Supplier<Collection<E>> collectionSupplier = CollectionSuppliers.sameCollection(collection);
-
         return new SetStrategy<>(
             collection.getClass(),
             collectionSupplier,
@@ -44,18 +53,31 @@ public class SetStrategies {
         );
     }
 
-    public static <E> MethodStrategy setLastStrategy(
+    public static <E> MethodStrategy<E> setLastStrategy(
         final Collection<E> collection,
-        final Function<Collection<E>, Supplier<Collection<E>>> collectionSupplierGetter,
+        final Supplier<Collection<E>> collectionSupplier,
         final Supplier<E> elementSupplier)
     {
-        Supplier<Collection<E>> collectionSupplier = CollectionSuppliers.sameCollection(collection);
-
         return new SetStrategy<>(
             collection.getClass(),
             collectionSupplier,
             ListMethods.setter(),
             IndexSuppliers.lastIndex(),
+            elementSupplier
+        );
+    }
+
+    public static <E> MethodStrategy<E> setByIndexStrategy(
+        final Collection<E> collection,
+        final Supplier<Collection<E>> collectionSupplier,
+        final Function<Collection<E>, Integer> indexGetter,
+        final Supplier<E> elementSupplier)
+    {
+        return new SetStrategy<>(
+            collection.getClass(),
+            collectionSupplier,
+            ListMethods.setter(),
+            indexGetter,
             elementSupplier
         );
     }

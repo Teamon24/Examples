@@ -8,10 +8,7 @@ import java.io.InputStreamReader;
  * Демо-класс. Здесь всё сводится воедино.
  */
 public class Client {
-    private static BufferedReader reader =
-        new BufferedReader(
-            new InputStreamReader(System.in)
-        );
+    private static BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
     private static Server server;
 
     private static void init() {

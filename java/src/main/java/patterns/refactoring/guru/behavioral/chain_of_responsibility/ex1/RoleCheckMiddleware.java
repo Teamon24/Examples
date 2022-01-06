@@ -5,12 +5,12 @@ package patterns.refactoring.guru.behavioral.chain_of_responsibility.ex1;
  */
 public class RoleCheckMiddleware extends Middleware {
 
-    public boolean check(String email, String password) {
+    public boolean process(String email, String password) {
         if (email.equals("admin@example.com")) {
             System.out.println("Hello, admin!");
             return true;
         }
         System.out.println("Hello, user!");
-        return checkNext(email, password);
+        return nextProcess(email, password);
     }
 }

@@ -2,8 +2,18 @@ package core.utils;
 
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.function.Supplier;
 
 public final class ElementUtils {
+    public static <T> ArrayList<T> getList(int size, Supplier<T> creator) {
+        ArrayList<T> ts = new ArrayList<>();
+        for (int i = 0; i < size; i++) {
+            ts.add(creator.get());
+        }
+
+        return ts;
+    }
+
     public static ArrayList<Integer> getRandomIntegerList(final Random random, int size) {
         System.out.println("Creating integers");
         ArrayList<Integer> integers = new ArrayList<>();

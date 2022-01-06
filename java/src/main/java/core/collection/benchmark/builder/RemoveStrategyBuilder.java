@@ -2,7 +2,7 @@ package core.collection.benchmark.builder;
 
 import core.collection.benchmark.builder.step.RemoveByIndexStep;
 import core.collection.benchmark.builder.step.RemoveElementStep;
-import core.collection.benchmark.strategy.MethodStrategy;
+import core.collection.benchmark.strategy.abstrct.MethodStrategy;
 import core.collection.benchmark.strategy.RemoveByIndexStrategy;
 import core.collection.benchmark.strategy.RemoveElementStrategy;
 

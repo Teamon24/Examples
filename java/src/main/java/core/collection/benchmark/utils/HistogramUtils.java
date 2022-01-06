@@ -23,19 +23,21 @@ import java.util.stream.Stream;
 
 public abstract class HistogramUtils {
 
+    public static final int DOUBLE_ACCURACY = 2;
     static LinkedList<String> marks = new LinkedList<>();
-    static HashMap<String, String> usedMarks = new HashMap<>();
+    static HashMap<Object, String> usedMarks = new HashMap<>();
 
     static double maxHistogramColumnLength = 40;
 
     static {
         marks.add("*");
-        marks.add("#");
+        marks.add("-");
+        marks.add("o");
+        marks.add("\\");
+        marks.add("|");
         marks.add("+");
         marks.add("=");
-        marks.add("|");
-        marks.add("\\");
-        marks.add("o");
+        marks.add("#");
         marks.add("0");
     }
 
@@ -51,23 +53,23 @@ public abstract class HistogramUtils {
         }
     }
 
-    public static HashMap<String, String> mapTypesToMarks(Set<String> collectionTypes){
-        HashMap<String, String> classToSign = new LinkedHashMap<>();
+    public static <T> HashMap<T, String> mapToMarks(Set<T> ts){
+        HashMap<T, String> tAndMark = new LinkedHashMap<>();
 
-        Iterator<String> iterator = collectionTypes.iterator();
+        Iterator<T> iterator = ts.iterator();
         for (int i = 0; iterator.hasNext();) {
-            String collectionType = iterator.next();
-            String mark = usedMarks.get(collectionType);
-            if (mark == null) {
-                String value = marks.get(i);
-                usedMarks.put(collectionType, value);
-                classToSign.put(collectionType, value);
+            T t = iterator.next();
+            String usedMark = usedMarks.get(t);
+            if (usedMark == null) {
+                String mark = marks.get(i);
+                usedMarks.put(t, mark);
+                tAndMark.put(t, mark);
                 marks.remove(i);
             } else {
-                classToSign.put(collectionType, mark);
+                tAndMark.put(t, usedMark);
             }
         }
-        return classToSign;
+        return tAndMark;
     }
 
     public static List<Histogram> getHistograms(final List<AveragedMethodResult> results,
@@ -80,17 +82,52 @@ public abstract class HistogramUtils {
                 filterNotZeroAndFindBy(Stream::min, results, AveragedMethodResult::getAverageExecutionTime)
             );
 
-        Double maxRelationAverageToMin = results.stream().map(it -> it.getAverageExecutionTime()/minAverageTime).max(Double::compareTo).get();
-        List<Histogram> histograms = createHistogramsObjects(collectionTypeAndMark, results, minAverageTime, maxRelationAverageToMin);
+        if (minAverageTime != 0) {
+            Double maxRelationAverageToMin = results.stream().map(it -> it.getAverageExecutionTime() / minAverageTime).max(Double::compareTo).get();
+            List<Histogram> histograms = createHistogramsObjects(collectionTypeAndMark, results, minAverageTime, maxRelationAverageToMin);
+            rescaleHistogramsColumns(collectionTypeAndMark, histograms);
+            return histograms;
+        } else {
+            return createEmptyHistogramsObjects(results);
+        }
+    }
+
+
+    private static void rescaleHistogramsColumns(final HashMap<String, String> collectionTypeAndMark,
+                                                 final List<Histogram> histograms)
+    {
+        List<Histogram> sortedByAverageTime =
+            histograms.stream()
+                .sorted(Comparator.comparing(Histogram::getAverageExecutionTimeDouble)).toList();
+
+        Histogram firstHistogram = sortedByAverageTime.get(0);
+        firstHistogram.setHistogramColumn(collectionTypeAndMark.get(firstHistogram.getCollectionType()).repeat(1));
+        for (int i = 1; i < sortedByAverageTime.size(); i++) {
+            Histogram prevHistogram = sortedByAverageTime.get(i - 1);
+            Histogram nextHistogram = sortedByAverageTime.get(i);
+            String mark = collectionTypeAndMark.get(nextHistogram.getCollectionType());
+
+            double averageExecutionTimeDouble = nextHistogram.getAverageExecutionTimeDouble();
+            double averageExecutionTimeDouble1 = prevHistogram.getAverageExecutionTimeDouble();
+            nextHistogram.setHistogramColumn(mark.repeat((int) (i* Math.min(2, averageExecutionTimeDouble / averageExecutionTimeDouble1 ))));
+        }
+    }
+
+    private static List<Histogram> createEmptyHistogramsObjects(final List<AveragedMethodResult> results) {
+        List<Histogram> histograms = results.stream().map(result -> {
+            String collectionClass = result.getCollectionClass();
+            return new Histogram(
+                collectionClass,
+                result.getMethodType(),
+                result.getIndex(),
+                "",
+                "0.0");
+        }).collect(Collectors.toList());
         return histograms;
     }
 
-    public static String getHistogramColumnIndent(final Histogram histogram, final int lengthOfLongestHistogram) {
-        return " ".repeat(lengthOfLongestHistogram - histogram.getHistogramColumn().length());
-    }
-
-    public static String getCollectionTypeIndent(final String collectionType, final Integer lengthOfLongestCollectionName) {
-        return " ".repeat(lengthOfLongestCollectionName - collectionType.length());
+    public static <T> String getIndent(final T currentValue, final int maxValues) {
+        return " ".repeat(maxValues - currentValue.toString().length());
     }
 
     public static List<Histogram> createHistogramsObjects(final HashMap<String, String> collectionTypeAndMark,
@@ -106,7 +143,7 @@ public abstract class HistogramUtils {
                 result.getMethodType(),
                 result.getIndex(),
                 getHistogramColumn(collectionClass, collectionTypeAndMark, averageExecutionTime, minAverageTime, maxRelationAverageToMin),
-                averageExecutionTime);
+                format(DOUBLE_ACCURACY, averageExecutionTime));
         }).collect(Collectors.toList());
         return histograms;
     }
@@ -125,13 +162,8 @@ public abstract class HistogramUtils {
         return mark.repeat(rounded);
     }
 
-    public static double getDigitsAfterDot(double d) {
-        BigDecimal bd = new BigDecimal(d - Math.floor(d));
-        bd = bd.setScale(4, RoundingMode.HALF_DOWN);
-        return bd.doubleValue();
-    }
 
-    public static double getDigitsBeforeDot(double d) {
+    public static double getDigitsAfterDot(double d) {
         BigDecimal bd = new BigDecimal(d - Math.floor(d));
         bd = bd.setScale(4, RoundingMode.HALF_DOWN);
         return bd.doubleValue();
@@ -144,18 +176,34 @@ public abstract class HistogramUtils {
 
     public static Stream<Map.Entry<MethodType, List<Histogram>>> groupByMethod(final List<Histogram> histograms) {
         return histograms.stream()
-            .collect(Collectors.groupingBy(Histogram::getMethodType)).entrySet().stream();
+            .collect(Collectors.groupingBy(Histogram::getMethodType))
+            .entrySet()
+            .stream();
     }
 
     public static <E> Double filterNotZeroAndFindBy(BiFunction<Stream<E>, Comparator<? super E>, Optional<E>> function,
                                                      final List<E> list,
                                                      Function<E, Double> fieldExtractor)
     {
-        E e = function.apply(
+        Optional<E> e = function.apply(
             list.stream().filter(it -> fieldExtractor.apply(it) != 0.0),
             Comparator.comparing(fieldExtractor)
-        ).get();
-        return fieldExtractor.apply(e);
+        );
+        return e.map(fieldExtractor).orElse(0.0);
     }
 
+    public static String format(final int doubleAccuracy, final Double value) {
+        return String.format("%." + doubleAccuracy + "f", value);
+    }
+
+    public static <T extends Comparable<T>> Stream<Map.Entry<T, List<Histogram>>> groupBy(
+        final Function<Histogram, T> grouping,
+        final List<Histogram> histograms)
+    {
+        return histograms.stream()
+            .collect(Collectors.groupingBy(grouping))
+            .entrySet()
+            .stream()
+            .sorted(Map.Entry.comparingByKey());
+    }
 }

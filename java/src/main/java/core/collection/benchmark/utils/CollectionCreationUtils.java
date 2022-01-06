@@ -7,33 +7,45 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Supplier;
 
 public final class CollectionCreationUtils {
 
-    public static <T> LinkedList<T> fillLinkedList(final int size, final Supplier<T> elementSupplier) {
-        return (LinkedList<T>) fillCollection(size, new LinkedList<>(), elementSupplier);
+    public static <T> List<T> list(final Class listClass, final int size, final Supplier<T> supplier) {
+
+        if (listClass.equals(LinkedList.class)) {
+            return (LinkedList<T>) fillCollection(size, new LinkedList<>(), supplier);
+        }
+
+        if (listClass.equals(ArrayList.class)) {
+            return (ArrayList<T>) fillCollection(size, new ArrayList<>(), supplier);
+        }
+
+        if (listClass.equals(TreeList.class)) {
+            return (TreeList<T>) fillCollection(size, new TreeList<>(), supplier);
+        }
+
+        throw new RuntimeException("In list initialization method no implementation for class: " + listClass.getSimpleName());
     }
 
-    public static <T> ArrayList<T> fillArrayList(final int size, final Supplier<T> supplier) {
-        return (ArrayList<T>) fillCollection(size, new ArrayList<>(), supplier);
-    }
+    public static <T> Set<T> set(final Class setClass, final int size, final Supplier<T> supplier) {
 
-    public static <T> TreeList<T> fillTreeList(final int size, final Supplier<T> supplier) {
-        return (TreeList<T>) fillCollection(size, new TreeList<>(), supplier);
-    }
+        if (setClass.equals(HashSet.class)) {
+            return (HashSet<T>) fillCollection(size, new HashSet<>(), supplier);
+        }
 
-    public static <T> HashSet<T> hashSet(final int size, final Supplier<T> supplier) {
-        return (HashSet<T>) fillCollection(size, new HashSet<>(), supplier);
-    }
+        if (setClass.equals(TreeSet.class)) {
+            return (TreeSet<T>) fillCollection(size, new TreeSet<>(), supplier);
+        }
 
-    public static <T> TreeSet<T> treeSet(final int size, final Supplier<T> supplier) {
-        return (TreeSet<T>) fillCollection(size, new TreeSet<>(), supplier);
-    }
+        if (setClass.equals(LinkedHashSet.class)) {
+            return (LinkedHashSet<T>) fillCollection(size, new LinkedHashSet<>(), supplier);
+        }
 
-    public static <T> LinkedHashSet<T> linkedHashSet(final int size, final Supplier<T> supplier) {
-        return (LinkedHashSet<T>) fillCollection(size, new LinkedHashSet<>(), supplier);
+        throw new RuntimeException("In set initialization method no implementation for class: " + setClass.getSimpleName());
     }
 
     public static <E> Collection<E> fillCollection(

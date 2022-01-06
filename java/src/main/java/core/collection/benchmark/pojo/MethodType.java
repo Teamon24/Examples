@@ -11,8 +11,8 @@ public enum MethodType {
     REMOVE_BY_INDEX("REMOVE_BY_INDEX"),
     REMOVE_ELEMENT("REMOVE_ELEMENT"),
     ADD("ADD"),
-    ADD_BY_INDEX("ADD"),
-    ADD_ELEMENT("ADD");
+    ADD_BY_INDEX("ADD_BY_INDEX"),
+    ADD_ELEMENT("ADD_ELEMENT");
 
     private String name;
 
@@ -26,5 +26,10 @@ public enum MethodType {
 
     public static Set<MethodType> types() {
         return Arrays.stream(MethodType.values()).collect(Collectors.toSet());
+    }
+
+    @Override
+    public String toString() {
+        return name;
     }
 }

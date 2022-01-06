@@ -1,6 +1,6 @@
 package core.concurrency.thread.ex2;
 
-import core.concurrency.thread.ThreadUtils;
+import core.concurrency.ConcurrencyUtils;
 
 public class SyncObject {
         int millis = 1500;
@@ -8,21 +8,21 @@ public class SyncObject {
     public synchronized void sync1(SyncThread thread) {
         String sync1 = "SYNC1";
         messageIn(sync1, thread);
-        ThreadUtils.sleep(millis);
+        ConcurrencyUtils.sleep(millis);
         messageOut(thread, sync1);
     }
 
     public synchronized void sync2(SyncThread thread) {
         String sync2 = "SYNC2";
         messageIn(sync2, thread);
-        ThreadUtils.sleep(millis);
+        ConcurrencyUtils.sleep(millis);
         messageOut(thread, sync2);
     }
 
     public void notSync(SyncThread thread) {
         String notSync = "NOT_SYNC";
         messageIn(notSync, thread);
-        ThreadUtils.sleep(millis);
+        ConcurrencyUtils.sleep(millis);
         messageOut(thread, notSync);
     }
 

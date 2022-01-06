@@ -15,18 +15,18 @@ public abstract class Middleware {
     }
 
     /**
-     * Подклассы реализуют в этом методе конкретные проверки.
-     */
-    public abstract boolean check(String email, String password);
-
-    /**
      * Запускает проверку в следующем объекте или завершает проверку, если мы в
      * последнем элементе цепи.
      */
-    protected boolean checkNext(String email, String password) {
+    protected boolean nextProcess(String email, String password) {
         if (next == null) {
             return true;
         }
-        return next.check(email, password);
+        return next.process(email, password);
     }
+
+    /**
+     * Подклассы реализуют в этом методе конкретные проверки.
+     */
+    public abstract boolean process(String email, String password);
 }

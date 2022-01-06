@@ -21,7 +21,7 @@ public class ThrottlingMiddleware extends Middleware {
      * Например, элемент цепи может пропустить все остальные проверки вперёд и
      * запустить свою проверку в конце.
      */
-    public boolean check(String email, String password) {
+    public boolean process(String email, String password) {
         if (System.currentTimeMillis() > currentTime + 60_000) {
             request = 0;
             currentTime = System.currentTimeMillis();
@@ -33,6 +33,6 @@ public class ThrottlingMiddleware extends Middleware {
             System.out.println("Request limit exceeded!");
             Thread.currentThread().stop();
         }
-        return checkNext(email, password);
+        return nextProcess(email, password);
     }
 }

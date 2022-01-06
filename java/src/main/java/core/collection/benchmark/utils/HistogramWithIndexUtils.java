@@ -2,50 +2,62 @@ package core.collection.benchmark.utils;
 
 import core.collection.benchmark.pojo.AveragedMethodResult;
 import core.collection.benchmark.pojo.Histogram;
-import core.collection.benchmark.pojo.MethodType;
-import core.concurrency.thread.ex1.utils.IntegerUtils;
 
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
+
+import static core.collection.benchmark.utils.MaxUtils.*;
 
 public final class HistogramWithIndexUtils extends HistogramUtils {
 
-
-    public static void printHistogram(List<AveragedMethodResult> results, Integer maxHistogramLength) {
+    public static void printHistogram(final List<AveragedMethodResult> results,
+                                      final Integer maxHistogramLength)
+    {
         maxHistogramColumnLength = maxHistogramLength;
-        printHistogram(results);
+        StringBuilder stringBuilder = getStringHistograms(results);
+        System.out.println(stringBuilder);
     }
 
-    public static void printHistogram(List<AveragedMethodResult> results) {
+    public static StringBuilder getStringHistograms(final List<AveragedMethodResult> results,
+                                                    final Integer maxHistogramLength)
+    {
+        maxHistogramColumnLength = maxHistogramLength;
+        return getStringHistograms(results);
+    }
+
+    private static StringBuilder getStringHistograms(List<AveragedMethodResult> results) {
+        if (results.isEmpty()) {
+            System.out.println("No results");
+            return null;
+        }
         Set<String> collectionTypes = StreamUtils.getUniques(results, AveragedMethodResult::getCollectionClass);
         checkSize(collectionTypes);
 
-        HashMap<String, String> collectionTypeAndMark = mapTypesToMarks(collectionTypes);
-        List<Histogram> histograms = getHistograms(results, collectionTypeAndMark);
+        HashMap<String, String> collectionTypeAndMark = mapToMarks(collectionTypes);
 
-        Integer lengthOfMaxIndex = getLengthOfMaxIndex(results);
-        Integer lengthOfLongestCollectionName = MaxUtils.getLongestCollectionName(collectionTypes).length();
-        int lengthOfLongestHistogram = MaxUtils.getLongestHistogramColumn(histograms).length();
-        Set<MethodType> methodTypes = StreamUtils.getUniques(results, AveragedMethodResult::getMethodType);
-        int lengthOfLongestMethodName = MaxUtils.getLongestMethodName(methodTypes).length();
+        List<Histogram> histograms =
+            getHistograms(results, collectionTypeAndMark)
+                .stream()
+                .sorted(Comparator.comparing(Histogram::getIndex))
+                .collect(Collectors.toList());
 
-        int count = (
-            lengthOfLongestMethodName +
-                lengthOfMaxIndex +
-                lengthOfLongestCollectionName +
-                lengthOfLongestCollectionName);
+        int lengthOfLongestCollectionName = longestBy(histograms, Histogram::getCollectionType).length();
+        int lengthOfMaxIndex              = longestBy(histograms, Histogram::getIndex).length();
+        int lengthOfLongestTime           = longestBy(histograms, Histogram::getAverageExecutionTime).length();
+        int lengthOfLongestHistogram      = longestBy(histograms, Histogram::getHistogramColumn).length();
+        int lengthOfLongestMethodName     = longestBy(histograms, Histogram::getMethodType).length();
 
         StringBuilder builder = new StringBuilder();
-        groupByMethod(histograms)
+
+        groupBy(Histogram::getMethodType, histograms)
             .forEach(histogramsByMethod -> {
                 final StringBuilder builderForMethod = new StringBuilder();
-                appendFirstLine(builderForMethod, lengthOfLongestMethodName);
-                groupByIndex(histogramsByMethod)
+                List<Histogram> histogramsByMethodValue = histogramsByMethod.getValue();
+
+                groupBy(Histogram::getIndex, histogramsByMethodValue)
                     .forEach(histogramsByIndex -> {
                         final StringBuilder builderForIndex = new StringBuilder();
                         for (Histogram histogram : histogramsByIndex.getValue()) {
@@ -55,32 +67,15 @@ public final class HistogramWithIndexUtils extends HistogramUtils {
                                 lengthOfMaxIndex,
                                 lengthOfLongestCollectionName,
                                 lengthOfLongestHistogram,
-                                lengthOfLongestMethodName);
+                                lengthOfLongestMethodName,
+                                lengthOfLongestTime);
                         }
-                        appendIndexGroup(builderForMethod, builderForIndex, lengthOfLongestMethodName);
+                        builderForMethod.append(builderForIndex);
                     });
-                appendMethodGroup(builder, builderForMethod);});
+                builder.append(builderForMethod).append("\n");
+            });
 
-        System.out.println(builder);
-    }
-
-    private static void appendIndexGroup(final StringBuilder builderForMethod,
-                                         final StringBuilder builderForIndex,
-                                         final int lengthOfLongestMethodName) {
-        builderForMethod
-            .append(builderForIndex)
-            .append(getSeparationLine("-", lengthOfLongestMethodName))
-            .append("\n");
-    }
-
-    private static void appendMethodGroup(final StringBuilder builder, final StringBuilder builderForMethod) {
-        builder
-            .append(builderForMethod)
-            .append("\n");
-    }
-
-    private static void appendFirstLine(final StringBuilder builderForMethod, final int count) {
-        builderForMethod.append(getSeparationLine("-", count)).append("\n");
+        return builder;
     }
 
     private static void appendHistogram(final StringBuilder builderForIndex,
@@ -89,54 +84,22 @@ public final class HistogramWithIndexUtils extends HistogramUtils {
                                         final Integer lengthOfMaxIndex,
                                         final Integer lengthOfLongestCollectionName,
                                         final int lengthOfLongestHistogram,
-                                        final int lengthOfLongestMethodName)
+                                        final int lengthOfLongestMethodName,
+                                        final Integer lengthOfLongestTime)
     {
-        int counter = 0;
-        String collectionType = histogram.getCollectionType();
-        String methodTypeName = histogram.getMethodType().getValue();
-        String histogramColumnIndent = getHistogramColumnIndent(histogram, lengthOfLongestHistogram);
-        String collectionTypeIndent = getCollectionTypeIndent(collectionType, lengthOfLongestCollectionName);
-        String indexIndent;
-        if (counter == 0) {
-            builderForIndex
-                .append(" ".repeat(lengthOfLongestMethodName - methodTypeName.length()))
-                .append(methodTypeName)
-                .append(" ");
+        String histogramColumnIndent = getIndent(histogram.getHistogramColumn(), lengthOfLongestHistogram);
+        String collectionTypeIndent = getIndent(histogram.getCollectionType(), lengthOfLongestCollectionName);
+        String executionTimeIndent = getIndent(histogram.getAverageExecutionTime(), lengthOfLongestTime);
+        String indexIndent = getIndent(index, lengthOfMaxIndex);
+        String methodTypeIndent = getIndent(histogram.getMethodType(), lengthOfLongestMethodName);
 
-            indexIndent = getIndexIndent(lengthOfMaxIndex, index) + index;
-            counter++;
-        } else {
-            builderForIndex.append(" ".repeat(lengthOfLongestMethodName)).append(" ");
-            indexIndent = " ".repeat(lengthOfMaxIndex);
-        }
-        appendIndexLine(builderForIndex, histogram, indexIndent, collectionTypeIndent, histogramColumnIndent);
-        builderForIndex.append("\n");
+        builderForIndex
+            .append(methodTypeIndent).append(histogram.getMethodType()).append(" ")
+            .append(indexIndent).append(index).append(" ")
+            .append(collectionTypeIndent).append(histogram.getCollectionType()).append(" ")
+            .append(histogram.getHistogramColumn()).append(histogramColumnIndent).append(" ")
+            .append(executionTimeIndent).append(histogram.getAverageExecutionTime()).append(" ")
+            .append("\n");
     }
 
-    private static Integer getLengthOfMaxIndex(final List<AveragedMethodResult> results) {
-        Integer maximalIndex = results.stream().max(Comparator.comparing(AveragedMethodResult::getIndex)).get().getIndex();
-        Integer lengthOfMaxIndex = IntegerUtils.countDigits(maximalIndex);
-        return lengthOfMaxIndex;
-    }
-
-    private static StringBuilder appendIndexLine(final StringBuilder builderForIndex,
-                                                 final Histogram it,
-                                                 final String indexIndent,
-                                                 final String collectionTypeIndent,
-                                                 final String histogramColumnIndent) {
-        return builderForIndex
-            .append(indexIndent).append(" ")
-            .append(collectionTypeIndent).append(it.getCollectionType()).append(" ")
-            .append(it.getHistogramColumn()).append(histogramColumnIndent).append(" ")
-            .append(it.getAverageExecutionTime()).append(" ");
-    }
-
-    private static String getIndexIndent(final Integer lengthOfMaxIndex, final Integer index) {
-        return " ".repeat(lengthOfMaxIndex - IntegerUtils.countDigits(index));
-    }
-
-    private static Stream<Map.Entry<Integer, List<Histogram>>> groupByIndex(final Map.Entry<MethodType, List<Histogram>> histogramByIndex) {
-        return histogramByIndex.getValue().stream().collect(Collectors.groupingBy(Histogram::getIndex))
-            .entrySet().stream().sorted(Map.Entry.comparingByKey());
-    }
 }

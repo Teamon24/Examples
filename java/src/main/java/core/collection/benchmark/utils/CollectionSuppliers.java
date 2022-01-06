@@ -10,15 +10,14 @@ import java.util.LinkedList;
 import java.util.TreeSet;
 import java.util.function.Supplier;
 
+import static core.collection.benchmark.utils.IndexSuppliers.getFirst;
+
 public final class CollectionSuppliers {
+
     public static <E> Supplier<Collection<E>> newCollection(Collection<E> collection) {
         Class<? extends Collection> collectionClass = collection.getClass();
         if (collectionClass.equals(LinkedList.class)) {
-            return () -> {
-                LinkedList<E> newList = new LinkedList<>(collection);
-                newList.get(0);
-                return newList;
-            };
+            return () -> new LinkedList<>(collection);
         }
 
         if (collectionClass.equals(ArrayList.class)) {
@@ -41,8 +40,7 @@ public final class CollectionSuppliers {
             return () -> new LinkedHashSet<>(collection);
         }
 
-        throw new RuntimeException("Unexpected class: " + collectionClass.getSimpleName());
-    }
+        throw new RuntimeException("Unexpected class: " + collectionClass.getSimpleName());    }
 
     public static <E> Supplier<Collection<E>> sameCollection(Collection<E> collection) {
         return () -> collection;

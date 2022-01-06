@@ -6,7 +6,7 @@ package patterns.refactoring.guru.behavioral.chain_of_responsibility.ex1;
 public class UserExistsMiddleware extends Middleware {
     private final UserService userService = new UserService();
 
-    public boolean check(String email, String password) {
+    public boolean process(String email, String password) {
         if (!userService.hasEmail(email)) {
             System.out.println("This email is not registered!");
             return false;
@@ -15,6 +15,6 @@ public class UserExistsMiddleware extends Middleware {
             System.out.println("Wrong password!");
             return false;
         }
-        return checkNext(email, password);
+        return nextProcess(email, password);
     }
 }

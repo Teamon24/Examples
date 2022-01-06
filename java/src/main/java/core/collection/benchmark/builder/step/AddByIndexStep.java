@@ -21,10 +21,12 @@ public class AddByIndexStep<E> {
         this.addByIndex = addByIndex;
     }
 
-    public AddStrategyBuilder<E> index(Function<Collection<E>, Integer> indexSupplier,
-                                       Supplier<E> elementSupplier)
-    {
+    public AddByIndexStep<E> index(Function<Collection<E>, Integer> indexSupplier) {
         this.indexSupplier = indexSupplier;
+        return this;
+    }
+
+    public AddStrategyBuilder<E> element(Supplier<E> elementSupplier) {
         this.elementSupplier = elementSupplier;
         return this.addStrategyBuilder;
     }

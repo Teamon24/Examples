@@ -1,7 +1,7 @@
 package core.concurrency.thread.ex1;
 
 import core.utils.TableUtils;
-import core.concurrency.thread.ThreadUtils;
+import core.concurrency.ConcurrencyUtils;
 import core.concurrency.thread.ex1.state.StateObject;
 import core.concurrency.thread.ex1.state.StateObjectImpl;
 import core.concurrency.thread.ex1.state.SynchronizedStateObject;
@@ -18,8 +18,9 @@ public class Main {
 
     public static void main(String[] args) throws InterruptedException {
 
-        int doubleAccuracy = 2;
-        int threadsAmount = 10;
+        int doubleAccuracy = 3;
+        int threadsAmount = 5;
+
         final StateObject stateObject1 = new StateObjectImpl();
         final StateObject stateObject2 = new VolatileStateObject();
         final StateObject stateObject3 = new SynchronizedStateObject();
@@ -35,8 +36,9 @@ public class Main {
                     records.add(record);
                 });
 
+        List<String> columns = List.of("Case", "Threads", "Expected", "Actual", "Lost");
         final TableUtils.Table table =
-            new TableUtils.Table(List.of("Case", "Threads", "Expected", "Actual", "Lost"), records);
+            new TableUtils.Table(columns, records);
         TableUtils.printResults(table);
     }
 
@@ -62,23 +64,10 @@ public class Main {
     {
         Counter checker = new Counter();
         Function<Integer, Thread> integerThreadFunction = (Integer id) -> new IncrementThread(checker, stateObject);
-        final List<Thread> threads = ThreadUtils.createThreads(threadsAmount, integerThreadFunction);
+        final List<Thread> threads = ConcurrencyUtils.createThreads(threadsAmount, integerThreadFunction);
         threads.forEach(Thread::start);
-        ThreadUtils.join(threads);
+        ConcurrencyUtils.join(threads);
         return stateObject.getI();
-    }
-
-    private static HashMap<Pair<String, Integer>, String> table(final int threadsAmount,
-                                                 final int expected,
-                                                 final int actual,
-                                                 final int doubleAccuracy)
-    {
-        return new HashMap<>() {{
-            put(Pair.of("Threads", 1), String.valueOf(threadsAmount));
-            put(Pair.of("Expected", 2), String.valueOf(expected));
-            put(Pair.of("Actual", 3), String.valueOf(actual));
-            put(Pair.of("Lost", 4), getLossString(actual, expected, doubleAccuracy));
-        }};
     }
 
     private static String getLossString(final double actual, double expected, int doubleAccuracy) {

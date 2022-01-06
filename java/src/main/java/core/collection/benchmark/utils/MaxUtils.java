@@ -1,24 +1,40 @@
 package core.collection.benchmark.utils;
 
-import core.collection.benchmark.pojo.Histogram;
-import core.collection.benchmark.pojo.MethodType;
-
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 public final class MaxUtils {
-    static String getLongestMethodName(final Set<MethodType> methodTypes) {
-        return methodTypes.stream().max(Comparator.comparingInt(it -> it.getValue().length())).get().getValue();
+
+    public static final String EMPTY = "";
+
+    static <Element> String longest(final Collection<Element> collectionTypes) {
+        return longestBy(collectionTypes, it -> it);
     }
 
-    static String getLongestHistogramColumn(final List<Histogram> histograms) {
-        return histograms.stream().max(Comparator.comparingInt(it -> it.getHistogramColumn().length())).get().getHistogramColumn();
+    static <Element, Field> String longestBy(final Collection<Element> collection, Function<Element, Field> mapping) {
+        return maxBy(collection, mapping);
     }
 
-    static String getLongestCollectionName(final Set<String> collectionTypes) {
-        return collectionTypes.stream().max(Comparator.comparing(String::length)).get();
+    static <Element, Field> String maxBy(final Collection<Element> collection,
+                                        Function<Element, Field> mapping
+    ) {
+        if (collection.isEmpty()) return EMPTY;
+        return collection
+            .stream()
+            .map(mapping)
+            .map(Object::toString)
+            .max(Comparator.comparing(String::length))
+            .get();
+    }
+
+    public static <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
+        Set<Object> seen = ConcurrentHashMap.newKeySet();
+        return t -> seen.add(keyExtractor.apply(t));
     }
 
     public static <E> Integer getMaxDigitsAmountAfterDot(final List<E> averagedMethodResults,

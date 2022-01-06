@@ -5,34 +5,17 @@ import org.apache.commons.lang3.tuple.Pair;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 public final class TableUtils {
 
     public static final String SEPARATOR = "     ";
-    public static final Random RANDOM = new Random();
     public static final String LINE_ELEMENT = "-";
 
     public record Table(List<String> columns, List<Record> records) {
         public void add(Record record) { records.add(record); }
     }
     public record Record(Map<String, Object> values) {}
-
-    public static void main(String[] args) {
-        List<String> columns = List.of("Threads", "Expected", "Actual", "Lost");
-        List<Record> records = IntStream.range(0, 10)
-            .mapToObj(
-                i -> new Record(
-                    columns.stream()
-                        .map(column -> Pair.of(column, String.valueOf(RANDOM.nextInt(1_000_000))))
-                        .collect(Collectors.toMap(Pair::getLeft, Pair::getRight))
-                )
-            ).toList();
-        Table table = new Table(columns, records);
-        TableUtils.printResults(table);
-    }
 
     public static void printResults(Table table) {
         Map<String, Integer> longestValuesByColumns = getLengthOfLongestValuesForColumns(table);
@@ -76,10 +59,15 @@ public final class TableUtils {
     {
         appendLine(stringBuilder, longestValuesByColumns);
         appendSeparator(stringBuilder);
-        for (String column : table.columns) {
-            stringBuilder
-                .append(getIndent(longestValuesByColumns, column))
-                .append(column);
+        List<String> columns = table.columns;
+        for (int i = 0, columnsSize = columns.size(); i < columnsSize; i++) {
+            final String column = columns.get(i);
+            String indent = getIndent(longestValuesByColumns, column);
+            if (i == 0) {
+                stringBuilder.append(column).append(indent);
+            } else {
+                stringBuilder.append(indent).append(column);
+            }
             appendSeparator(stringBuilder);
         }
         stringBuilder.append("\n");

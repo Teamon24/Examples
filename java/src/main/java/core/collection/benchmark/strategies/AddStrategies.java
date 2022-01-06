@@ -1,68 +1,76 @@
 package core.collection.benchmark.strategies;
 
-import core.collection.benchmark.utils.MethodSuppliers;
 import core.collection.benchmark.builder.AddStrategyBuilder;
-import core.collection.benchmark.utils.ListMethods;
-import core.collection.benchmark.strategy.MethodStrategy;
+import core.collection.benchmark.strategy.abstrct.MethodStrategy;
 import core.collection.benchmark.utils.IndexSuppliers;
+import core.collection.benchmark.utils.ListMethods;
 
 import java.util.Collection;
-import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class AddStrategies {
+import static core.collection.benchmark.utils.CollectionSuppliers.newCollection;
+import static core.collection.benchmark.utils.MethodSuppliers.*;
+
+public final class AddStrategies {
+
+    public static <E> MethodStrategy<E> addFirstStrategy(final Collection<E> collection, final Supplier<E> elementSupplier) {
+        return addFirstStrategy(collection, newCollection(collection), elementSupplier);
+    }
+
+    public static <E> MethodStrategy<E> addMiddleStrategy(final Collection<E> collection, final Supplier<E> elementSupplier) {
+        return addMiddleStrategy(collection, newCollection(collection), elementSupplier);
+    }
+
+    public static <E> MethodStrategy<E> addLastStrategy(final Collection<E> collection, final Supplier<E> elementSupplier) {
+        return addLastStrategy(collection, newCollection(collection), elementSupplier);
+    }
+
     public static <E> MethodStrategy<E> addFirstStrategy(
         final Collection<E> collection,
-        final Function<Collection<E>, Supplier<Collection<E>>> collectionSupplierGetter,
+        final Supplier<Collection<E>> collectionSupplierGetter,
         final Supplier<E> elementSupplier)
     {
-        Supplier<Collection<E>> collectionSupplier = collectionSupplierGetter.apply(collection);
-        return new AddStrategyBuilder<>(collectionSupplier)
-            .collectionClass(collection.getClass())
-            .addByIndex(ListMethods.addByIndex())
-            .index(IndexSuppliers.firstIndex(), elementSupplier)
-            .build();
+        return addByIndexStrategy(collection, collectionSupplierGetter, IndexSuppliers.firstIndex(), elementSupplier);
     }
 
     public static <E> MethodStrategy<E> addMiddleStrategy(
         final Collection<E> collection,
-        final Function<Collection<E>, Supplier<Collection<E>>> collectionSupplierGetter,
+        final Supplier<Collection<E>> collectionSupplier,
         final Supplier<E> elementSupplier)
     {
-        Supplier<Collection<E>> collectionSupplier = collectionSupplierGetter.apply(collection);
-
-        return new AddStrategyBuilder<>(collectionSupplier)
-            .collectionClass(collection.getClass())
-            .addByIndex(ListMethods.addByIndex())
-            .index(IndexSuppliers.middleIndex(), elementSupplier)
-            .build();
+        return addByIndexStrategy(collection, collectionSupplier, IndexSuppliers.middleIndex(), elementSupplier);
     }
 
     public static <E> MethodStrategy<E> addLastStrategy(
         final Collection<E> collection,
-        final Function<Collection<E>, Supplier<Collection<E>>> collectionSupplierGetter,
-        final Supplier<E> element)
+        final Supplier<Collection<E>> collectionSupplier,
+        final Supplier<E> elementSupplier)
     {
-        Supplier<Collection<E>> collectionSupplier = collectionSupplierGetter.apply(collection);
+        return addByIndexStrategy(collection, collectionSupplier, IndexSuppliers.lastIndex(), elementSupplier);
+    }
+
+    public static <E> MethodStrategy<E> addByIndexStrategy(
+        final Collection<E> collection,
+        final Supplier<Collection<E>> collectionSupplier,
+        final Function<Collection<E>, Integer> indexSupplier,
+        final Supplier<E> elementSupplier)
+    {
         return new AddStrategyBuilder<>(collectionSupplier)
             .collectionClass(collection.getClass())
             .addByIndex(ListMethods.addByIndex())
-            .index(IndexSuppliers.lastIndex(), element)
+            .index(indexSupplier)
+            .element(elementSupplier)
             .build();
     }
 
     public static <E> MethodStrategy<E> addElementStrategy(
         final Collection<E> collection,
-        final Function<Collection<E>, Supplier<Collection<E>>> collectionSupplierGetter,
         final Supplier<E> elementSupplier)
     {
-        Supplier<Collection<E>> collectionSupplier = collectionSupplierGetter.apply(collection);
-        BiConsumer<Collection<E>, E> addElement = MethodSuppliers.getAddElement(collection);
-
-        return new AddStrategyBuilder<>(collectionSupplier)
+        return new AddStrategyBuilder<>(newCollection(collection))
             .collectionClass(collection.getClass())
-            .addElement(addElement)
+            .addElement(getAddElement(collection))
             .element(elementSupplier)
             .build();
     }

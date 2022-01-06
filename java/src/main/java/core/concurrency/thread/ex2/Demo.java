@@ -1,7 +1,7 @@
 package core.concurrency.thread.ex2;
 
 import org.apache.commons.lang3.tuple.Pair;
-import core.concurrency.thread.ThreadUtils;
+import core.concurrency.ConcurrencyUtils;
 
 import java.util.Collection;
 import java.util.List;
@@ -46,7 +46,7 @@ public class Demo {
     {
 
         return methods
-            .map(it -> Pair.of(it, ThreadUtils.createThreads(threadsAmount, create)))
+            .map(it -> Pair.of(it, ConcurrencyUtils.createThreads(threadsAmount, create)))
             .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
     }
 

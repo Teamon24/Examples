@@ -4,7 +4,7 @@ import core.collection.benchmark.builder.step.AddByIndexStep;
 import core.collection.benchmark.builder.step.AddElementStep;
 import core.collection.benchmark.strategy.AddByIndexStrategy;
 import core.collection.benchmark.strategy.AddElementStrategy;
-import core.collection.benchmark.strategy.MethodStrategy;
+import core.collection.benchmark.strategy.abstrct.MethodStrategy;
 import core.collection.benchmark.utils.TriConsumer;
 
 import java.util.Collection;
@@ -57,5 +57,4 @@ public class AddStrategyBuilder<E> {
 
         throw new RuntimeException("Index and element should not be null both");
     }
-
 }

@@ -1,18 +1,18 @@
 package core.collection.benchmark.strategy;
 
 import core.collection.benchmark.pojo.MethodType;
+import core.collection.benchmark.strategy.abstrct.IndexAndElementStrategy;
 import core.collection.benchmark.utils.TriConsumer;
-import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.Collection;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class AddByIndexStrategy<E> extends MethodStrategy<E> {
+public class AddByIndexStrategy<E> extends IndexAndElementStrategy<E> {
 
-    private TriConsumer<Collection<E>, Integer, E> addByIndex;
-    private Function<Collection<E>, Integer> indexSupplier;
-    private Supplier<E> elementSupplier;
+    private final TriConsumer<Collection<E>, Integer, E> addByIndex;
+    private final Function<Collection<E>, Integer> indexSupplier;
+    private final Supplier<E> elementSupplier;
 
     public AddByIndexStrategy(Class collectionClass,
                               Supplier<Collection<E>> collectionSupplier,
@@ -32,17 +32,7 @@ public class AddByIndexStrategy<E> extends MethodStrategy<E> {
     }
 
     @Override
-    public void method(final Collection<E> collection, final Integer index) {
-        throwNoImplementationShouldBe(new Pair[]{Pair.of("index", "present"), Pair.of("element", "absent")});
-    }
-
-    @Override
-    public void method(final Collection<E> collection, final E element) {
-        throwNoImplementationShouldBe(new Pair[]{Pair.of("index", "absent"), Pair.of("element", "present")});
-    }
-
-    @Override
     public MethodType getMethodType() {
-        return MethodType.ADD;
+        return MethodType.ADD_BY_INDEX;
     }
 }

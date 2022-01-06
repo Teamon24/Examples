@@ -27,21 +27,9 @@ public final class ListMethods {
         return (Collection<T> collection, T element) -> ((List<T>)collection).add(element);
     }
 
-    public static <T> TriConsumer<Collection<T>, Integer, T> remover() {
-        TriConsumer<Collection<T>, Integer, T> remove =
-            (Collection<T> collection, Integer index, T element) -> ((List<T>)collection).remove((int)index);
-        return remove;
-    }
-
     public static <T> TriConsumer<Collection<T>, Integer, T> setter() {
         TriConsumer<Collection<T>, Integer, T> set =
             (Collection<T> collection, Integer index, T element) -> ((List<T>)collection).set(index, element);
         return set;
-    }
-
-    public static <T> TriConsumer<Collection<T>, Integer, T> getter() {
-        TriConsumer<Collection<T>, Integer, T> get =
-            (Collection<T> collection, Integer index, T element) -> ((List<T>)collection).get(index);
-        return get;
     }
 }

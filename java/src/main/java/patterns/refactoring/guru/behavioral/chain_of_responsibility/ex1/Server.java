@@ -20,7 +20,7 @@ public class Server {
      * авторизации у цепочки.
      */
     public boolean logIn(String email, String password) {
-        if (middleware.check(email, password)) {
+        if (middleware.process(email, password)) {
             System.out.println("Authorization have been successful!");
 
             // Здесь должен быть какой-то полезный код, работающий для

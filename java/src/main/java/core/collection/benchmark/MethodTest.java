@@ -3,46 +3,31 @@ package core.collection.benchmark;
 import core.collection.benchmark.pojo.MethodResult;
 import core.collection.benchmark.pojo.MethodType;
 import core.collection.benchmark.utils.TimeMeasureStrategy;
-import core.collection.benchmark.strategy.MethodStrategy;
+import core.collection.benchmark.strategy.abstrct.MethodStrategy;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MethodTest {
-
-    private final List<MethodResult> testResults = new ArrayList<>();
-    private final int testsAmount;
-    private final MethodStrategy methodStrategy;
-    private final TimeMeasureStrategy timeMeasureStrategy;
-
-    public MethodTest(int testsAmount,
-                      MethodStrategy methodStrategy,
-                      TimeMeasureStrategy timeMeasureStrategy)
-    {
-        this.testsAmount = testsAmount;
-        this.methodStrategy = methodStrategy;
-        this.timeMeasureStrategy = timeMeasureStrategy;
-    }
+public record MethodTest(int testsAmount,
+                        MethodStrategy methodStrategy,
+                        TimeMeasureStrategy timeMeasureStrategy) {
 
     public MethodTest(int testsAmount, MethodStrategy methodStrategy) {
-        this(testsAmount, methodStrategy, System::currentTimeMillis);
+        this(testsAmount, methodStrategy, System::nanoTime);
     }
 
-    public List<MethodResult> test(final boolean enableLog, int logStep) {
+    public List<MethodResult> test(final boolean enableLog, Integer logStep) {
+        final List<MethodResult> testResults = new ArrayList<>();
         for (int i = 0; i < testsAmount; i++) {
             long executionTime = methodStrategy.executeAndGetTime(timeMeasureStrategy);
 
             String collectionType = methodStrategy.getCollectionType();
             MethodType methodType = methodStrategy.getMethodType();
-
             MethodResult methodResult = methodStrategy.createResult(executionTime);
-
             testResults.add(methodResult);
 
             if (enableLog) {
-                if (logStep == 1) {
-                    printTestResult(i, collectionType, methodType, executionTime);
-                } else if (i % logStep == 0) {
+                if (i % logStep == 0) {
                     printTestResult(i, collectionType, methodType, executionTime);
                 }
             }

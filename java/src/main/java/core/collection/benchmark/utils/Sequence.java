@@ -25,4 +25,9 @@ public final class Sequence<In> {
         this.current = next;
         return next;
     }
+
+    public static Sequence<Integer> intSequence() {
+        Sequence<Integer> intSequence = Sequence.first(0).init((it -> it = it + 1));
+        return intSequence;
+    }
 }

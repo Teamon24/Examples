@@ -6,14 +6,26 @@ import java.util.function.Function;
 public final class IndexSuppliers {
 
     public static <E> Function<Collection<E>, Integer> lastIndex() {
-        return (Collection<E> collection) -> collection.size() - 1;
+        return IndexSuppliers::getLast;
+    }
+
+    public static int getLast(final Collection<?> collection) {
+        return collection.size() - 1;
     }
 
     public static <E> Function<Collection<E>, Integer> middleIndex() {
-        return (Collection<E> collection) -> collection.size() / 2;
+        return IndexSuppliers::getMiddle;
+    }
+
+    public static int getMiddle(final Collection<?> collection) {
+        return (collection.size() >> 1) - 1;
     }
 
     public static <E> Function<Collection<E>, Integer> firstIndex() {
-        return (Collection<E> collection) -> 1;
+        return (Collection<E> collection) -> getFirst();
+    }
+
+    public static int getFirst() {
+        return 0;
     }
 }

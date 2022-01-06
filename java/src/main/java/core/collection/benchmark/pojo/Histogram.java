@@ -6,14 +6,14 @@ public class Histogram {
     private MethodType methodType;
     private Integer index;
     private String histogramColumn;
-    private Double averageExecutionTime;
+    private String averageExecutionTime;
 
 
     public Histogram(final String collectionType,
                      final MethodType methodType,
                      final Integer index,
                      final String histogramColumn,
-                     final Double averageExecutionTime)
+                     final String averageExecutionTime)
     {
         this.collectionType = collectionType;
         this.methodType = methodType;
@@ -38,8 +38,12 @@ public class Histogram {
         return histogramColumn;
     }
 
-    public Double getAverageExecutionTime() {
+    public String getAverageExecutionTime() {
         return averageExecutionTime;
+    }
+
+    public double getAverageExecutionTimeDouble() {
+        return Double.parseDouble(averageExecutionTime.replace(",", "."));
     }
 
     public void setHistogramColumn(final String histogramColumn) {
