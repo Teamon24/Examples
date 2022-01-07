@@ -22,8 +22,9 @@ public class MoneyClassComparisonFix {
         if (this == o) return true;
         if (haveDifferentClass(this, o)) return false;
         MoneyClassComparisonFix other = (MoneyClassComparisonFix) o;
-        boolean currencyCodeEquals = Objects.equals(this.currencyCode, other.currencyCode);
-        return this.amount == other.amount && currencyCodeEquals;
+        return
+            this.amount == other.amount &&
+            Objects.equals(this.currencyCode, other.currencyCode);
     }
 
     public static<T> boolean haveDifferentClass(T t1, T t2) {

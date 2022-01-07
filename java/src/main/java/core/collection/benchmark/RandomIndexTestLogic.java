@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public record RandomIndexTestLogic(int testsAmount, int logStep, int maxHistogramLength) {
+public record RandomIndexTestLogic(int testsAmount, int logStep) {
 
     public <T> List<AveragedMethodResult> test(Sequence<T> sequence, List<T> list) {
 

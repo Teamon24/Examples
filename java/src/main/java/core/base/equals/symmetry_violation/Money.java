@@ -21,8 +21,8 @@ public class Money {
         if (o == this) return true;
         if (!(o instanceof Money)) return false;
         Money other = (Money) o;
-        boolean currencyCodeEquals = Objects.equals(this.currencyCode, other.currencyCode);
-        return this.amount == other.amount && currencyCodeEquals;
+        return this.amount == other.amount &&
+            Objects.equals(this.currencyCode, other.currencyCode);
     }
 }
 

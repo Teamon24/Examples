@@ -13,22 +13,12 @@ import static core.collection.benchmark.utils.MaxUtils.*;
 
 public final class HistogramWithIndexUtils extends HistogramUtils {
 
-    public static void printHistogram(final List<AveragedMethodResult> results,
-                                      final Integer maxHistogramLength)
-    {
-        maxHistogramColumnLength = maxHistogramLength;
+    public static void printHistogram(final List<AveragedMethodResult> results) {
         StringBuilder stringBuilder = getStringHistograms(results);
         System.out.println(stringBuilder);
     }
 
-    public static StringBuilder getStringHistograms(final List<AveragedMethodResult> results,
-                                                    final Integer maxHistogramLength)
-    {
-        maxHistogramColumnLength = maxHistogramLength;
-        return getStringHistograms(results);
-    }
-
-    private static StringBuilder getStringHistograms(List<AveragedMethodResult> results) {
+    public static StringBuilder getStringHistograms(List<AveragedMethodResult> results) {
         if (results.isEmpty()) {
             System.out.println("No results");
             return null;

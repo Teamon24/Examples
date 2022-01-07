@@ -16,7 +16,9 @@ public class Demo {
         Money money2 = new Money(money);
         VoucherCompositionFix voucher2 = new VoucherCompositionFix(voucher);
 
-        checkSymmetry("Composition fix (VoucherCompositionFix)", voucher2.equals(money2), money2.equals(voucher2));
+        String template = "Composition fix (VoucherCompositionFix does not extend %s)";
+        String title = String.format(template, money.getClass().getSimpleName());
+        checkSymmetry(title, voucher2.equals(money2), money2.equals(voucher2));
 
         MoneyClassComparisonFix money3 = new MoneyClassComparisonFix(money);
         Voucher voucher3 = new Voucher(voucher);
@@ -42,8 +44,8 @@ public class Demo {
         System.out.println(line);
         System.out.println(title);
         System.out.println(line);
-        System.out.printf("voucher != money = %s\n", !voucherEqualsMoney);
-        System.out.printf("money != voucher = %s\n", !moneyEqualsVoucher);
+        System.out.println("voucher" + (voucherEqualsMoney ? "==" : "!=") + "money");
+        System.out.println("money" + (moneyEqualsVoucher ? "==" : "!=") + "voucher");
         System.out.println();
     }
 }

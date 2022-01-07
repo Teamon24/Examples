@@ -27,8 +27,6 @@ public abstract class HistogramUtils {
     static LinkedList<String> marks = new LinkedList<>();
     static HashMap<Object, String> usedMarks = new HashMap<>();
 
-    static double maxHistogramColumnLength = 40;
-
     static {
         marks.add("*");
         marks.add("-");
@@ -41,8 +39,8 @@ public abstract class HistogramUtils {
         marks.add("0");
     }
 
-    public static void checkSize(final Set<String> collectionTypes) {
-        HashSet<String> restCollectionTypes = new HashSet<>(collectionTypes);
+    public static <T> void checkSize(final Set<T> set) {
+        HashSet<T> restCollectionTypes = new HashSet<>(set);
         restCollectionTypes.removeAll(usedMarks.keySet());
         int resultsSize = restCollectionTypes.size();
         int marksSize = marks.size();
@@ -83,9 +81,8 @@ public abstract class HistogramUtils {
             );
 
         if (minAverageTime != 0) {
-            Double maxRelationAverageToMin = results.stream().map(it -> it.getAverageExecutionTime() / minAverageTime).max(Double::compareTo).get();
-            List<Histogram> histograms = createHistogramsObjects(collectionTypeAndMark, results, minAverageTime, maxRelationAverageToMin);
-            rescaleHistogramsColumns(collectionTypeAndMark, histograms);
+            List<Histogram> histograms = createEmptyColumnHistograms(results);
+            setHistogramsColumns(collectionTypeAndMark, histograms);
             return histograms;
         } else {
             return createEmptyHistogramsObjects(results);
@@ -93,27 +90,21 @@ public abstract class HistogramUtils {
     }
 
 
-    private static void rescaleHistogramsColumns(final HashMap<String, String> collectionTypeAndMark,
-                                                 final List<Histogram> histograms)
+    protected static void setHistogramsColumns(final HashMap<String, String> collectionTypeAndMark,
+                                               final List<Histogram> histograms)
     {
         List<Histogram> sortedByAverageTime =
             histograms.stream()
                 .sorted(Comparator.comparing(Histogram::getAverageExecutionTimeDouble)).toList();
 
-        Histogram firstHistogram = sortedByAverageTime.get(0);
-        firstHistogram.setHistogramColumn(collectionTypeAndMark.get(firstHistogram.getCollectionType()).repeat(1));
-        for (int i = 1; i < sortedByAverageTime.size(); i++) {
-            Histogram prevHistogram = sortedByAverageTime.get(i - 1);
-            Histogram nextHistogram = sortedByAverageTime.get(i);
-            String mark = collectionTypeAndMark.get(nextHistogram.getCollectionType());
-
-            double averageExecutionTimeDouble = nextHistogram.getAverageExecutionTimeDouble();
-            double averageExecutionTimeDouble1 = prevHistogram.getAverageExecutionTimeDouble();
-            nextHistogram.setHistogramColumn(mark.repeat((int) (i* Math.min(2, averageExecutionTimeDouble / averageExecutionTimeDouble1 ))));
+        for (int i = 0; i < sortedByAverageTime.size(); i++) {
+            Histogram histogram = sortedByAverageTime.get(i);
+            String mark = collectionTypeAndMark.get(histogram.getCollectionType());
+            histogram.setHistogramColumn(mark.repeat(i));
         }
     }
 
-    private static List<Histogram> createEmptyHistogramsObjects(final List<AveragedMethodResult> results) {
+    protected static List<Histogram> createEmptyHistogramsObjects(final List<AveragedMethodResult> results) {
         List<Histogram> histograms = results.stream().map(result -> {
             String collectionClass = result.getCollectionClass();
             return new Histogram(
@@ -130,10 +121,7 @@ public abstract class HistogramUtils {
         return " ".repeat(maxValues - currentValue.toString().length());
     }
 
-    public static List<Histogram> createHistogramsObjects(final HashMap<String, String> collectionTypeAndMark,
-                                                          final List<AveragedMethodResult> groupedByMethod,
-                                                          final Double minAverageTime,
-                                                          final Double maxRelationAverageToMin)
+    public static List<Histogram> createEmptyColumnHistograms(final List<AveragedMethodResult> groupedByMethod)
     {
         List<Histogram> histograms = groupedByMethod.stream().map(result -> {
             String collectionClass = result.getCollectionClass();
@@ -142,37 +130,17 @@ public abstract class HistogramUtils {
                 collectionClass,
                 result.getMethodType(),
                 result.getIndex(),
-                getHistogramColumn(collectionClass, collectionTypeAndMark, averageExecutionTime, minAverageTime, maxRelationAverageToMin),
+                "",
                 format(DOUBLE_ACCURACY, averageExecutionTime));
         }).collect(Collectors.toList());
         return histograms;
     }
-
-    public static String getHistogramColumn(final String collectionClass,
-                                            final HashMap<String, String> collectionTypeAndMark,
-                                            final Double averageExecutionTime,
-                                            final Double minAverageTime,
-                                            final Double maxRelationAverageToMin)
-    {
-        String mark = collectionTypeAndMark.get(collectionClass);
-        if (averageExecutionTime == 0) return "";
-        double v = maxHistogramColumnLength * (averageExecutionTime / minAverageTime) / maxRelationAverageToMin;
-        if (v < 1 && v != 0) v = 1;
-        int rounded = Math.round((int) v);
-        return mark.repeat(rounded);
-    }
-
 
     public static double getDigitsAfterDot(double d) {
         BigDecimal bd = new BigDecimal(d - Math.floor(d));
         bd = bd.setScale(4, RoundingMode.HALF_DOWN);
         return bd.doubleValue();
     }
-
-    public static String getSeparationLine(String separationSymbol, int count) {
-        return separationSymbol.repeat(count);
-    }
-
 
     public static Stream<Map.Entry<MethodType, List<Histogram>>> groupByMethod(final List<Histogram> histograms) {
         return histograms.stream()

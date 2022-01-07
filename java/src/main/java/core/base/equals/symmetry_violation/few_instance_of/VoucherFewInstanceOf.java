@@ -1,5 +1,6 @@
 package core.base.equals.symmetry_violation.few_instance_of;
 
+import core.base.equals.symmetry_violation.ExceptionUtils;
 import core.base.equals.symmetry_violation.Money;
 import core.base.equals.symmetry_violation.Voucher;
 import lombok.Getter;
@@ -25,18 +26,18 @@ public class VoucherFewInstanceOf extends Money {
         if (o == this) return true;
 
         if (o instanceof VoucherFewInstanceOf other) {
-            boolean amountEquals = super.getAmount() == other.getAmount();
-            boolean currencyCodeEquals = Objects.equals(this.getCurrencyCode(), other.getCurrencyCode());
-            boolean storeEquals = Objects.equals(this.store, other.store);
-            return amountEquals && currencyCodeEquals && storeEquals;
+            return
+                super.getAmount() == other.getAmount() &&
+                Objects.equals(this.getCurrencyCode(), other.getCurrencyCode()) &&
+                Objects.equals(this.store, other.store);
         }
 
         if (o instanceof Money other) {
-            boolean amountEquals = super.getAmount() == other.getAmount();
-            boolean currencyCodeEquals = Objects.equals(this.getCurrencyCode(), other.getCurrencyCode());
-            return amountEquals && currencyCodeEquals;
+            return
+                super.getAmount() == other.getAmount() &&
+                Objects.equals(this.getCurrencyCode(), other.getCurrencyCode());
         }
 
-        return false;
+        throw ExceptionUtils.exceptionIfNoInstanceOfCheck(o, this);
     }
 }

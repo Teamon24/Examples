@@ -13,13 +13,6 @@ import static core.collection.benchmark.utils.StreamUtils.*;
 
 public final class HistogramWithNoIndexUtils extends HistogramUtils {
 
-    public static void printHistogram(final List<AveragedMethodResult> results,
-                                      final int maxHistogramLength)
-    {
-        maxHistogramColumnLength = maxHistogramLength;
-        printHistogram(results);
-    }
-
     public static void printHistogram(List<AveragedMethodResult> results) {
         if (results.isEmpty()) {
             System.out.println("No results");

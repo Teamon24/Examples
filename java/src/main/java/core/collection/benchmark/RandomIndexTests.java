@@ -16,10 +16,9 @@ import static core.collection.benchmark.utils.CollectionCreationUtils.list;
 import static core.collection.benchmark.utils.Sequence.intSequence;
 
 public class RandomIndexTests {
-    private static final int size = 100_000;
-    private static final int testsAmount = 1_000_000;
+    private static final int size = 50_000;
+    private static final int testsAmount = 500_000;
     private static final int logStep = size;
-    private static final int maxHistogramLength = 120;
 
     public static void main(String[] args) {
         List<AveragedMethodResult> result1 = test(ArrayList.class);
@@ -31,7 +30,7 @@ public class RandomIndexTests {
             .filter(each(size / 10))
             .collect(Collectors.toList());
 
-        StringBuilder histograms = HistogramWithIndexUtils.getStringHistograms(filtered, maxHistogramLength);
+        StringBuilder histograms = HistogramWithIndexUtils.getStringHistograms(filtered);
 
         System.out.println(histograms);
     }
@@ -43,7 +42,7 @@ public class RandomIndexTests {
     private static List<AveragedMethodResult> test(Class listClass) {
         Sequence<Integer> intSequence = intSequence();
         List<Integer> arrayList = list(listClass, size, intSequence::next);
-        return new RandomIndexTestLogic(testsAmount, logStep, maxHistogramLength)
+        return new RandomIndexTestLogic(testsAmount, logStep)
             .test(intSequence, arrayList);
     }
 }

@@ -4,6 +4,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * #hashcode() возвращает целочисленное представление объекта.
@@ -34,10 +35,9 @@ record Team(String city, String department) {
         if (this == o) return true;
         if (!(o instanceof Team team)) return false;
 
-        boolean citiesEqual = this.city == team.city || this.city != null && this.city.equals(team.city);
-        boolean departmentsEqual = this.department == team.department || this.department != null && this.department.equals(team.department);
-
-        return citiesEqual && departmentsEqual;
+        return
+            Objects.equals(this.city, team.city) &&
+            Objects.equals(this.department, team.department);
     }
 
     @Override
@@ -46,46 +46,5 @@ record Team(String city, String department) {
             .append(this.city)
             .append(this.department)
             .toHashCode();
-    }
-}
-
-class Human {
-    String sex;
-}
-class Person extends Human {
-
-    private String name;
-    private Integer age;
-
-    Person(String name, Integer age) {
-        this.name = name;
-        this.age = age;
-    }
-
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o instanceof Person p) {
-            boolean namesEqual = this.name == p.name || this.name != null && this.name.equals(p.name);
-            boolean sexesEqual = super.sex == p.sex || super.sex != null && super.sex.equals(p.sex);
-            boolean agesEqual = this.age == p.age || this.age != null && this.age.equals(p.age);
-            return namesEqual && agesEqual && sexesEqual;
-        }
-
-        if (o instanceof Human h) {
-            boolean sexesEqual = super.sex == h.sex || super.sex != null && super.sex.equals(h.sex);
-            return sexesEqual;
-        }
-
-        return false;
-    }
-
-    public int hashCode() {
-        int result = 17;
-        int prime = 31;
-
-        result = result * prime + name.hashCode();
-        result = result * prime + age.hashCode();
-        result = result * prime + sex.hashCode();
-        return result;
     }
 }

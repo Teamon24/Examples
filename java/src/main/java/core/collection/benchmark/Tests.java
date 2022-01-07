@@ -68,8 +68,8 @@ public class Tests {
         List<AveragedMethodResult> resultsWithNoIndex =
             MethodResultGroupingUtils.averageByMethod(partitionedResults.get(false));
 
-        HistogramWithIndexUtils.printHistogram(resultsWithIndex, maxHistogramLength);
-        HistogramWithNoIndexUtils.printHistogram(resultsWithNoIndex, maxHistogramLength);
+        HistogramWithIndexUtils.printHistogram(resultsWithIndex);
+        HistogramWithNoIndexUtils.printHistogram(resultsWithNoIndex);
     }
 
     private static <T> CollectionTest<T> collectionTest(final Collection<T> collection) {

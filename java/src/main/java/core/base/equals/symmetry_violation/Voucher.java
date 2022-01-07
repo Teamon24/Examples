@@ -24,10 +24,9 @@ public class Voucher extends Money {
         if (o == this) return true;
         if (!(o instanceof Voucher other)) return false;
 
-        boolean amountEquals = super.getAmount() == other.getAmount();
-        boolean currencyCodeEquals = Objects.equals(this.getCurrencyCode(), other.getCurrencyCode());
-        boolean storeEquals = Objects.equals(this.store, other.store);
-
-        return amountEquals && currencyCodeEquals && storeEquals;
+        return
+            super.getAmount() == other.getAmount() &&
+                Objects.equals(this.getCurrencyCode(), other.getCurrencyCode()) &&
+                Objects.equals(this.store, other.store);
     }
 }

@@ -14,7 +14,7 @@ fun result() =
             p  {+"this format can be used as an alternative markup to XML"}
 
             // an element with attributes and text content
-            a(href = "http://kotlinlang.org") {+"Kotlin"}
+            a(href = "http://kotlinlang.org/") {+"Kotlin"}
 
             // mixed content
             p {
@@ -34,15 +34,15 @@ fun result() =
         }
     }
 
-
-
 interface Element {
-    fun render(builder: StringBuilder, indent: String)
+    fun render(builder: StringBuilder, indent: String): StringBuilder
 
 }
+
 class TextElement(val text: String) : Element {
-    override fun render(builder: StringBuilder, indent: String) {
+    override fun render(builder: StringBuilder, indent: String): StringBuilder {
         builder.append("$indent$text\n")
+        return builder
     }
 
 }
@@ -61,12 +61,13 @@ abstract class Tag(val name: String) : Element {
         return tag
     }
 
-    override fun render(builder: StringBuilder, indent: String) {
+    override fun render(builder: StringBuilder, indent: String): StringBuilder {
         builder.append("$indent<$name${renderAttributes()}>\n")
         for (c in children) {
             c.render(builder, indent + "  ")
         }
         builder.append("$indent</$name>\n")
+        return builder
     }
 
     private fun renderAttributes(): String {
@@ -77,9 +78,7 @@ abstract class Tag(val name: String) : Element {
         return builder.toString()
     }
     override fun toString(): String {
-        val builder = StringBuilder()
-        render(builder, "")
-        return builder.toString()
+        return render(StringBuilder(), "").toString()
     }
 
 }
@@ -87,7 +86,6 @@ abstract class TagWithText(name: String) : Tag(name) {
     operator fun String.unaryPlus() {
         children.add(TextElement(this))
     }
-
 }
 class HTML : TagWithText("html") {
 

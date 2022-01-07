@@ -4,6 +4,8 @@ import core.base.equals.symmetry_violation.Money;
 import core.base.equals.symmetry_violation.Voucher;
 import lombok.Getter;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 @Getter
@@ -24,12 +26,11 @@ public class VoucherCompositionFix {
 
     @Override
     public boolean equals(Object o) {
-        if (o == null) return false;
         if (o == this) return true;
         if (!(o instanceof VoucherCompositionFix other)) return false;
 
-        boolean valueEquals = Objects.equals(this.money, other.money);
-        boolean storeEquals = Objects.equals(this.store, other.store);
-        return valueEquals && storeEquals;
+        return
+            Objects.equals(this.money, other.money) &&
+            Objects.equals(this.store, other.store);
     }
 }

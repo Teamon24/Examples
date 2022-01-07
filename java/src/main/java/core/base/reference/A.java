@@ -1,4 +1,4 @@
-package core.base._misc;
+package core.base.reference;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
