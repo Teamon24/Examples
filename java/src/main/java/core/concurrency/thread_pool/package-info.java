@@ -26,8 +26,7 @@
  * <p><strong>Executor</strong></p>
  * ---------------------------------------------------------------------------------------------------------------------
  * <p>Интерфейс имеет единственный метод executor#execute(Runnable):
- * <pre>
- * {@code
+ * <pre>{@code
  * Executor executor = Executors.newSingleThreadExecutor();
  * executor.execute(() -> System.out.println("Hello World"));}
  * </pre>
@@ -38,21 +37,93 @@
  * Возможно подвердить готовность выполнить задачу
  * (метод executorService#submit()), а также контролировать ее выполнение, используя интерфейс Future.
  * Future может возвращать результат выполнения задачи (метод future#get()):
- * <pre>
- * {@code
+ * <pre>{@code
  * ExecutorService executorService = Executors.newFixedThreadPool(10);
  * Future<?> runnableFuture = executorService.submit(() -> System.out.println("Hello World"));
- * Future<String> callableFuture = executorService.submit(() -> "Hello World");;
+ * Future<String> callableFuture = executorService.submit(() -> "Hello World");
  * String runnableResult = runnableFuture.get();
  * String callableResult = callableFuture.get();}
  * </pre>
- * <p>Обычно, при разработке, результат выполнения задачи запрашивается в момент, когда этот результат необходим, т.е. немного позже, чем момент подтверждения задачи.</p>
+ * <p>Обычно, при разработке, результат выполнения задачи запрашивается в момент, когда этот результат необходим,
+ * т.е. немного позже, чем момент подтверждения задачи.</p>
  * ---------------------------------------------------------------------------------------------------------------------
- * <p><a href="https://www.baeldung.com/thread-pool-java-and-guava#2-threadpoolexecutor"><strong>ThreadPoolExecutor</strong></a></p>
+ * <p><strong>Methods</strong></p>
  * ---------------------------------------------------------------------------------------------------------------------
- * <p>- это расширенная реализация паттерна Thread Pool со множеством параметров для настройки:
- * <pre>
- * {@code
+ * <p>Метод <i><strong>execute()</strong></i> не возвращает ни результат выполнения задачи, ни статус выполнения.
+ * <p>Метод <i><strong>submit()</strong></i> запускает выполнение задачи (Callable или Runnable) возврадает объект Future.
+ * <p>Метод <i><strong>invokeAny()</strong></i> запускает выполенение задач и возвращает результат первый успешно выполненной.
+ * <p>Метод <i><strong>invokeAll()</strong></i> запускает выполенение задач и возвращает список объектов Future.
+ * <p>ExecutorService автоматически не удаляется, когда нет задач для выполнения: он остается ждать новых задач.
+ * В случаях, когда задачи появляются нерегулярно или их количествоо неизвестно на этапе компиляции, это полезно.
+ * С другой стороны, приложению необходимо будет остановиться, но JVM будет запущена, т.к. ExecutorService все еще
+ * ожидает задачи на выполнение.
+ * <p>Метод <i><strong>shutdown()</strong></i> не удаляет ExecutorService сразу же, но не дает ExecutorService
+ * принимать новые задачи.
+ * Удаление происходит после выполнения всех запущенных задач.
+ * <p>Метод <i><strong>shutdownNow()</strong></i> пытается удалить ExecutorService в момент своего вызова, но гарантии,
+ * что потоки остановятся сразу же, - нет. После вызова метода возвращается список задач, которые ожидают своего выполнения.
+ * Разработчику необходимо решить, что делать с этими задачами.
+ * <p>Метод <i><strong>awaitTermination()</strong></i> - это еще один способ удалить ExecutorService
+ * (Oracle также рекомедует использовать), который используется вместе с двумя вышеуказанными методами:
+ * <pre>{@code
+ * executorService.shutdown();
+ * try {
+ *     if (!executorService.awaitTermination(800, TimeUnit.MILLISECONDS)) {
+ *         executorService.shutdownNow();
+ *     }
+ * } catch (InterruptedException e) {
+ *     executorService.shutdownNow();
+ * }}
+ * </pre>
+ * <ul>Такой подход позволяет сначала предотвратить выполенение новых задач, затем задать время,
+ * по истечению которого запущенные в работу задачи будут остановылены немедленно.</ul>
+ * ---------------------------------------------------------------------------------------------------------------------
+ * <p><a href="https://www.baeldung.com/thread-pool-java-and-guava#3-exiting-executor-services">
+ *     <strong>Exiting Executor Services</strong></a></p>
+ * ---------------------------------------------------------------------------------------------------------------------
+ * <p>Частая проблема - остановка виртуальной машины, в то время как thread pool еще выполняет задачи.
+ * <p>Даже с предосталенными механизмами отмены выполнения задач, нет гарантий того, что задача
+ * будет остановлена при остановке executor service. Это может задержать остановку виртуальной машины.
+ * <p>Чтобы решить данную проблему, <strong>Guava</strong> предлагает несколько executor service. Они базируются
+ * на демон-потоках, которые останавливаются вместе с JVM.
+ *
+ * Сервисы предлагают shutdown hook с методом {@code Runtime.getRuntime().addShutdownHook()}
+ * и откладывает остановку виртуальной машины на заданное время перед тем, как остановить "зависшие" задачи.
+ *
+ * ---------------------------------------------------------------------------------------------------------------------
+ * <p><a href="https://www.baeldung.com/java-executor-service-tutorial#interface">
+ * <strong>Интерфейс Future</strong></a></p>
+ * ---------------------------------------------------------------------------------------------------------------------
+ * <p>Интерфейс Future предоставляет блокирующий метод <strong><i>future#get()</i></strong>,
+ * который возвращает результат в случае выполнения Callable-задачи или null - в случае Runnable-задачи:
+ * <pre>{@code
+ * Future<String> future = executorService.submit(callableTask);
+ * String result = null;
+ * try {
+ *     result = future.get();
+ * } catch (InterruptedException | ExecutionException e) {
+ *     e.printStackTrace();
+ * }}
+ * </pre>
+ *
+ * <p>Вызов метода future#get() во время выполнения задачи приведет к блокировке текущего потока до момента корректного
+ * выполнения задачи и получения результата.
+ *
+ * <p>При длительной блокировке производительность приложения может снизится. Если дынные не являются критически важными,
+ * то избежать падения производительности возможно следующим образом:
+ * <pre>{@code String result = future.get(200, TimeUnit.MILLISECONDS); }</pre>
+ * <p>Если период выполнения больше указанного промежутка, то выбросится исключение
+ * <i><strong>TimeoutException</strong></i>.
+ * <p>Можно использовать метод <i><strong>isDone()</strong></i>, чтобы проверить выполнена ли задача или нет.
+ * <p>Также возможны отмена выполняющейся задачи и проверка флага отмены при помощи методов
+ * <i><strong>future#cancel(Boolean)</strong></i> и <i><strong>future#isCancelled()</strong></i></p>
+ *
+ * ---------------------------------------------------------------------------------------------------------------------
+ * <p><a href="https://www.baeldung.com/thread-pool-java-and-guava#2-threadpoolexecutor">
+ *     <strong>ThreadPoolExecutor</strong></a></p>
+ * ---------------------------------------------------------------------------------------------------------------------
+ * <p>- это расширенная реализация паттерна Thread Pool со множеством параметров для настройки:</p>
+ * <pre>{@code
  * ThreadPoolExecutor(int corePoolSize,
  *                    int maximumPoolSize,
  *                    long keepAliveTime,
@@ -70,7 +141,8 @@
  * Для того чтобы и основные потоки можно было исключить из использования вызывается метод
  * <i>threadPoolExecutor#allowCoreThreadTimeOut(Boolean)</i>.
  * ---------------------------------------------------------------------------------------------------------------------
- * <p><strong>newFixedThreadPool</strong>, <strong>newCachedThreadPool</strong>, <strong>newSingleThreadExecutor</strong></p>
+ * <p><strong>newFixedThreadPool</strong>, <strong>newCachedThreadPool</strong>,
+ * <strong>newSingleThreadExecutor</strong></p>
  * ---------------------------------------------------------------------------------------------------------------------
  * <ul>
  * <li>newFixedThreadPool(corePoolSize)</li>
@@ -90,35 +162,30 @@
  * <p><ul>
  * <li>ScheduledExecutorService:
  * <ul>
- *  <li><i>schedule(Runnable command, long delay, TimeUnit unit)</i></li>
- *      запускает задачу после окончания определенного промежутка времени.
- *  <li><i>scheduleAtFixedRate(Runnable command, long initialDelay, long period, TimeUnit unit)</i></li>
- *      запускает задачу с определенным периодом после определенного момента времени.
- *  <li><i>scheduleWithFixedDelay(Runnable command, long initialDelay, long delay, TimeUnit unit)</i></li>
- *      запускает задачу с определенным периодом и задержкой, которая определяется с момента окончания запуска
- *      предущего повторения задачи до момента начала запуска следующего. Скорость выполнения может изменяться
- *      в зависимости от времени, которое требуется любому запуску задачи
- *  </ul></li></ul>
+ * <li><i>schedule(Runnable command, long delay, TimeUnit unit)</i></li>
+ *     запускает задачу после окончания определенного промежутка времени.
+ * <li><i>scheduleAtFixedRate(Runnable command, long initialDelay, long period, TimeUnit unit)</i></li>
+ *     запускает задачу с определенным периодом после определенного момента времени.
+ * <li><i>scheduleWithFixedDelay(Runnable command, long initialDelay, long delay, TimeUnit unit)</i></li>
+ *     запускает задачу с определенным периодом и задержкой, которая определяется с момента окончания запуска
+ *     предущего повторения задачи до момента начала запуска следующего. Скорость выполнения может изменяться
+ *     в зависимости от времени, которое требуется любому запуску задачи
+ * </ul></li></ul>
  *
  * ---------------------------------------------------------------------------------------------------------------------
- *  <p><a href="https://www.baeldung.com/thread-pool-java-and-guava#2-direct-executor-and-direct-executor-service">
+ * <p><a href="https://www.baeldung.com/thread-pool-java-and-guava#2-direct-executor-and-direct-executor-service">
  *     <strong>Direct Executor and Direct Executor Service (Guava)</strong></a></p>
  * ---------------------------------------------------------------------------------------------------------------------
  * <p>Иногда необходимо запустить задачу в текущем потоке, что DirectExecutor/DirectExecutorService
  * и делает. Задача запущенная при помощи них блокирует текущий поток.</p>
  * ---------------------------------------------------------------------------------------------------------------------
- * <p><a href="https://www.baeldung.com/thread-pool-java-and-guava#3-exiting-executor-services">
- *     <strong>Exiting Executor Services</strong></a></p>
+ * <p><strong>Заключение</strong></p>
  * ---------------------------------------------------------------------------------------------------------------------
- * <p>Частая проблема - остановка виртуальной машины, в то время как thread pool еще выполняет задачи.
- * <p>Даже с предосталенными механизмами отмены выполнения задач, нет гарантий того, что задача
- * будет остановлена при остановке executor service. Это может задержать остановку виртуальной машины.
- * <p>Чтобы решить данную проблему, <strong>Guava</strong> предлагает несколько executor service. Они базируются
- * на демон-потоках, которые останавливаются вместе с JVM.
- *
- * Сервисы предлагают shutdown hook с методом {@code Runtime.getRuntime().addShutdownHook()}
- * и откладывает остановку виртуальной машины на заданное время перед тем, как остановить "зависшие" задачи.
- *
- *
+ * <p>Не смотря на относительную простоту интерфейса ExecutorService, есть следующие "подводные камни":
+ * <ul>Подбор фиксированного числа потоков в thread pool: важно определить как много потоков понадобится для эффективного выполнения задач.</ul>
+ * <ul><ul>Слишком большое число потоков приведет к простою, когда потоки будут находится в ожидании новой задачи. Слишком малое число может привести к длительному
+ * ожиданию выполнению задач, которые находятся в очереди выполнения, что сделает приложение.</ul></ul>
+ * <ul>Вызов метода future#get() после отмены выполнения задачи: вызов может привести к выбросу исключниея <i>CancellationException</i>.</ul>
+ * <ul>Долгая блокировка в ожидании результата выполнения задачи: необходимо использовать таймауты, чтобы избежать задержок.</ul>
  */
 package core.concurrency.thread_pool;

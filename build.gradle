@@ -11,8 +11,6 @@ repositories {
     mavenCentral()
 }
 
-
-
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib"
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.2'
@@ -21,10 +19,6 @@ dependencies {
 
     implementation "io.projectreactor:reactor-core:3.3.9.RELEASE"
     implementation "ch.qos.logback:logback-classic:1.2.6"
-
-
-
-
 }
 
 test {

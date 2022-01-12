@@ -24,7 +24,6 @@ import java.util.stream.Stream;
 import static core.collection.benchmark.utils.CollectionCreationUtils.list;
 import static core.collection.benchmark.utils.CollectionCreationUtils.set;
 import static core.collection.benchmark.utils.ElementSupplier.getRandomElementAndForgetHimFrom;
-import static core.collection.benchmark.utils.Sequence.intSequence;
 
 public class Tests {
     private static final int size = 10_000;
@@ -34,12 +33,12 @@ public class Tests {
     private static final int maxHistogramLength = 50;
 
     public static void main(String[] args) {
-        Sequence<Integer> hashSetSequence = intSequence();
-        Sequence<Integer> treeSetSequence = intSequence();
-        Sequence<Integer> linkedHashSetSequence = intSequence();
-        Sequence<Integer> linkedListSequence = intSequence();
-        Sequence<Integer> arrayListSequence = intSequence();
-        Sequence<Integer> treeListSequence = intSequence();
+        Sequence<Integer> hashSetSequence = Sequence.intSequence();
+        Sequence<Integer> treeSetSequence = Sequence.intSequence();
+        Sequence<Integer> linkedHashSetSequence = Sequence.intSequence();
+        Sequence<Integer> linkedListSequence = Sequence.intSequence();
+        Sequence<Integer> arrayListSequence = Sequence.intSequence();
+        Sequence<Integer> treeListSequence = Sequence.intSequence();
 
         Set<Integer> hashSet       = set(HashSet.class,       size, hashSetSequence::next);
         Set<Integer> treeSet       = set(TreeSet.class,       size, treeSetSequence::next);

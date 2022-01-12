@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static core.collection.benchmark.utils.CollectionCreationUtils.list;
-import static core.collection.benchmark.utils.Sequence.intSequence;
 
 public class RandomIndexTests {
     private static final int size = 50_000;
@@ -40,7 +39,7 @@ public class RandomIndexTests {
     }
 
     private static List<AveragedMethodResult> test(Class listClass) {
-        Sequence<Integer> intSequence = intSequence();
+        Sequence<Integer> intSequence = Sequence.intSequence();
         List<Integer> arrayList = list(listClass, size, intSequence::next);
         return new RandomIndexTestLogic(testsAmount, logStep)
             .test(intSequence, arrayList);

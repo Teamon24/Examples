@@ -1,4 +1,5 @@
 rootProject.name = 'Examples'
 include 'java'
 include 'kotlin'
+include 'database'
 

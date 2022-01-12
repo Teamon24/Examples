@@ -3,8 +3,13 @@
 /out
 /.idea
 
+/venv
+
 /java/build
 /java/out
 
 /kotlin/build
 /kotlin/out
+
+/java/src/main/resources/.idea
+/java/src/main/resources/jpa/postgres/postgres_data_link

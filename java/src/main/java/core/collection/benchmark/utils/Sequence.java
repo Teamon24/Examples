@@ -2,12 +2,15 @@ package core.collection.benchmark.utils;
 
 import java.util.function.Function;
 
-public final class Sequence<In> {
+public class Sequence<In> {
 
-    private Function<In, In> generateNext;
-    private In current;
+    protected Function<In, In> generateNext;
+    protected In current;
+    protected In first;
+    protected Integer counter = 0;
 
-    private Sequence(final In first) {
+    protected Sequence(final In first) {
+        this.first = first;
         this.current = first;
     }
 
@@ -21,13 +24,21 @@ public final class Sequence<In> {
     }
 
     public In next() {
+        if (counter == 0) {
+            counter++;
+            return this.first;
+        }
+
+        if (generateNext == null) throw new RuntimeException("sequence has no logic of next element generation");
+
         In next = generateNext.apply(current);
         this.current = next;
+
+        counter++;
         return next;
     }
 
     public static Sequence<Integer> intSequence() {
-        Sequence<Integer> intSequence = Sequence.first(0).init((it -> it = it + 1));
-        return intSequence;
+        return Sequence.first(0).init((it -> it = it + 1));
     }
 }

@@ -54,10 +54,10 @@
  * ---------------------------------------------------------------------------------------------------------------------
  * <p><strong>Примеры Посредника в стандартных библиотеках Java:</strong></p>
  * ---------------------------------------------------------------------------------------------------------------------
- * <p><strong>java.util.Timer</strong> (все методы scheduleXXX())
- * <p><strong>java.util.concurrent.Executor#execute()</strong>
- * <p><strong>java.util.concurrent.ExecutorService</strong> (методы invokeXXX() и submit())
- * <p><strong>java.util.concurrent.ScheduledExecutorService</strong> (все методы scheduleXXX())
- * <p><strong>java.lang.reflect.Method#invoke()</strong>
+ * <p><strong>{@link java.util.Timer}</strong> (все методы scheduleXXX())
+ * <p><strong>{@link java.util.concurrent.Executor#execute(Runnable)}</strong>
+ * <p><strong>{@link java.util.concurrent.ExecutorService}</strong> (методы invokeXXX() и submit())
+ * <p><strong>{@link java.util.concurrent.ScheduledExecutorService}</strong> (все методы scheduleXXX())
+ * <p><strong>{@link java.lang.reflect.Method#invoke(Object, Object...)}</strong>
  */
 package patterns.refactoring.guru.behavioral.mediator;

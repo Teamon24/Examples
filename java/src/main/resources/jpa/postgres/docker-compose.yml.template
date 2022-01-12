@@ -1,0 +1,19 @@
+version: '3.3'
+
+volumes:
+  ${VOLUME_NAME}:
+
+services:
+  ${SERVICE_NAME}:
+    image: postgres
+    restart: always
+    container_name: ${CONTAINER_NAME}
+    environment:
+      - POSTGRES_PASSWORD=${PASSWORD}
+      - POSTGRES_USER=${USER_NAME}
+      - POSTGRES_DB=${DATABASE}
+    volumes:
+      - ${VOLUME_NAME}:${CONTAINER_POSTGRES_DATA}
+      - ${INIT_SCRIPTS}:${CONTAINER_INIT_SCRIPTS}
+    ports:
+      - ${PORT}:${CONTAINER_PORT}
