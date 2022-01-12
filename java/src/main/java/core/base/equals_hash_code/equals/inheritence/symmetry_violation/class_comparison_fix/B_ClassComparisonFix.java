@@ -1,6 +1,6 @@
-package core.base.equals.inheritence.symmetry_violation.class_comparison_fix;
+package core.base.equals_hash_code.equals.inheritence.symmetry_violation.class_comparison_fix;
 
-import core.base.equals.inheritence.B;
+import core.base.equals_hash_code.equals.inheritence.B;
 import lombok.Getter;
 
 import java.util.Objects;

@@ -1,4 +1,4 @@
-package core.base.equals;
+package core.base.equals_hash_code.equals;
 
 import lombok.Getter;
 import lombok.Setter;

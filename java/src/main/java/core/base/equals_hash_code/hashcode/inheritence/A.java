@@ -1,4 +1,4 @@
-package core.base.hashcode.inheritence;
+package core.base.equals_hash_code.hashcode.inheritence;
 
 public class A {
     private final int a1;

@@ -1,4 +1,4 @@
-package core.base.equals.inheritence;
+package core.base.equals_hash_code.equals.inheritence;
 
 import lombok.AllArgsConstructor;
 

@@ -1,4 +1,4 @@
-package core.base.hashcode;
+package core.base.equals_hash_code.hashcode;
 
 import java.util.HashMap;
 import java.util.Map;

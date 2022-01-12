@@ -1,9 +1,9 @@
-package core.base.equals.inheritence.transitivity_violation;
+package core.base.equals_hash_code.equals.inheritence.transitivity_violation;
 
 
-import core.base.equals.inheritence.A;
-import core.base.equals.inheritence.B;
-import core.base.equals.inheritence.C;
+import core.base.equals_hash_code.equals.inheritence.A;
+import core.base.equals_hash_code.equals.inheritence.B;
+import core.base.equals_hash_code.equals.inheritence.C;
 
 public class Demo {
     public static void main(String[] args) {

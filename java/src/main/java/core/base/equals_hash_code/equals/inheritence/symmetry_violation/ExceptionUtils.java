@@ -1,4 +1,4 @@
-package core.base.equals.inheritence.symmetry_violation;
+package core.base.equals_hash_code.equals.inheritence.symmetry_violation;
 
 public class ExceptionUtils {
     public static <T> RuntimeException exceptionIfNoInstanceOfCase(T thiz, Object o) {

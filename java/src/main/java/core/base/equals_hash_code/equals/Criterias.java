@@ -1,7 +1,4 @@
-package core.base.equals;
-
-import lombok.Getter;
-import lombok.Setter;
+package core.base.equals_hash_code.equals;
 
 /**
  * <p><strong>Критерии</strong>:

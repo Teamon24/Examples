@@ -1,8 +1,8 @@
-package core.base.equals.inheritence.symmetry_violation.few_instance_of;
+package core.base.equals_hash_code.equals.inheritence.symmetry_violation.few_instance_of;
 
-import core.base.equals.inheritence.symmetry_violation.ExceptionUtils;
-import core.base.equals.inheritence.A;
-import core.base.equals.inheritence.B;
+import core.base.equals_hash_code.equals.inheritence.symmetry_violation.ExceptionUtils;
+import core.base.equals_hash_code.equals.inheritence.A;
+import core.base.equals_hash_code.equals.inheritence.B;
 import lombok.Getter;
 
 import java.util.Objects;

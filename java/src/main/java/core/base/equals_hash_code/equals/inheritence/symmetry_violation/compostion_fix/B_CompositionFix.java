@@ -1,7 +1,7 @@
-package core.base.equals.inheritence.symmetry_violation.compostion_fix;
+package core.base.equals_hash_code.equals.inheritence.symmetry_violation.compostion_fix;
 
-import core.base.equals.inheritence.A;
-import core.base.equals.inheritence.B;
+import core.base.equals_hash_code.equals.inheritence.A;
+import core.base.equals_hash_code.equals.inheritence.B;
 import lombok.Getter;
 
 import java.util.Objects;

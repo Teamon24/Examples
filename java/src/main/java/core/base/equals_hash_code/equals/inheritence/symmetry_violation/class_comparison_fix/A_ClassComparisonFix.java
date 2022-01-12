@@ -1,6 +1,6 @@
-package core.base.equals.inheritence.symmetry_violation.class_comparison_fix;
+package core.base.equals_hash_code.equals.inheritence.symmetry_violation.class_comparison_fix;
 
-import core.base.equals.inheritence.A;
+import core.base.equals_hash_code.equals.inheritence.A;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

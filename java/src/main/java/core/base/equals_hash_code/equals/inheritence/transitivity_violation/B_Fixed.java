@@ -1,7 +1,7 @@
-package core.base.equals.inheritence.transitivity_violation;
+package core.base.equals_hash_code.equals.inheritence.transitivity_violation;
 
-import core.base.equals.inheritence.A;
-import core.base.equals.inheritence.symmetry_violation.ExceptionUtils;
+import core.base.equals_hash_code.equals.inheritence.A;
+import core.base.equals_hash_code.equals.inheritence.symmetry_violation.ExceptionUtils;
 import lombok.Getter;
 
 import java.util.Objects;

@@ -11,9 +11,7 @@ import java.util.UUID;
 public class Users {
     public static final List<UserEntity> USER_ENTITIES = new ArrayList<>();
     private static final Faker FAKER = new Faker();
-
     public static final Name NAMES = FAKER.name();
-
     public static final Internet INTERNET = FAKER.internet();
 
     static {
