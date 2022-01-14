@@ -8,13 +8,14 @@ import lombok.Setter;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.function.BiConsumer;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Setter
 @Getter
-public class UserEntity extends Entity<String, UserEntity> {
+public class UserEntity extends Entity<String> {
 
     public static final String idColumn = "id";
     private String id;
@@ -32,6 +33,11 @@ public class UserEntity extends Entity<String, UserEntity> {
     @Override
     public String getTableName() {
         return "user";
+    }
+
+    @Override
+    public List<String> getTableColumns() {
+        return List.of(idColumn, fullNameColumn, passwordColumn, emailColumn);
     }
 
     @Override

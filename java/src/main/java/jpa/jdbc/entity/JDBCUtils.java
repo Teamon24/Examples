@@ -22,7 +22,7 @@ public class JDBCUtils {
             try {
                 return resultSet.getInt(column);
             } catch (SQLException e) {
-                throw new RuntimeException(e.getCause());
+                throw new RuntimeException(e.getMessage(), e.getCause());
             }
         };
     }
@@ -32,7 +32,7 @@ public class JDBCUtils {
             try {
                 prepared.setString(index, (String) value);
             } catch (SQLException e) {
-                throw new RuntimeException(e.getCause());
+                throw new RuntimeException(e.getMessage(), e.getCause());
             }
         };
     }

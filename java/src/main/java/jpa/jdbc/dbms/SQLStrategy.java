@@ -5,6 +5,7 @@ import lombok.Getter;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.function.Function;
 
 public abstract class SQLStrategy {
@@ -38,15 +39,12 @@ public abstract class SQLStrategy {
     public abstract String selectByIdsQuery(String tableName, String idName);
     public abstract String selectByIdQuery(String tableName, String idName);
     public abstract String deleteByIdQuery(String tableName, String idName);
-    public abstract String insertUserQuery(String tableName);
+    public abstract String insertUserQuery(String tableName, List<String> columns);
+
     public abstract String getIntegerTypeName();
     public abstract String getVarcharTypeName();
     public abstract String getUrl();
     public abstract DataSource getDatasource();
-
-    public void setConnectionSupplier(Function<SQLStrategy, Connection> connectionSupplier) {
-        this.connectionSupplier = connectionSupplier;
-    }
 
     public Connection getConnection() throws SQLException {
         return this.connectionSupplier.apply(this);

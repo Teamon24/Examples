@@ -9,6 +9,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -64,18 +65,34 @@ public class UserDAO extends DAO<String, UserEntity> {
         statementSettersAndEntityGetters;
 
     static {
-        resultGettersAndEntitySetters = new HashMap<>() {{
-            put(UserEntity.idColumn, Pair.of(getString(UserEntity.idColumn), (UserEntity user, Object id) -> user.setId((String) id)));
-            put(UserEntity.fullNameColumn, Pair.of(getString(UserEntity.fullNameColumn), (UserEntity user, Object fullName) -> user.setFullName((String) fullName)));
-            put(UserEntity.passwordColumn, Pair.of(getString(UserEntity.passwordColumn), (UserEntity user, Object password) -> user.setPassword((String) password)));
-            put(UserEntity.emailColumn, Pair.of(getString(UserEntity.emailColumn), (UserEntity user, Object mail) -> user.setEmail((String) mail)));
+        resultGettersAndEntitySetters = new LinkedHashMap<>() {{
+            put(UserEntity.idColumn,
+                Pair.of(getString(UserEntity.idColumn), (UserEntity user, Object id) -> user.setId((String) id)));
+
+            put(UserEntity.fullNameColumn,
+                Pair.of(getString(UserEntity.fullNameColumn), (UserEntity user, Object fullName) -> user.setFullName((String) fullName)));
+
+            put(UserEntity.passwordColumn,
+                Pair.of(getString(UserEntity.passwordColumn), (UserEntity user, Object password) -> user.setPassword((String) password)));
+
+            put(UserEntity.emailColumn,
+                Pair.of(getString(UserEntity.emailColumn), (UserEntity user, Object mail) -> user.setEmail((String) mail)));
+
         }};
 
-        statementSettersAndEntityGetters = new HashMap<>() {{
-            put(UserEntity.idColumn, Pair.of(setString(1), UserEntity::getId));
-            put(UserEntity.fullNameColumn, Pair.of(setString(2), UserEntity::getFullName));
-            put(UserEntity.passwordColumn, Pair.of(setString(3), UserEntity::getPassword));
-            put(UserEntity.emailColumn, Pair.of(setString(4), UserEntity::getEmail));
+        statementSettersAndEntityGetters = new LinkedHashMap<>() {{
+            put(UserEntity.idColumn,
+                Pair.of(setString(1), UserEntity::getId));
+
+            put(UserEntity.fullNameColumn,
+                Pair.of(setString(2), UserEntity::getFullName));
+
+            put(UserEntity.passwordColumn,
+                Pair.of(setString(3), UserEntity::getPassword));
+
+            put(UserEntity.emailColumn,
+                Pair.of(setString(4), UserEntity::getEmail));
+
         }};
     }
 }

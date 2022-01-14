@@ -11,7 +11,7 @@ public class PostgresStrategyBuilder extends SQLStrategyBuilder {
             super.password,
             super.databaseName,
             super.schema,
-            super.getConnection
+            super.connectionSupplier
         );
     }
 }

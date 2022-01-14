@@ -12,7 +12,7 @@ public abstract class SQLStrategyBuilder {
     String password;
     String databaseName;
     String schema;
-    Function<SQLStrategy, Connection> getConnection;
+    Function<SQLStrategy, Connection> connectionSupplier;
 
     public SQLStrategyBuilder host(String host) {
         this.host = host;
@@ -47,7 +47,7 @@ public abstract class SQLStrategyBuilder {
     public SQLStrategyBuilder connectionSupplier(ConnectionSupplierType connectionSupplierType) {
         switch (connectionSupplierType) {
             case DATA_SOURCE:
-                this.getConnection = (SQLStrategy sqlStrategy) -> {
+                this.connectionSupplier = (SQLStrategy sqlStrategy) -> {
                     try {
                         return sqlStrategy.getDatasource().getConnection();
                     } catch (SQLException e) {
@@ -57,9 +57,13 @@ public abstract class SQLStrategyBuilder {
                 return this;
 
             case DRIVER_MANAGER:
-                this.getConnection = (SQLStrategy sqlStrategy) -> {
+                this.connectionSupplier = (SQLStrategy sqlStrategy) -> {
                     try {
-                        return DriverManager.getConnection(sqlStrategy.getUrl(), sqlStrategy.username, sqlStrategy.password);
+                        String url = sqlStrategy.getUrl();
+                        return DriverManager.getConnection(
+                            url, sqlStrategy.username, sqlStrategy.password
+                        );
+
                     } catch (SQLException e) {
                         throw new RuntimeException(e.getCause());
                     }

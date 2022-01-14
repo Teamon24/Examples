@@ -17,7 +17,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public abstract class DAO<Id, T extends Entity<Id, T>> {
+public abstract class DAO<Id, T extends Entity<Id>> {
 
     private final SQLStrategy sqlStrategy;
     private final String selectByIds;
@@ -63,7 +63,7 @@ public abstract class DAO<Id, T extends Entity<Id, T>> {
         selectByIds = sqlStrategy.selectByIdsQuery(tableName, idName);
         selectById = sqlStrategy.selectByIdQuery(tableName, idName);
         deleteById = sqlStrategy.deleteByIdQuery(tableName, idName);
-        insertUser = sqlStrategy.insertUserQuery(tableName);
+        insertUser = sqlStrategy.insertUserQuery(tableName, emptyEntity.getTableColumns());
     }
 
     public abstract Supplier<T> emptyEntityCreator();

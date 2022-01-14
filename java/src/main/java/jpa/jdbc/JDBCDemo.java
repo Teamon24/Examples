@@ -23,7 +23,7 @@ public class JDBCDemo {
 
     static {
         try {
-            VARIABLES.putAll(DotEnvUtils.getVariables("jpa/postgres/vars.sh"));
+            VARIABLES.putAll(DotEnvUtils.getVariables("jpa/vars.sh"));
             SQL_STRATEGY = getStrategy();
             USER_DAO = new UserDAO(SQL_STRATEGY);
         } catch (FileNotFoundException e) {
@@ -91,11 +91,11 @@ public class JDBCDemo {
 
 
     private static SQLStrategy getStrategy() {
-        String host = VARIABLES.get("HOST");
-        String port = VARIABLES.get("PORT");
-        String database = VARIABLES.get("DATABASE");
-        String userName = VARIABLES.get("USER_NAME");
-        String password = VARIABLES.get("PASSWORD");
+        String host = VARIABLES.get("POSTGRES_HOST");
+        String port = VARIABLES.get("POSTGRES_PORT");
+        String database = VARIABLES.get("POSTGRES_DATABASE");
+        String userName = VARIABLES.get("POSTGRES_USER_NAME");
+        String password = VARIABLES.get("POSTGRES_PASSWORD");
 
         return new PostgresStrategyBuilder()
             .host(host)

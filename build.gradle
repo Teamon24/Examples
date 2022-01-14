@@ -12,13 +12,13 @@ repositories {
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib"
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.2'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.2'
-    implementation "org.apache.commons:commons-lang3:3.0"
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
+    implementation 'org.apache.commons:commons-lang3:3.12.0'
 
-    implementation "io.projectreactor:reactor-core:3.3.9.RELEASE"
-    implementation "ch.qos.logback:logback-classic:1.2.6"
+    implementation 'io.projectreactor:reactor-core:3.4.13'
+    implementation 'ch.qos.logback:logback-classic:1.2.10'
 }
 
 test {

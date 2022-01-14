@@ -10,11 +10,13 @@ def get_from(path, key):
     return envVariables[key]
 
 def read_env_file(path):
+    print(path)
     envFile = open(path, 'r')
     envVariables = {}
     with envFile as fp:
         Lines = fp.readlines()
         for line in Lines:
+            if (line[0] == "#"): continue;
             split = line.split("=")
             if len(split) > 1:
                 envVariables[split[0]] = split[1].replace("\n", "")

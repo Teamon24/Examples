@@ -1,16 +1,19 @@
 package jpa.jdbc.dbms;
 
+import org.apache.commons.lang3.StringUtils;
 import org.postgresql.ds.PGSimpleDataSource;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
+import java.util.Collections;
+import java.util.List;
 import java.util.function.Function;
 
 
 public class PostgresqlStrategy extends SQLStrategy {
 
     private static final String URL_TEMPLATE = "jdbc:postgresql://%s:%s/%s?currentSchema=%s";
-    private final PGSimpleDataSource PG_SIMPLE_DATA_SOURCE = new PGSimpleDataSource();
+    private final PGSimpleDataSource PG_SIMPLE_DATA_SOURCE;
 
     public PostgresqlStrategy(String host,
                               int port,
@@ -21,6 +24,7 @@ public class PostgresqlStrategy extends SQLStrategy {
                               Function<SQLStrategy, Connection> connectionSupplier)
     {
         super(host, port, username, password, databaseName, currentSchema, connectionSupplier);
+        PG_SIMPLE_DATA_SOURCE = new PGSimpleDataSource();
         PG_SIMPLE_DATA_SOURCE.setServerNames(new String[]{host});
         PG_SIMPLE_DATA_SOURCE.setPortNumbers(new int[]{port});
         PG_SIMPLE_DATA_SOURCE.setUser(username);
@@ -45,8 +49,18 @@ public class PostgresqlStrategy extends SQLStrategy {
     }
 
     @Override
-    public String insertUserQuery(String tableName) {
-        return "INSERT INTO %s VALUES(?, ?, ?, ?)".formatted(tableName);
+    public String insertUserQuery(String tableName, List<String> columns) {
+        String formatted = "INSERT INTO %s (%s) VALUES(%s)"
+            .formatted(tableName, join(columns), placeholders(columns.size()));
+        return formatted;
+    }
+
+    private String placeholders(int size) {
+        return join(Collections.nCopies(size, "?"));
+    }
+
+    private String join(List<String> columns) {
+        return StringUtils.joinWith(",", columns).replaceAll("[\\[\\]]", "");
     }
 
     @Override

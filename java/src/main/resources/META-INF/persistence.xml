@@ -1,0 +1,62 @@
+<persistence version="1.0"
+             xmlns="http://java.sun.com/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd">
+    <persistence-unit name="examples.core.jpa.hibernate.postgres" transaction-type="RESOURCE_LOCAL">
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+        <class>jpa.hiberbate.UserEntity</class>
+        <properties>
+            <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQL10Dialect"/>
+<!--            <property name="hibernate.hbm2ddl.auto" value="create"/>-->
+            <property name="hibernate.show_sql" value="true"/>
+            <property name="hibernate.format_sql" value="true"/>
+            <property name="current_session_context_class" value="thread"/>
+            <property name="javax.persistence.jdbc.driverProperties" value="org.postgresql.Driver"/>
+            <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/selectel?currentSchema=examples"/>
+            <property name="javax.persistence.jdbc.user" value="selectel"/>
+            <property name="javax.persistence.jdbc.password" value="selectel"/>
+        </properties>
+    </persistence-unit>
+    <persistence-unit name="examples.core.jpa.hibernate.oracle" transaction-type="RESOURCE_LOCAL">
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+        <properties>
+            <property name="javax.persistence.jdbc.driverProperties" value="oracle.jdbc.OracleDriver"/>
+            <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5431/selectel?currentSchema=examples"/>
+            <property name="javax.persistence.jdbc.user" value="scott"/>
+            <property name="javax.persistence.jdbc.password" value="tiger"/>
+            <property name="eclipselink.ddl-generation" value="create-tables"/>
+
+            <!--  Optimization #9 - statement caching -->
+            <property name="eclipselink.jdbc.cache-statements" value="true"/>
+
+            <!--  Optimization #10 - batch writing -->
+            <property name="eclipselink.jdbc.batch-writing" value="JDBC"/>
+
+            <property name="eclipselink.jdbc.batch-writing.size" value="1000"/>
+            <!--  Optimization #11 - disable caching for batch insert (caching only improves reads, so only adds overhead for inserts) -->
+            <property name="eclipselink.cache.shared.default" value="false"/>
+
+            <!--  Except for Customer which is shared by orders -->
+            <property name="eclipselink.cache.shared.Customer" value="true"/>
+            <!--  Optimization #12 - turn logging off -->
+            <!-- property name="eclipselink.logging.level" value="FINE" /-->
+
+            <property name="eclipselink.logging.level" value="off"/>
+            <!--  Optimization #13 - close EntityManager on commit, to avoid cost of resume -->
+            <property name="eclipselink.persistence-context.close-on-commit" value="true"/>
+
+            <!--  Optimization #14 - avoid auto flush cost on query execution -->
+            <property name="eclipselink.persistence-context.flush-mode" value="commit"/>
+
+            <!--  Optimization #15 - avoid cost of persist on commit -->
+            <property name="eclipselink.persistence-context.persist-on-commit" value="true"/>
+
+        </properties>
+    </persistence-unit>
+
+    <persistence-unit name="examples.core.jpa.mysql" transaction-type="RESOURCE_LOCAL">
+        <properties>
+            <!-- source-2 properties here -->
+        </properties>
+    </persistence-unit>
+</persistence>
