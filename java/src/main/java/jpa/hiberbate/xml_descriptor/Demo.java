@@ -9,7 +9,8 @@ import javax.persistence.Persistence;
 import java.util.List;
 
 public class Demo {
-    public static final String PERSISTENCE_UNIT_NAME = "examples.core.jpa.postgres";
+    public static final String PERSISTENCE_UNIT_NAME = "examples.core.jpa.hibernate.postgres";
+    public static final String PERSISTENCE_UNIT_2_NAME = "examples.core.jpa.hibernate.postgres";
 
     public static void main(String[] args) {
         EntityManagerFactory factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);

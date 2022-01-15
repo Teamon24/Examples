@@ -32,7 +32,6 @@ public class HibernateProperties extends ProviderProperties {
 
         super.properties.putAll(
             ImmutableMap.<String, Object>builder()
-//                .put(HBM2DDL_AUTO, "create")
                 .put(DIALECT, value)
                 .put(FORMAT_SQL, true)
                 .put(SHOW_SQL, true)

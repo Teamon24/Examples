@@ -18,6 +18,7 @@ public abstract class DriverProperties implements Cloneable {
     protected Properties properties = new Properties();
 
     public abstract DriverType getType();
+    public abstract String getDriverName();
 
     @Override
     public DriverProperties clone() {

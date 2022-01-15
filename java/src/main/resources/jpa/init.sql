@@ -1,3 +1,5 @@
+CREATE SCHEMA IF NOT EXISTS examples;
+
 CREATE TABLE examples.user
 (
     id        varchar(50) NOT NULL PRIMARY KEY,

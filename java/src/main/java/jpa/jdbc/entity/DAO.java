@@ -169,5 +169,4 @@ public abstract class DAO<Id, T extends Entity<Id>> {
         Object entityValue = entityFieldGetter.apply(entity);
         return entityValue;
     }
-
 }

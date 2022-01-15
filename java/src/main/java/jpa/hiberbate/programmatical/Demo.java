@@ -18,7 +18,7 @@ import java.util.List;
 
 public class Demo {
     public static void main(String[] args) {
-        DriverProperties driverProperties = DriverPropertiesFactory.createDriver(
+        DriverProperties driverProperties = DriverPropertiesFactory.create(
             DriverType.POSTGRES, "localhost", 5432, "selectel", "selectel", "selectel", "examples"
         );
         ProviderProperties providerProperties = ProviderPropertiesFactory.createProvider(ProviderType.HIBERNATE, driverProperties);

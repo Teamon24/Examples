@@ -1,5 +1,6 @@
 package jpa.jdbc;
 
+import core.lambda.exception_handling.Throwing;
 import jpa.jdbc.dbms.PostgresStrategyBuilder;
 import jpa.jdbc.dbms.SQLStrategy;
 import utils.DotEnvUtils;
@@ -13,12 +14,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static core.lambda.exception_handling.ThrowingSupplier.tryCatch;
 import static jpa.jdbc.dbms.ConnectionSupplierType.DATA_SOURCE;
 
 public class JDBCDemo {
     public static final Map<String, String> VARIABLES = new HashMap<>();
     public static final UserDAO USER_DAO;
-    public static final String SCHEMA = "examples";
     private static final SQLStrategy SQL_STRATEGY;
 
     static {
@@ -30,65 +31,77 @@ public class JDBCDemo {
             throw new RuntimeException(e);
         }
     }
-
-    public static void main(String args[]) throws ClassNotFoundException, FileNotFoundException {
+    public static void main(String args[])
+        throws
+        ClassNotFoundException,
+        FileNotFoundException
+    {
         Class.forName("org.postgresql.Driver");
-        Connection connection;
-        try {
-            connection = SQL_STRATEGY.getConnection();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        Connection connection = tryCatch(SQL_STRATEGY::getConnection, SQLException.class);
+        Throwing.tryCatch(() -> connection.setAutoCommit(false), SQLException.class, () -> close(connection));
+        Throwing.tryCatch(() -> USER_DAO.truncate(connection), SQLException.class);
+
+        List<UserEntity> usersEntities = Users.USER_ENTITIES;
 
         try {
-            connection.setAutoCommit(false);
-            connection.createStatement().execute("CREATE SCHEMA IF NOT EXISTS " + SCHEMA);
-            connection.commit();
-        } catch (SQLException e) {
-            e.printStackTrace(System.out);
-        }
-
-        List<UserEntity> usersEntities;
-
-        Savepoint insertingUsers;
-        try {
-            USER_DAO.truncate(connection);
-            usersEntities = Users.USER_ENTITIES;
             for (UserEntity it : usersEntities) {
                 USER_DAO.insert(connection, it);
             }
-            insertingUsers = connection.setSavepoint();
         } catch (SQLException e) {
+            close(connection);
             throw new RuntimeException(e);
         }
 
+        Savepoint insertingUsers = tryCatch(connection::setSavepoint, SQLException.class);
+
         try {
-            String id = usersEntities.get(0).getId();
+            UserEntity firstUser = usersEntities.get(0);
+            String id = firstUser.getId();
             String newPassword = "1dO7^6Snsl(l7";
             USER_DAO.update(connection, id, newPassword);
-            USER_DAO.selectById(connection, id).getPassword().equals(newPassword);
+            USER_DAO.selectById(connection, id);
+            handleSelect(connection, id);
 
-            UserEntity searchedUser = usersEntities.get(1);
-            USER_DAO.selectById(connection, searchedUser.getId());
-            USER_DAO.deleteById(connection, searchedUser.getId());
-            Optional
-                .ofNullable(USER_DAO.selectById(connection, searchedUser.getId()))
-                .ifPresentOrElse(
-                    (ignored) -> System.out.printf("User (id='%s') was not found%n", searchedUser.getId()),
-                    () -> {
-                    });
+            String oldPassword = firstUser.getPassword();
+            printPasswordUpdate(newPassword, oldPassword);
 
-            connection.commit();
+
+            UserEntity removableUser = usersEntities.get(1);
+            String searchedUserId = removableUser.getId();
+            USER_DAO.deleteById(connection, searchedUserId);
+            handleSelect(connection, searchedUserId);
+
+            throw new SQLException();
         } catch (SQLException e) {
             try {
                 connection.rollback(insertingUsers);
+                connection.commit();
                 System.out.println("Rollback to the insertion of users was done.");
             } catch (SQLException ex) {
-                ex.printStackTrace();
+                close(connection);
+                throw new RuntimeException(e);
             }
         }
     }
 
+    private static void printPasswordUpdate(String newPassword, String oldPassword) {
+        if (newPassword.equals(oldPassword)) {
+            String template = "Password was updated: old = '%s', new = '%s'";
+            System.out.println(template.formatted(newPassword, oldPassword));
+        }
+    }
+
+    private static void handleSelect(Connection connection, String id) throws SQLException {
+        Optional
+            .ofNullable(USER_DAO.selectById(connection, id))
+            .ifPresentOrElse(
+                (userEntity) -> System.out.printf("User (id='%s') was found%n", userEntity.getId()),
+                () -> System.out.printf("User (id='%s') was not found%n", id));
+    }
+
+    private static void close(Connection connection) {
+        Throwing.tryCatch(connection::close, SQLException.class);
+    }
 
     private static SQLStrategy getStrategy() {
         String host = VARIABLES.get("POSTGRES_HOST");
@@ -103,7 +116,7 @@ public class JDBCDemo {
             .databaseName(database)
             .username(userName)
             .password(password)
-            .schema(SCHEMA)
+            .schema("examples")
             .connectionSupplier(DATA_SOURCE)
             .build();
 
