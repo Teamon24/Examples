@@ -12,13 +12,21 @@ public final class ThrowingLambdasEssential {
         boolean rethrows)
     {
         try {
-            E expectedException = expectedClass.cast(actualException);
-            System.err.println("Exception occurred : " + expectedException.getMessage());
-            if (rethrows) throwRTE(actualException);
+            expectedClass.cast(actualException);
+            printSuccessCaughtMessage(expectedClass, actualException);
+            rethrowIfNeeded(rethrows, actualException);
         } catch (ClassCastException ccEx) {
             printComparisonFailMessage(List.of(expectedClass), actualException);
             throwRTE(actualException);
         }
+    }
+
+    private static void rethrowIfNeeded(boolean rethrows, Throwable actualException) {
+        if (rethrows) {
+            String template = "Lambda: rethrow caught exception: '%s'.";
+            System.out.println(template.formatted(actualException.getClass().getSimpleName()));
+            throwRTE(actualException);
+        };
     }
 
     public static <E extends Throwable> void rethrowOrThrowActual(
@@ -51,7 +59,7 @@ public final class ThrowingLambdasEssential {
 
         if (found) {
             System.err.println("Exception occurred : " + expectedException.getMessage());
-            if (toThrowFurther) throwRTE(actualException);
+            rethrowIfNeeded(toThrowFurther, actualException);
         } else {
             printComparisonFailMessage(expectedClasses, actualException);
             throwRTE(actualException);
@@ -62,12 +70,21 @@ public final class ThrowingLambdasEssential {
         List<Class<E>> expectedClasses,
         Throwable actualException)
     {
-        String template = "%s was expected but %s was thrown. Throwing actual exception further.";
+        String template = "Lambda: %s was thrown but %s was expected. Throwing actual exception further.";
         String message = template.formatted(
-            StringUtils.joinWith(", ", expectedClasses.stream().map(Class::getSimpleName).toList()),
-            actualException.getClass().getSimpleName()
+            actualException.getClass().getSimpleName(),
+            StringUtils.joinWith(", ", expectedClasses.stream().map(Class::getSimpleName).toList())
         );
         System.out.println(message);
+    }
+
+    private static <E extends Throwable> void printSuccessCaughtMessage(
+        Class<E> expectedClass,
+        Throwable actualException)
+    {
+        String template = "Lambda: expected '%s' and actual '%s' classes are identical.";
+        String message = template.formatted(expectedClass.getSimpleName(), actualException.getClass().getSimpleName());
+        System.err.println(message);
     }
 
     private static void throwRTE(Throwable ex) {

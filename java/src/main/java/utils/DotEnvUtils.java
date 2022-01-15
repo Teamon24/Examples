@@ -37,4 +37,25 @@ public class DotEnvUtils {
         return envVariables;
     }
 
+    public static Map<String, String> variables(final String absFilePath) throws FileNotFoundException
+    {
+
+        File file = new File(absFilePath);
+        BufferedReader reader = new BufferedReader(new FileReader(file));
+        Map<String, String> envVariables = new HashMap<>();
+
+        try {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] split = line.split("=");
+                if (split.length == 2) {
+                    envVariables.put(split[0], split[1]);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return envVariables;
+    }
+
 }

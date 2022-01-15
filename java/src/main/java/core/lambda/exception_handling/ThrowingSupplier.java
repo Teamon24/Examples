@@ -22,7 +22,7 @@ public interface ThrowingSupplier<T, E extends Throwable> {
      * @param <Ex> тип ожидаемого исключения.
      * @return результат выполнения лямбды.
      */
-    static <R, Ex extends Throwable> R tryCatch(
+    static <R, Ex extends Throwable> R get(
         ThrowingSupplier<R, Ex> supplier,
         Class<Ex> expectedClass,
         boolean rethrows,
@@ -37,10 +37,10 @@ public interface ThrowingSupplier<T, E extends Throwable> {
         return null;
     }
 
-    static <T, E extends Throwable> T tryCatch(
+    static <T, E extends Throwable> T get(
         ThrowingSupplier<T, E> tryBlock,
         Class<E> expectedExceptionClass)
     {
-        return ThrowingSupplier.tryCatch(tryBlock, expectedExceptionClass, true, () -> {});
+        return ThrowingSupplier.get(tryBlock, expectedExceptionClass, true, () -> {});
     }
 }

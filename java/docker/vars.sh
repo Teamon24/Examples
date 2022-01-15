@@ -29,7 +29,9 @@ MYSQL_USER_NAME=selectel
 MYSQL_DATABASE=selectel
 
 POSTGRES_INIT_SCRIPTS=./init.sql
+POSTGRES_INIT_SCRIPTS_2=./clubdata.sql
 CONTAINER_POSTGRES_INIT_SCRIPTS=/docker-entrypoint-initdb.d/init.sql
+CONTAINER_POSTGRES_INIT_SCRIPTS_2=/docker-entrypoint-initdb.d/clubdata.sql
 
 POSTGRES_DATA=./volumes/postgres/data
 CONTAINER_POSTGRES_DATA=/var/lib/postgresql/data

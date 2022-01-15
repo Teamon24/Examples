@@ -14,7 +14,8 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import static core.lambda.exception_handling.Throwing.tryCatch;
+import static core.lambda.exception_handling.Throwing.*;
+import static core.lambda.exception_handling.ThrowingConsumer.*;
 import static core.lambda.exception_handling.ThrowingObject.createEx;
 /**
  *
@@ -24,7 +25,7 @@ class ThrowingLambdasTest {
     private static final Voider EMPTY_CATCH_BLOCK = () -> {};
 
     @ParameterizedTest
-    @MethodSource("provideForThrowingTest")
+    @MethodSource("providerForThrowingTest")
     <E extends Exception, UE extends RuntimeException> void testTryCatchForThrowing(
         boolean noExceptionThrowing,
         boolean rethrowsExpected,
@@ -36,7 +37,7 @@ class ThrowingLambdasTest {
         final ThrowingObject<E, UE> object = new ThrowingObject<>(noExceptionThrowing, rethrowsExpected, expectedException, unexpectedException);
 
         Function method = (ignored) -> {
-            tryCatch(object::method, expectedExceptionClass, rethrowsExpected, EMPTY_CATCH_BLOCK);
+            rethrow(object::method, expectedExceptionClass, rethrowsExpected, EMPTY_CATCH_BLOCK);
             return null;
         };
 
@@ -44,7 +45,7 @@ class ThrowingLambdasTest {
     }
 
     @ParameterizedTest
-    @MethodSource("provideForThrowingTest")
+    @MethodSource("providerForThrowingTest")
     <E extends Exception, UE extends RuntimeException> void testTryCatchForThrowingConsumer(
         boolean noExceptionThrowing,
         boolean rethrowsExpected,
@@ -57,7 +58,7 @@ class ThrowingLambdasTest {
         final ThrowingObject<E, UE> object = new ThrowingObject<>(noExceptionThrowing, rethrowsExpected, expectedException, unexpectedException);
 
         Function method = (ignored) -> {
-            Consumer consumer = ThrowingConsumer.wrap((i) -> object.method(),
+            Consumer consumer = wrap((i) -> object.method(),
                 expectedExceptionClass,
                 rethrowsExpected,
                 EMPTY_CATCH_BLOCK);
@@ -70,7 +71,7 @@ class ThrowingLambdasTest {
     }
 
     @ParameterizedTest
-    @MethodSource("provideForThrowingTest")
+    @MethodSource("providerForThrowingTest")
     <E extends Exception, UE extends RuntimeException> void testTryCatchForThrowingSupplier(
         boolean noExceptionThrowing,
         boolean rethrowsExpected,
@@ -85,7 +86,7 @@ class ThrowingLambdasTest {
             );
 
         Function method = (ignored) -> {
-            tryCatch(object::method, expectedExceptionClass, rethrowsExpected, EMPTY_CATCH_BLOCK);
+            rethrow(object::method, expectedExceptionClass, rethrowsExpected, EMPTY_CATCH_BLOCK);
             return null;
         };
 
@@ -103,20 +104,26 @@ class ThrowingLambdasTest {
             method.apply(null);
         } catch (Exception e) {
             actual = e;
-
             Throwable cause = actual.getCause();
             if (unexpectedException != null) {
+                String template = "Test: actual is %s, but expected is %s";
+                String message = template.formatted(
+                    cause.getClass().getSimpleName(), expectedExceptionClass.getSimpleName()
+                );
+                System.out.println(message);
                 Assertions.assertNotEquals(expectedExceptionClass, cause.getClass());
                 Assertions.assertEquals(unexpectedException.getClass(), cause.getClass());
             } else {
                 if (rethrowsExpected) {
                     Assertions.assertEquals(expectedExceptionClass, cause.getClass());
+                    String template = "Test: rethrown exception is '%s";
+                    System.out.println(template.formatted(expectedExceptionClass.getSimpleName()));
                 }
             }
         }
     }
 
-    private static Stream<Arguments> provideForThrowingTest() {
+    private static Stream<Arguments> providerForThrowingTest() {
         List rethrowsExpected = List.of(true, false);
         List noExceptionThrowing = List.of(true, false);
         List expectedExceptions = List.of(SQLException.class, IOException.class, IllegalArgumentException.class);

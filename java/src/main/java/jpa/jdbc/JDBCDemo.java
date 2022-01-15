@@ -1,6 +1,5 @@
 package jpa.jdbc;
 
-import core.lambda.exception_handling.Throwing;
 import jpa.jdbc.dbms.PostgresStrategyBuilder;
 import jpa.jdbc.dbms.SQLStrategy;
 import utils.DotEnvUtils;
@@ -14,7 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static core.lambda.exception_handling.ThrowingSupplier.tryCatch;
+import static core.lambda.exception_handling.Throwing.rethrow;
+import static core.lambda.exception_handling.ThrowingSupplier.get;
 import static jpa.jdbc.dbms.ConnectionSupplierType.DATA_SOURCE;
 
 public class JDBCDemo {
@@ -24,7 +24,7 @@ public class JDBCDemo {
 
     static {
         try {
-            VARIABLES.putAll(DotEnvUtils.getVariables("jpa/vars.sh"));
+            VARIABLES.putAll(DotEnvUtils.variables("C:/Users/teamo/IdeaProjects/Examples/java/docker/vars.sh"));
             SQL_STRATEGY = getStrategy();
             USER_DAO = new UserDAO(SQL_STRATEGY);
         } catch (FileNotFoundException e) {
@@ -37,22 +37,23 @@ public class JDBCDemo {
         FileNotFoundException
     {
         Class.forName("org.postgresql.Driver");
-        Connection connection = tryCatch(SQL_STRATEGY::getConnection, SQLException.class);
-        Throwing.tryCatch(() -> connection.setAutoCommit(false), SQLException.class, () -> close(connection));
-        Throwing.tryCatch(() -> USER_DAO.truncate(connection), SQLException.class);
+        Connection connection = get(SQL_STRATEGY::getConnection, SQLException.class);
+        rethrow(SQLException.class,
+            () -> connection.setAutoCommit(false),
+            () -> close(connection)
+        );
+
+        rethrow(SQLException.class,
+            () -> USER_DAO.truncate(connection));
 
         List<UserEntity> usersEntities = Users.USER_ENTITIES;
 
-        try {
-            for (UserEntity it : usersEntities) {
-                USER_DAO.insert(connection, it);
-            }
-        } catch (SQLException e) {
-            close(connection);
-            throw new RuntimeException(e);
-        }
+        rethrow(SQLException.class,
+            () -> insert(connection, usersEntities),
+            () -> close(connection)
+         );
 
-        Savepoint insertingUsers = tryCatch(connection::setSavepoint, SQLException.class);
+        Savepoint insertingUsers = get(connection::setSavepoint, SQLException.class);
 
         try {
             UserEntity firstUser = usersEntities.get(0);
@@ -65,12 +66,12 @@ public class JDBCDemo {
             String oldPassword = firstUser.getPassword();
             printPasswordUpdate(newPassword, oldPassword);
 
-
-            UserEntity removableUser = usersEntities.get(1);
-            String searchedUserId = removableUser.getId();
-            USER_DAO.deleteById(connection, searchedUserId);
-            handleSelect(connection, searchedUserId);
-
+            for (int i = 10; i < 20; i++) {
+                UserEntity removableUser = usersEntities.get(i);
+                String searchedUserId = removableUser.getId();
+                USER_DAO.deleteById(connection, searchedUserId);
+                handleDelete(connection, searchedUserId);
+            }
             throw new SQLException();
         } catch (SQLException e) {
             try {
@@ -84,11 +85,29 @@ public class JDBCDemo {
         }
     }
 
+    private static void insert(Connection connection, List<UserEntity> usersEntities) throws SQLException {
+        for (UserEntity it : usersEntities) {
+            USER_DAO.insert(connection, it);
+        }
+    }
+
+    private static void close(Connection connection) {
+        rethrow(SQLException.class, connection::close);
+    }
+
     private static void printPasswordUpdate(String newPassword, String oldPassword) {
         if (newPassword.equals(oldPassword)) {
             String template = "Password was updated: old = '%s', new = '%s'";
             System.out.println(template.formatted(newPassword, oldPassword));
         }
+    }
+
+    private static void handleDelete(Connection connection, String id) throws SQLException {
+        Optional
+            .ofNullable(USER_DAO.selectById(connection, id))
+            .ifPresentOrElse(
+                (userEntity) -> System.out.printf("User (id='%s') was not deleted%n", userEntity.getId()),
+                () -> System.out.printf("User (id='%s') was deleted%n", id));
     }
 
     private static void handleSelect(Connection connection, String id) throws SQLException {
@@ -97,10 +116,6 @@ public class JDBCDemo {
             .ifPresentOrElse(
                 (userEntity) -> System.out.printf("User (id='%s') was found%n", userEntity.getId()),
                 () -> System.out.printf("User (id='%s') was not found%n", id));
-    }
-
-    private static void close(Connection connection) {
-        Throwing.tryCatch(connection::close, SQLException.class);
     }
 
     private static SQLStrategy getStrategy() {

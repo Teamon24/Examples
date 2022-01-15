@@ -12,6 +12,7 @@ services:
     volumes:
       - examples_jpa_postgres:/var/lib/postgresql/data
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./clubdata.sql:/docker-entrypoint-initdb.d/clubdata.sql
     ports:
       - 5432:5432
   examples-jpa-mysql:

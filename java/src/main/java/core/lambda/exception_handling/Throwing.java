@@ -4,34 +4,32 @@ import static core.lambda.exception_handling.ThrowingLambdasEssential.throwAnoth
 
 @FunctionalInterface
 public interface Throwing<E extends Throwable> {
-    void invoke() throws E;
+    void rethrow() throws E;
 
-    static <E extends Throwable> void tryCatch(
+    static <E extends Throwable> void rethrow(
         Throwing<E> tryBlock,
         Class<E> expectedClass,
         boolean rethrows,
         Voider catchBlock)
     {
         try {
-            tryBlock.invoke();
+            tryBlock.rethrow();
         } catch (Throwable actualException) {
-            throwAnotherIfWasCaught(expectedClass, actualException, rethrows);
             catchBlock.invoke();
+            throwAnotherIfWasCaught(expectedClass, actualException, rethrows);
         }
     }
 
-    static <E extends Throwable> void tryCatch(
-        Throwing<E> tryBlock,
-        Class<E> expectedClass,
+    static <E extends Throwable> void rethrow(
+        Class<E> expectedClass, Throwing<E> tryBlock,
         Voider catchBlock)
     {
-        Throwing.tryCatch(tryBlock, expectedClass, true, catchBlock);
+        Throwing.rethrow(tryBlock, expectedClass, true, catchBlock);
     }
 
-    static <E extends Throwable> void tryCatch(
-        Throwing<E> tryBlock,
-        Class<E> expectedExceptionClass)
+    static <E extends Throwable> void rethrow(
+        Class<E> expectedExceptionClass, Throwing<E> tryBlock)
     {
-        Throwing.tryCatch(tryBlock, expectedExceptionClass, true, () -> {});
+        Throwing.rethrow(tryBlock, expectedExceptionClass, true, () -> {});
     }
 }
