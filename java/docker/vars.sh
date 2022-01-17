@@ -28,10 +28,12 @@ MYSQL_PASSWORD=selectel
 MYSQL_USER_NAME=selectel
 MYSQL_DATABASE=selectel
 
-POSTGRES_INIT_SCRIPTS=./init.sql
-POSTGRES_INIT_SCRIPTS_2=./clubdata.sql
-CONTAINER_POSTGRES_INIT_SCRIPTS=/docker-entrypoint-initdb.d/init.sql
-CONTAINER_POSTGRES_INIT_SCRIPTS_2=/docker-entrypoint-initdb.d/clubdata.sql
+POSTGRES_INIT_SCRIPTS_1=./sql_scripts/1.example.sql
+POSTGRES_INIT_SCRIPTS_2=./sql_scripts/2.example.sql
+
+CONTAINER_POSTGRES_INIT_SCRIPTS_1=/docker-entrypoint-initdb.d/1.example.sql
+CONTAINER_POSTGRES_INIT_SCRIPTS_2=/docker-entrypoint-initdb.d/2.example.sql
+
 
 POSTGRES_DATA=./volumes/postgres/data
 CONTAINER_POSTGRES_DATA=/var/lib/postgresql/data

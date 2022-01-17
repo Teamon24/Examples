@@ -1,15 +1,12 @@
 package core.concurrency.thread_pool.forkJoin.ex2;
 
-import core.utils.ElementUtils;
-
-import java.util.concurrent.ForkJoinPool;
+import java.io.File;
+import java.io.IOException;
 
 public class Demo {
-    public static void main(String[] args) {
-        ForkJoinPool commonPool = ForkJoinPool.commonPool();
-        CustomRecursiveTask task = new CustomRecursiveTask(ElementUtils.getRandomIntArray(100));
-        commonPool.execute(task);
-        int result = task.join();
-        System.out.println("Result: " + result);
+    public static void main(String[] args) throws IOException {
+        Folder folder = Folder.fromDirectory(new File(args[0]));
+        System.out.println(WordCounter.countWordOnSingleThread(folder, args[1]));
+        System.out.println(WordCounter.countWordParallel(folder, args[1]));
     }
 }

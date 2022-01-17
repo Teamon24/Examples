@@ -11,8 +11,8 @@ services:
       - POSTGRES_PASSWORD=selectel
     volumes:
       - examples_jpa_postgres:/var/lib/postgresql/data
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
-      - ./clubdata.sql:/docker-entrypoint-initdb.d/clubdata.sql
+      - ./sql_scripts/1.example.sql:/docker-entrypoint-initdb.d/1.example.sql
+      - ./sql_scripts/2.example.sql:/docker-entrypoint-initdb.d/2.example.sql
     ports:
       - 5432:5432
   examples-jpa-mysql:

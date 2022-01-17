@@ -7,13 +7,10 @@
  * <p><strong>Применимость</strong></p>
  * ---------------------------------------------------------------------------------------------------------------------
  * <p>* Когда вам нужно представить древовидную структуру объектов.
- *
  * <ul>Паттерн Компоновщик предлагает хранить в составных объектах ссылки на другие простые или составные объекты.
  * Те, в свою очередь, тоже могут хранить свои вложенные объекты и так далее. В итоге вы можете строить сложную
  * древовидную структуру данных, используя всего две основные разновидности объектов.</ul>
- *
  * <p>* Когда клиенты должны единообразно трактовать простые и составные объекты.
- *
  * <ul>Благодаря тому, что простые и составные объекты реализуют общий интерфейс, клиенту безразлично, с каким именно
  * объектом ему предстоит работать.</ul>
  * ---------------------------------------------------------------------------------------------------------------------
@@ -46,19 +43,50 @@
  * <p><strong>Отношения с другими паттернами</strong></p>
  * ---------------------------------------------------------------------------------------------------------------------
  * <ul>
- * <li><a href=https://refactoring.guru/ru/design-patterns/builder><strong>Строитель</strong></a> позволяет пошагово сооружать дерево <a href=https://refactoring.guru/ru/design-patterns/composite><strong>Компоновщика</strong></a>.</li>
- * <li><a href=https://refactoring.guru/ru/design-patterns/chain-of-responsibility><strong>Цепочку</strong></a> обязанностей часто используют вместе с <a href=https://refactoring.guru/ru/design-patterns/composite><strong>Компоновщиком</strong></a>. В этом случае запрос передаётся от дочерних
+ * <li>
+ *     <a href=https://refactoring.guru/ru/design-patterns/builder><strong>Строитель</strong></a>
+ *     позволяет пошагово сооружать дерево
+ *     <a href=https://refactoring.guru/ru/design-patterns/composite><strong>Компоновщика</strong></a>.
+ * </li>
+ * <li>
+ *     <a href=https://refactoring.guru/ru/design-patterns/chain-of-responsibility><strong>Цепочку</strong></a>
+ *     обязанностей часто используют вместе с
+ *     <a href=https://refactoring.guru/ru/design-patterns/composite><strong>Компоновщиком</strong></a>.
+ *     В этом случае запрос передаётся от дочерних
  * компонентов к их родителям.</li>
- * <li>Вы можете обходить дерево <a href=https://refactoring.guru/ru/design-patterns/composite><strong>Компоновщика</strong></a>, используя <a href=https://refactoring.guru/ru/design-patterns/iterator><strong>Итератор</strong></a>.</li>
- * <li>Вы можете выполнить какое-то действие над всем деревом <a href=https://refactoring.guru/ru/design-patterns/composite><strong>Компоновщика</strong></a> при помощи <a href=https://refactoring.guru/ru/design-patterns/visitor><strong>Посетителя</strong></a>.</li>
- * <li><a href=https://refactoring.guru/ru/design-patterns/composite><strong>Компоновщик</strong></a> часто совмещают с <a href=https://refactoring.guru/ru/design-patterns/flyweight><strong>Легковесом</strong></a>, чтобы реализовать общие ветки дерева и сэкономить при этом память.</li>
- * <li><a href=https://refactoring.guru/ru/design-patterns/composite><strong>Компоновщик</strong></a> и <a href=https://refactoring.guru/ru/design-patterns/decorator><strong>Декоратор</strong></a> имеют похожие структуры классов из-за того, что оба построены на рекурсивной вложенности.
- * Она позволяет связать в одну структуру бесконечное количество объектов.</li>
- * <ul>Декоратор оборачивает только один объект, а узел Компоновщика может иметь много детей. Декоратор добавляет
- * вложенному объекту новую функциональность, а Компоновщик не добавляет ничего нового, но «суммирует» результаты всех своих детей.</ul>
+ * <li>
+ *     Вы можете обходить дерево
+ *     <a href=https://refactoring.guru/ru/design-patterns/composite><strong>Компоновщика</strong></a>,
+ *     используя
+ *     <a href=https://refactoring.guru/ru/design-patterns/iterator><strong>Итератор</strong></a>.</li>
+ * <li>
+ *     Вы можете выполнить какое-то действие над всем деревом
+ *     <a href=https://refactoring.guru/ru/design-patterns/composite><strong>Компоновщика</strong></a>
+ *     при помощи <a href=https://refactoring.guru/ru/design-patterns/visitor><strong>Посетителя</strong></a>.
+ * </li>
+ * <li>
+ *     <a href=https://refactoring.guru/ru/design-patterns/composite><strong>Компоновщик</strong></a>
+ *     часто совмещают с
+ *     <a href=https://refactoring.guru/ru/design-patterns/flyweight><strong>Легковесом</strong></a>, чтобы реализовать
+ *     общие ветки дерева и сэкономить при этом память.
+ * </li>
+ * <li>
+ *     <a href=https://refactoring.guru/ru/design-patterns/composite><strong>Компоновщик</strong></a> и
+ *     <a href=https://refactoring.guru/ru/design-patterns/decorator><strong>Декоратор</strong></a>
+ *     имеют похожие структуры классов из-за того, что оба построены на рекурсивной вложенности.
+ *     Она позволяет связать в одну структуру бесконечное количество объектов.</li>
+ * <ul>
+ *     Декоратор оборачивает только один объект, а узел Компоновщика может иметь много детей. Декоратор добавляет
+ * вложенному объекту новую функциональность, а Компоновщик не добавляет ничего нового, но «суммирует» результаты всех своих детей.
+ * </ul>
  * <ul>Но они могут и сотрудничать: Компоновщик может использовать Декоратор, чтобы переопределить функции отдельных
  * частей дерева компонентов.</ul>
- * <li>Архитектура, построенная на <a href=https://refactoring.guru/ru/design-patterns/composite><strong>Компоновщиках</strong></a> и <a href=https://refactoring.guru/ru/design-patterns/decorator><strong>Декораторах</strong></a>, часто может быть улучшена за счёт внедрения <a href=https://refactoring.guru/ru/design-patterns/prototype><strong>Прототипа</strong></a>.
+ * <li>
+ *     Архитектура, построенная на
+ *     <a href=https://refactoring.guru/ru/design-patterns/composite><strong>Компоновщиках</strong></a> и
+ * <a href=https://refactoring.guru/ru/design-patterns/decorator><strong>Декораторах</strong></a>,
+ * часто может быть улучшена за счёт внедрения
+ * <a href=https://refactoring.guru/ru/design-patterns/prototype><strong>Прототипа</strong></a>.
  * Он позволяет клонировать сложные структуры объектов, а не собирать их заново.</li>
  * </ul>
  *

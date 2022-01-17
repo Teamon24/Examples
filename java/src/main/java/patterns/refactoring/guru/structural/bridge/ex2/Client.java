@@ -27,7 +27,10 @@ public class Client {
 
         T basicRemote = create.apply(device);
         printTest(basicRemote.getClass().getSimpleName());
-        Arrays.stream(commands).forEach(command -> command.accept(basicRemote));
+
+        for (Consumer<T> command : commands) {
+            command.accept(basicRemote);
+        }
         device.printStatus();
     }
 

@@ -1,5 +1,7 @@
 package patterns.refactoring.guru.structural.bridge.ex2;
 
+
+@Abstraction
 public interface Remote {
     void power();
 
