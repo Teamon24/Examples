@@ -51,11 +51,11 @@ public abstract class HistogramUtils {
         }
     }
 
-    public static <T> HashMap<T, String> mapToMarks(Set<T> ts){
+    public static <T> HashMap<T, String> mapToMarks(Set<T> ts) {
         HashMap<T, String> tAndMark = new LinkedHashMap<>();
 
         Iterator<T> iterator = ts.iterator();
-        for (int i = 0; iterator.hasNext();) {
+        for (int i = 0; iterator.hasNext(); ) {
             T t = iterator.next();
             String usedMark = usedMarks.get(t);
             if (usedMark == null) {
@@ -70,13 +70,14 @@ public abstract class HistogramUtils {
         return tAndMark;
     }
 
-    public static List<Histogram> getHistograms(final List<AveragedMethodResult> results,
-                                                final HashMap<String, String> collectionTypeAndMark)
-    {
+    public static <T extends Comparable<T>> List<Histogram> getHistograms(
+        final List<AveragedMethodResult<T>> results,
+        final HashMap<String, String> collectionTypeAndMark
+    ) {
         Double minAverageTime = results.stream()
             .map(it -> getDigitsAfterDot(it.getAverageExecutionTime()))
             .filter(it -> it != 0)
-            .min(Double::compareTo).orElseGet( () ->
+            .min(Double::compareTo).orElseGet(() ->
                 filterNotZeroAndFindBy(Stream::min, results, AveragedMethodResult::getAverageExecutionTime)
             );
 
@@ -90,9 +91,10 @@ public abstract class HistogramUtils {
     }
 
 
-    protected static void setHistogramsColumns(final HashMap<String, String> collectionTypeAndMark,
-                                               final List<Histogram> histograms)
-    {
+    protected static void setHistogramsColumns(
+        final HashMap<String, String> collectionTypeAndMark,
+        final List<Histogram> histograms
+    ) {
         List<Histogram> sortedByAverageTime =
             histograms.stream()
                 .sorted(Comparator.comparing(Histogram::getAverageExecutionTimeDouble)).toList();
@@ -104,36 +106,30 @@ public abstract class HistogramUtils {
         }
     }
 
-    protected static List<Histogram> createEmptyHistogramsObjects(final List<AveragedMethodResult> results) {
-        List<Histogram> histograms = results.stream().map(result -> {
-            String collectionClass = result.getCollectionClass();
-            return new Histogram(
-                collectionClass,
-                result.getMethodType(),
-                result.getIndex(),
-                "",
-                "0.0");
-        }).collect(Collectors.toList());
-        return histograms;
+    protected static <T extends Comparable<? super T>> List<Histogram> createEmptyHistogramsObjects(final List<AveragedMethodResult<T>> results) {
+        return results.stream().map(result -> new Histogram(
+            result.getCollectionClass(),
+            result.getMethodType(),
+            result.getIndex(),
+            result.getElement() == null ? "" : result.getElement().toString(),
+            "",
+            "0.0")).collect(Collectors.toList());
     }
 
     public static <T> String getIndent(final T currentValue, final int maxValues) {
         return " ".repeat(maxValues - currentValue.toString().length());
     }
 
-    public static List<Histogram> createEmptyColumnHistograms(final List<AveragedMethodResult> groupedByMethod)
-    {
-        List<Histogram> histograms = groupedByMethod.stream().map(result -> {
-            String collectionClass = result.getCollectionClass();
-            Double averageExecutionTime = result.getAverageExecutionTime();
-            return new Histogram(
-                collectionClass,
-                result.getMethodType(),
-                result.getIndex(),
-                "",
-                format(DOUBLE_ACCURACY, averageExecutionTime));
-        }).collect(Collectors.toList());
-        return histograms;
+    public static <T extends Comparable<T>> List<Histogram> createEmptyColumnHistograms(
+        final List<AveragedMethodResult<T>> groupedByMethod
+    ) {
+        return groupedByMethod.stream().map(result -> new Histogram(
+            result.getCollectionClass(),
+            result.getMethodType(),
+            result.getIndex(),
+            result.getElement() == null ? "" : result.getElement().toString(),
+            "",
+            format(DOUBLE_ACCURACY, result.getAverageExecutionTime()))).collect(Collectors.toList());
     }
 
     public static double getDigitsAfterDot(double d) {
@@ -149,10 +145,11 @@ public abstract class HistogramUtils {
             .stream();
     }
 
-    public static <E> Double filterNotZeroAndFindBy(BiFunction<Stream<E>, Comparator<? super E>, Optional<E>> function,
-                                                     final List<E> list,
-                                                     Function<E, Double> fieldExtractor)
-    {
+    public static <E> Double filterNotZeroAndFindBy(
+        BiFunction<Stream<E>, Comparator<? super E>, Optional<E>> function,
+        final List<E> list,
+        Function<E, Double> fieldExtractor
+    ) {
         Optional<E> e = function.apply(
             list.stream().filter(it -> fieldExtractor.apply(it) != 0.0),
             Comparator.comparing(fieldExtractor)
@@ -164,14 +161,15 @@ public abstract class HistogramUtils {
         return String.format("%." + doubleAccuracy + "f", value);
     }
 
-    public static <T extends Comparable<T>> Stream<Map.Entry<T, List<Histogram>>> groupBy(
-        final Function<Histogram, T> grouping,
-        final List<Histogram> histograms)
-    {
+    public static <G extends Comparable<? super G>> Stream<Map.Entry<G, List<Histogram>>> groupBy(
+        final Function<? super Histogram, G> grouping,
+        final List<Histogram> histograms
+    ) {
+        Comparator<Map.Entry<G, List<Histogram>>> comparator = Map.Entry.comparingByKey();
         return histograms.stream()
             .collect(Collectors.groupingBy(grouping))
             .entrySet()
             .stream()
-            .sorted(Map.Entry.comparingByKey());
+            .sorted(comparator);
     }
 }

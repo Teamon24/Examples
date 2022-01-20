@@ -19,8 +19,8 @@ public class RemoveByIndexStep<E> {
         this.removeByIndex = removeByIndex;
     }
 
-    public RemoveStrategyBuilder<E> index(Function<Collection<E>, Integer> index) {
-        this.indexSupplier = index;
+    public RemoveStrategyBuilder<E> index(Function<Collection<E>, Integer> indexSupplier) {
+        this.indexSupplier = indexSupplier;
         return removeStrategyBuilder;
     }
 

@@ -28,7 +28,7 @@ public final class CollectionCreationUtils {
             return (TreeList<T>) fillCollection(size, new TreeList<>(), supplier);
         }
 
-        throw new RuntimeException("In list initialization method no implementation for class: " + listClass.getSimpleName());
+        throw new RuntimeException("There is no list initialization case for class: " + listClass.getSimpleName());
     }
 
     public static <T> Set<T> set(final Class setClass, final int size, final Supplier<T> supplier) {

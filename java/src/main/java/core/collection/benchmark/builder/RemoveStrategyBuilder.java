@@ -13,7 +13,7 @@ import java.util.function.Supplier;
 public class RemoveStrategyBuilder<E> {
 
     private Class<? extends Collection> collectionClass;
-    private Supplier<Collection<E>> collectionSupplier;
+    private final Supplier<Collection<E>> collectionSupplier;
     private RemoveByIndexStep<E> removeByIndexStep;
     private RemoveElementStep<E> removeElementStep;
 
@@ -53,6 +53,6 @@ public class RemoveStrategyBuilder<E> {
                 this.removeElementStep.getElementSupplier());
         }
 
-        throw new RuntimeException("Index and element should not be null both");
+        throw new RuntimeException("Remove-by-index logic and remove-element logic should not be null both");
     }
 }

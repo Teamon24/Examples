@@ -25,7 +25,7 @@ public final class ListGenerator {
         System.out.println("Creating integers");
         ArrayList<Integer> integers = new ArrayList<>();
         for (int i = 0; i < size; i++) {
-            integers.add(random.nextInt(1, 100));
+            integers.add(random.nextInt(100));
         }
         System.out.println("Done with creating");
         System.out.println("Elements: " + StringUtils.joinWith(", ", integers));

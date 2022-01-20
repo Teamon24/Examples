@@ -11,7 +11,6 @@ import java.util.function.Supplier;
 public class AddElementStrategy<E> extends ElementStrategy<E> {
 
     private BiConsumer<Collection<E>, E> addElement;
-    private Supplier<E> elementSupplier;
 
     public AddElementStrategy(final Class<?> collectionClass,
                               Supplier<Collection<E>> collectionSupplier,
@@ -20,7 +19,6 @@ public class AddElementStrategy<E> extends ElementStrategy<E> {
     {
         super(collectionClass, collectionSupplier, elementSupplier);
         this.addElement = addElement;
-        this.elementSupplier = elementSupplier;
     }
 
 
@@ -30,8 +28,8 @@ public class AddElementStrategy<E> extends ElementStrategy<E> {
     }
 
     @Override
-    public MethodResult createResult(final long executionTime) {
-        return new MethodResult(getCollectionType(), getMethodType(), null, elementSupplier, executionTime);
+    public MethodResult<E> createResult(final long executionTime) {
+        return new MethodResult(getCollectionType(), getMethodType(), null, super.element, executionTime);
     }
 
     @Override

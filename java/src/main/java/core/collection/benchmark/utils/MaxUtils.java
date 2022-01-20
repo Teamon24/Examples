@@ -13,15 +13,15 @@ public final class MaxUtils {
     public static final String EMPTY = "";
 
     static <Element> String longest(final Collection<Element> collectionTypes) {
-        return longestBy(collectionTypes, it -> it);
+        return longest(collectionTypes, it -> it);
     }
 
-    static <Element, Field> String longestBy(final Collection<Element> collection, Function<Element, Field> mapping) {
+    static <Element, Field> String longest(final Collection<Element> collection, Function<? super Element, ? extends Field> mapping) {
         return maxBy(collection, mapping);
     }
 
     static <Element, Field> String maxBy(final Collection<Element> collection,
-                                        Function<Element, Field> mapping
+                                        Function<? super Element, ? extends Field> mapping
     ) {
         if (collection.isEmpty()) return EMPTY;
         return collection

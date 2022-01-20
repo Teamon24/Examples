@@ -1,14 +1,15 @@
 package jpa.hiberbate.ex1.programmatical.driver;
 
-import jpa.hibernate.ex1.programmatical.driver.DriverProperties;
-import jpa.hibernate.ex1.programmatical.driver.DriverPropertiesFactory;
-import jpa.hibernate.ex1.programmatical.driver.DriverType;
+import dbms.jpa.ex1.programmatical.driver.DriverProperties;
+import dbms.jpa.ex1.programmatical.driver.DriverPropertiesFactory;
+import dbms.jpa.ex1.programmatical.driver.DriverType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.Properties;
 
-import static jpa.hibernate.ex1.programmatical.driver.PostgresDriver.*;
+import static dbms.jpa.ex1.programmatical.driver.DriverProperties.DRIVER_PROP;
+import static dbms.jpa.ex1.programmatical.driver.DriverProperties.PASSWORD_PROP;
 
 /**
  *

@@ -1,54 +1,74 @@
 package core.concurrency.safe_iteration;
 
+import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-/**
- * Created by Артем on 18.12.2016.
- */
-
 class ThreadSafeIteratorExample {
 
     public static void main(String... args) {
-        System.out.println("Concurrent order");
-        List<String> myList = new CopyOnWriteArrayList<String>();
+        Map<String, String> hashMap = new HashMap<>();
+        List<String> arrayList = new ArrayList<>();
 
-        myList.add("ex1");
-        myList.add("2");
-        myList.add("3");
+        tryIterateAndModify(arrayList);
+        tryIterateAndModify(hashMap);
+
+        Map<String, String> concurrentHashMap = new ConcurrentHashMap<>();
+        List<String> copyOnWriteArrayList = new CopyOnWriteArrayList<>();
+        iterateAndModify(concurrentHashMap);
+        iterateAndModify(copyOnWriteArrayList);
+    }
+
+    private static void tryIterateAndModify(Map<String, String> hashMap) {
+        try {
+            iterateAndModify(hashMap);
+        } catch (ConcurrentModificationException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void tryIterateAndModify(List<String> arrayList) {
+        try {
+            iterateAndModify(arrayList);
+        } catch (ConcurrentModificationException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void iterateAndModify(List<String> myList) {
+        String searchedElement = "3";
+        myList.add(searchedElement);
         myList.add("4");
         myList.add("5");
 
         Iterator<String> it = myList.iterator();
         while (it.hasNext()) {
             String value = it.next();
-            System.out.println("List Value:" + value);
-            if (value.equals("3")) {
-                myList.remove("4");
-                myList.add("6");
-                myList.add("7");
+            if (value.equals(searchedElement)) {
+                it.remove(); //Non-exception code
+                myList.remove("4"); //can throw java.util.ConcurrentModificationException
+                myList.add("6"); //can throw java.util.ConcurrentModificationException
+                myList.add("7"); //can throw java.util.ConcurrentModificationException
             }
         }
-        System.out.println("List Size:" + myList.size());
+    }
 
-        Map<String, String> myMap = new ConcurrentHashMap<String, String>();
+    private static void iterateAndModify(Map<String, String> myMap) {
+        String searchedKey = "2";
         myMap.put("ex1", "ex1");
-        myMap.put("2", "2");
+        myMap.put(searchedKey, "2");
         myMap.put("3", "3");
 
-        Iterator<String> it1 = myMap.keySet().iterator();
-        while (it1.hasNext()) {
-            String key = it1.next();
-            System.out.println("Map Value:" + myMap.get(key));
-            if (key.equals("ex1")) {
-                myMap.remove("3");
-                myMap.put("4", "4");
-                myMap.put("5", "5");
+        for (String key : myMap.keySet()) {
+            if (searchedKey.equals(key)) {
+                myMap.put("ex1", "4"); //Non-exception code; Map do not put entry ("ex1","4") because of already existed key = "ex1";
+                myMap.put("4", "4"); //can throw java.util.ConcurrentModificationException because of new element adding
             }
         }
-        System.out.println("Map Size:" + myMap.size());
     }
 }

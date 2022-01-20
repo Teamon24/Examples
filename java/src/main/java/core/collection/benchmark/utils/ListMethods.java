@@ -13,10 +13,6 @@ public final class ListMethods {
         return (Collection<T> collection, Integer index) -> ((List<T>)collection).remove((int)index);
     }
 
-    public static <T> BiConsumer<Collection<T>, T> removeElement() {
-        return (Collection<T> collection, T element) -> ((List<T>)collection).remove(element);
-    }
-
     public static <T> TriConsumer<Collection<T>, Integer, T> addByIndex() {
         TriConsumer<Collection<T>, Integer, T> add =
             (Collection<T> collection, Integer index, T element) -> ((List<T>)collection).add(index, element);

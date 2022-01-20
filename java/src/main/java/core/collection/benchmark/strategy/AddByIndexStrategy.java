@@ -11,8 +11,6 @@ import java.util.function.Supplier;
 public class AddByIndexStrategy<E> extends IndexAndElementStrategy<E> {
 
     private final TriConsumer<Collection<E>, Integer, E> addByIndex;
-    private final Function<Collection<E>, Integer> indexSupplier;
-    private final Supplier<E> elementSupplier;
 
     public AddByIndexStrategy(Class collectionClass,
                               Supplier<Collection<E>> collectionSupplier,
@@ -22,8 +20,6 @@ public class AddByIndexStrategy<E> extends IndexAndElementStrategy<E> {
     {
         super(collectionClass, collectionSupplier, indexSupplier, elementSupplier);
         this.addByIndex = addByIndex;
-        this.indexSupplier = indexSupplier;
-        this.elementSupplier = elementSupplier;
     }
 
     @Override

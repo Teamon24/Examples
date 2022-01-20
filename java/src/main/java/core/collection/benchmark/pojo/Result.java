@@ -1,15 +1,15 @@
 package core.collection.benchmark.pojo;
 
-abstract public class Result {
+abstract public class Result<T> {
 
     private final MethodInfo methodInfo;
     private final Integer index;
-    private final Object element;
+    private final T element;
 
     public Result(final String collectionClass,
                   final MethodType methodType,
                   final Integer index,
-                  final Object element)
+                  final T element)
     {
         this.methodInfo = MethodInfo.get(collectionClass, methodType);
         this.index = index;
@@ -28,7 +28,7 @@ abstract public class Result {
         return index;
     }
 
-    public Object getElement() {
+    public T getElement() {
         return element;
     }
 }

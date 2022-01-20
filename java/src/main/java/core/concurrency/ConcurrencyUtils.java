@@ -5,8 +5,10 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 public final class ConcurrencyUtils {
@@ -33,8 +35,9 @@ public final class ConcurrencyUtils {
         }
     }
 
-    public static <T> List<T> createThreads(final int amount,
-                                            final Function<Integer, T> create) {
+    public static <T> List<T> createThreads(
+        final int amount, final Function<Integer, T> create
+    ) {
         List<T> threads = new ArrayList<>();
         for (int i = 1; i <= amount; i++) {
             threads.add(create.apply(i));
@@ -52,18 +55,21 @@ public final class ConcurrencyUtils {
         }
     }
 
-    public static void executeAll(final ExecutorService executorService,
-                                  final List<Runnable> tasks) {
+    public static void executeAll(
+        final ExecutorService executorService, final List<Runnable> tasks
+    ) {
         tasks.forEach(executorService::execute);
     }
 
-    public static List<Future<String>> submitAll(final ExecutorService executorService,
-                                                 final List<Callable<String>> tasks) {
+    public static <T> List<Future<T>> submitAll(
+        final ExecutorService executorService, final List<Callable<T>> tasks
+    ) {
         return tasks.stream().map(executorService::submit).toList();
     }
 
-    public static List<Future<String>> invokeAll(final ExecutorService executorService,
-                                                 final List<Callable<String>> tasks) {
+    public static <T> List<Future<T>> invokeAll(
+        final ExecutorService executorService, final List<Callable<T>> tasks
+    ) {
         try {
             return executorService.invokeAll(tasks);
         } catch (InterruptedException e) {
@@ -72,8 +78,9 @@ public final class ConcurrencyUtils {
         return new ArrayList<>();
     }
 
-    public static <T> T invokeAny(final ThreadPoolExecutor executor,
-                                  final List<Callable<T>> tasks) {
+    public static <T> T invokeAny(
+        final ThreadPoolExecutor executor, final List<Callable<T>> tasks
+    ) {
         try {
             return executor.invokeAny(tasks);
         } catch (InterruptedException | ExecutionException e) {
@@ -90,5 +97,28 @@ public final class ConcurrencyUtils {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public static <T> List<T> getAll(ExecutorService executorService, List<Callable<T>> tasks) {
+        List<Future<T>> futures = invokeAll(executorService, tasks);
+        return futures.stream().map(ConcurrencyUtils::getResult).toList();
+    }
+
+    public static <T> List<T> getAll(List<Callable<T>> tasks) {
+        ExecutorService executorService = Executors.newFixedThreadPool(5);
+        List<T> results = getAll(executorService, tasks);
+        shutdown(executorService, 1000);
+        return results;
+    }
+
+    public static void shutdown(ExecutorService executorService, int millisTimeout) {
+        executorService.shutdown();
+        try {
+            if (!executorService.awaitTermination(millisTimeout, TimeUnit.MILLISECONDS)) {
+                executorService.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            executorService.shutdownNow();
+        }
     }
 }

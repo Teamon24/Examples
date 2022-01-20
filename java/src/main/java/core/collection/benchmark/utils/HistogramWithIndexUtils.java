@@ -2,23 +2,33 @@ package core.collection.benchmark.utils;
 
 import core.collection.benchmark.pojo.AveragedMethodResult;
 import core.collection.benchmark.pojo.Histogram;
+import core.collection.benchmark.pojo.MethodType;
 
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static core.collection.benchmark.utils.MaxUtils.*;
+import static core.collection.benchmark.utils.StreamUtils.getUniques;
 
 public final class HistogramWithIndexUtils extends HistogramUtils {
 
-    public static void printHistogram(final List<AveragedMethodResult> results) {
-        StringBuilder stringBuilder = getStringHistograms(results);
+    public static <E extends Comparable<E>> void printHistogram(final List<AveragedMethodResult<E>> results) {
+        StringBuilder stringBuilder = getStringHistograms(results, Histogram::getIndex);
         System.out.println(stringBuilder);
     }
 
-    public static StringBuilder getStringHistograms(List<AveragedMethodResult> results) {
+    public static <E extends Comparable<E>> void printHistogramNoIndex(final List<AveragedMethodResult<E>> results) {
+        StringBuilder stringBuilder = HistogramWithIndexUtils.getStringHistograms(results, Histogram::getElement);
+        System.out.println(stringBuilder);
+    }
+
+    public static <E extends Comparable<E>, G extends Comparable<? super G>> StringBuilder getStringHistograms(
+        List<AveragedMethodResult<E>> results,
+        Function<? super Histogram, ? extends G> fieldExtractor
+    ) {
         if (results.isEmpty()) {
             System.out.println("No results");
             return null;
@@ -28,17 +38,18 @@ public final class HistogramWithIndexUtils extends HistogramUtils {
 
         HashMap<String, String> collectionTypeAndMark = mapToMarks(collectionTypes);
 
+        Comparator<Histogram> comparing = Comparator.comparing(fieldExtractor);
         List<Histogram> histograms =
             getHistograms(results, collectionTypeAndMark)
-                .stream()
-                .sorted(Comparator.comparing(Histogram::getIndex))
+                .stream().sorted(comparing)
                 .collect(Collectors.toList());
 
-        int lengthOfLongestCollectionName = longestBy(histograms, Histogram::getCollectionType).length();
-        int lengthOfMaxIndex              = longestBy(histograms, Histogram::getIndex).length();
-        int lengthOfLongestTime           = longestBy(histograms, Histogram::getAverageExecutionTime).length();
-        int lengthOfLongestHistogram      = longestBy(histograms, Histogram::getHistogramColumn).length();
-        int lengthOfLongestMethodName     = longestBy(histograms, Histogram::getMethodType).length();
+        Set<MethodType> methodTypes = getUniques(results, AveragedMethodResult::getMethodType);
+
+        int lengthOfLongestCollectionName = MaxUtils.longest(histograms, Histogram::getCollectionType).length();
+        int lengthOfLongestTime = MaxUtils.longest(histograms, Histogram::getAverageExecutionTime).length();
+        int lengthOfLongestMethodName = MaxUtils.longest(methodTypes, MethodType::getValue).length();
+        int lengthOfMax = MaxUtils.longest(histograms, fieldExtractor).length();
 
         StringBuilder builder = new StringBuilder();
 
@@ -47,20 +58,21 @@ public final class HistogramWithIndexUtils extends HistogramUtils {
                 final StringBuilder builderForMethod = new StringBuilder();
                 List<Histogram> histogramsByMethodValue = histogramsByMethod.getValue();
 
-                groupBy(Histogram::getIndex, histogramsByMethodValue)
+                groupBy(fieldExtractor, histogramsByMethodValue)
                     .forEach(histogramsByIndex -> {
                         final StringBuilder builderForIndex = new StringBuilder();
                         for (Histogram histogram : histogramsByIndex.getValue()) {
-                            Integer index = histogramsByIndex.getKey();
+                            G groupingField = histogramsByIndex.getKey();
                             appendHistogram(
-                                builderForIndex, index, histogram,
-                                lengthOfMaxIndex,
+                                builderForIndex, groupingField, histogram,
+                                lengthOfMax,
                                 lengthOfLongestCollectionName,
-                                lengthOfLongestHistogram,
                                 lengthOfLongestMethodName,
                                 lengthOfLongestTime);
                         }
-                        builderForMethod.append(builderForIndex);
+                        builderForMethod.append(builderForIndex)
+                            .append("-".repeat(lengthOfLongestMethodName))
+                            .append("\n");
                     });
                 builder.append(builderForMethod).append("\n");
             });
@@ -68,26 +80,24 @@ public final class HistogramWithIndexUtils extends HistogramUtils {
         return builder;
     }
 
-    private static void appendHistogram(final StringBuilder builderForIndex,
-                                        final Integer index,
-                                        final Histogram histogram,
-                                        final Integer lengthOfMaxIndex,
-                                        final Integer lengthOfLongestCollectionName,
-                                        final int lengthOfLongestHistogram,
-                                        final int lengthOfLongestMethodName,
-                                        final Integer lengthOfLongestTime)
-    {
-        String histogramColumnIndent = getIndent(histogram.getHistogramColumn(), lengthOfLongestHistogram);
+    private static <T> void appendHistogram(
+        final StringBuilder builderForIndex,
+        final T groupingField,
+        final Histogram histogram,
+        final Integer lengthOfMaxGroupingField,
+        final Integer lengthOfLongestCollectionName,
+        final int lengthOfLongestMethodName,
+        final Integer lengthOfLongestTime
+    ) {
         String collectionTypeIndent = getIndent(histogram.getCollectionType(), lengthOfLongestCollectionName);
         String executionTimeIndent = getIndent(histogram.getAverageExecutionTime(), lengthOfLongestTime);
-        String indexIndent = getIndent(index, lengthOfMaxIndex);
+        String groupingFieldIndent = getIndent(groupingField, lengthOfMaxGroupingField);
         String methodTypeIndent = getIndent(histogram.getMethodType(), lengthOfLongestMethodName);
 
         builderForIndex
             .append(methodTypeIndent).append(histogram.getMethodType()).append(" ")
-            .append(indexIndent).append(index).append(" ")
+            .append(groupingFieldIndent).append(groupingField).append(" ")
             .append(collectionTypeIndent).append(histogram.getCollectionType()).append(" ")
-            .append(histogram.getHistogramColumn()).append(histogramColumnIndent).append(" ")
             .append(executionTimeIndent).append(histogram.getAverageExecutionTime()).append(" ")
             .append("\n");
     }

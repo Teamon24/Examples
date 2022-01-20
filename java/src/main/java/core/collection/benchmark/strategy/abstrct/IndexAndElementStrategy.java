@@ -2,6 +2,7 @@ package core.collection.benchmark.strategy.abstrct;
 
 import core.collection.benchmark.pojo.MethodResult;
 import core.collection.benchmark.pojo.MethodType;
+import core.collection.benchmark.utils.PrintResultBuilder;
 
 import java.util.Collection;
 import java.util.function.Function;
@@ -33,6 +34,25 @@ public abstract class IndexAndElementStrategy<E> extends MethodStrategy<E> {
 
     public MethodResult createResult(long executionTime) {
         return new MethodResult(getCollectionType(), getMethodType(), this.index, this.element, executionTime);
+    }
+
+    @Override
+    public void printTestResult(
+        int testsAmount,
+        int testNumber,
+        String collectionType,
+        MethodType methodType,
+        long executionTime
+    ) {
+        String build = new PrintResultBuilder<E>()
+            .testAmount(testsAmount)
+            .testNumber(testNumber)
+            .collection(collectionType)
+            .method(methodType.getValue())
+            .element(this.element)
+            .index(this.index)
+            .executionTime(executionTime).build();
+        System.out.println(build);
     }
 
     public abstract void method(Collection<E> collection, Integer index, E element);

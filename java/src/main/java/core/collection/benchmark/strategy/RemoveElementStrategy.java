@@ -10,7 +10,6 @@ import java.util.function.Supplier;
 public class RemoveElementStrategy<E> extends ElementStrategy<E> {
 
     private BiConsumer<Collection<E>, E> removeElement;
-    private Supplier<E> elementSupplier;
 
     public RemoveElementStrategy(Class collectionClass,
                                  Supplier<Collection<E>> collectionSupplier,
@@ -19,12 +18,11 @@ public class RemoveElementStrategy<E> extends ElementStrategy<E> {
     {
         super(collectionClass, collectionSupplier, elementSupplier);
         this.removeElement = removeElement;
-        this.elementSupplier = elementSupplier;
     }
 
     @Override
     public void method(final Collection<E> collection, final E element) {
-        removeElement.accept(collection, element);
+        this.removeElement.accept(collection, element);
     }
 
     @Override

@@ -1,13 +1,13 @@
 package core.collection.benchmark.pojo;
 
-public class MethodResult extends Result {
+public class MethodResult<T> extends Result<T> {
 
     private final Long executionTime;
 
     public MethodResult(final String listClass,
                         final MethodType methodType,
                         final Integer index,
-                        final Object element,
+                        final T element,
                         final long executionTime)
     {
         super(listClass, methodType, index, element);

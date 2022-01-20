@@ -15,5 +15,18 @@
  *     Package cohesion reuse release equivalence principle
  * </a>
  *
+ *
+ *
+ * <p><a href="https://bool.dev/blog/detail/grasp-printsipy">
+ *     Grasp principles
+ * </a>
+ *
+ * <p><a href="https://dzone.com/articles/solid-grasp-and-other-basic-principles-of-object-o">
+ *    Solid grasp and other basic principles of OOD
+ * </a>
+ *
+ * <p><a href="https://khalilstemmler.com/articles/software-design-architecture/domain-driven-design-vs-clean-architecture/">
+ *     Domain driven design vs clean architecture
+ * </a>
  */
 package architecture;
