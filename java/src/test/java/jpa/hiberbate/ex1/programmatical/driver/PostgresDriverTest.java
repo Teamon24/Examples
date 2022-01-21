@@ -11,9 +11,6 @@ import java.util.Properties;
 import static dbms.jpa.ex1.programmatical.driver.DriverProperties.DRIVER_PROP;
 import static dbms.jpa.ex1.programmatical.driver.DriverProperties.PASSWORD_PROP;
 
-/**
- *
- */
 class PostgresDriverTest {
 
     @Test
