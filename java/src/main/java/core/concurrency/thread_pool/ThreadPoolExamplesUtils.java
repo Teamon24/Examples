@@ -1,10 +1,10 @@
 package core.concurrency.thread_pool;
 
 import core.collection.benchmark.utils.Sequence;
+import core.concurrency.ConcurrencyUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
@@ -18,43 +18,37 @@ import static core.concurrency.ConcurrencyUtils.threadName;
 
 public final class ThreadPoolExamplesUtils {
 
-    public static final int TASK_SLEEP_SECONDS = 4;
+    public static final int TASK_SLEEP_SECONDS = 2;
     public static final long SLEEP_TIME = (long) TASK_SLEEP_SECONDS * MILLIS_IN_SECOND;
 
-    public static Callable<String> callable(final int taskNumber) {
+    public static Callable<String> task(final int taskNumber) {
         return () -> {
-            printTask(taskNumber);
+            printTask(taskNumber, SLEEP_TIME);
             return String.format("task#%s was done", taskNumber);
         };
     }
 
-    public static void printTask(int taskNumber) {
-        String currentThreadName = threadName().toUpperCase(Locale.ROOT);
-        System.out.printf("%s: executing task#%s\n", currentThreadName, taskNumber);
-        sleep(SLEEP_TIME);
-        System.out.printf("%s: DONE with task#%s\n", currentThreadName, taskNumber);
+    public static void printTask(int taskNumber, long taskWorkImitationTime) {
+        printTask(taskNumber, "", taskWorkImitationTime);
     }
 
-    public static void printTask(int taskNumber, String title) {
-        String currentThreadName = threadName().toUpperCase(Locale.ROOT);
-        System.out.printf("%s[%s]: executing task#%s\n", currentThreadName, title, taskNumber);
-        sleep(SLEEP_TIME);
-        System.out.printf("%s[%s]: DONE with task#%s\n", currentThreadName, title, taskNumber);
+    public static void printTask(int taskNumber, String title, long taskWorkImitationTime) {
+        String titleResult = title.isEmpty() ? "" : "[" + title + "]";
+        ConcurrencyUtils.safePrintf("%s%s: executing task#%s\n", threadName(), titleResult, taskNumber);
+        ConcurrencyUtils.sleep(taskWorkImitationTime);
+        ConcurrencyUtils.safePrintf("%s%s: DONE with task#%s\n", threadName(), titleResult, taskNumber);
     }
 
-    public static List<Callable<String>> getCallables(final String methodName,
-                                                      final Sequence<Integer> sequence)
+    public static List<Callable<String>> getTasks(final Sequence<Integer> sequence) {
+        return getTasks("", sequence);
+    }
+
+    public static List<Callable<String>> getTasks(final String methodName,
+                                                  final Sequence<Integer> sequence)
     {
         final List<Callable<String>> callables = new ArrayList<>();
-        fill(callables, callable(methodName), sequence);
+        fill(callables, task(methodName), sequence);
         return callables;
-    }
-
-    private static Function<Integer, Callable<String>> callable(String methodName) {
-        return (number) -> () -> {
-            printTask(number, methodName);
-            return "";
-        };
     }
 
     public static List<Runnable> getRunnables(final String methodName,
@@ -66,8 +60,46 @@ public final class ThreadPoolExamplesUtils {
         return runnables;
     }
 
+    public static List<Future<String>> submitEach(final ExecutorService executor,
+                                                  final int taskAmount,
+                                                  final Function<Integer, Callable<String>> getCallable)
+    {
+        final List<Future<String>> futureTasks = new ArrayList<>();
+        for (int number = 0; number < taskAmount; number++) {
+            futureTasks.add(executor.submit(getCallable.apply(number)));
+        }
+        return futureTasks;
+    }
+
+    public static void printPoolAndQueueSizes(ThreadPoolExecutor executor, int taskAmount) {
+        long start = System.currentTimeMillis();
+        int checkTime = getCheckTime(taskAmount);
+        while (System.currentTimeMillis() - start < checkTime) {
+            String threadNameTemplate = "\n---------- %s -----------\n%s\n---------------------------\n\n";
+            String message = String.format("pool size: %s\nqueue size: %s", executor.getPoolSize(), executor.getQueue().size());
+            ConcurrencyUtils.threadPrintln(threadNameTemplate, message);
+            ConcurrencyUtils.sleep(SLEEP_TIME);
+        }
+    }
+
+    public static Runnable infiniteLoop() {
+        return () -> {
+            while (true) {
+                System.out.println("In the infinite loop");
+                sleep(1000);
+            }
+        };
+    }
+
+    private static Function<Integer, Callable<String>> task(String methodName) {
+        return (number) -> () -> {
+            printTask(number, methodName, SLEEP_TIME);
+            return "";
+        };
+    }
+
     private static Function<Integer, Runnable> runnable(String methodName) {
-        return (number) -> () -> call(callable(methodName).apply(number));
+        return (number) -> () -> call(task(methodName).apply(number));
     }
 
     private static <T> void fill(List<T> runnables,
@@ -83,40 +115,7 @@ public final class ThreadPoolExamplesUtils {
         }
     }
 
-    public static List<Future<String>> submitEach(final ExecutorService executor,
-                                                  final int taskAmount,
-                                                  final Function<Integer, Callable<String>> getCallable)
-    {
-        final List<Future<String>> futureTasks = new ArrayList<>();
-        for (int number = 0; number < taskAmount; number++) {
-            futureTasks.add(executor.submit(getCallable.apply(number)));
-        }
-        return futureTasks;
-    }
-
-    public static void print(ThreadPoolExecutor executor, int taskAmount) {
-        long start = System.currentTimeMillis();
-        int checkTime = getCheckTime(taskAmount);
-        while (System.currentTimeMillis() - start < checkTime) {
-            String currentThreadName = threadName().toUpperCase(Locale.ROOT);
-            System.out.printf("---------- %s -----------\n", currentThreadName);
-            System.out.printf("pool size: %s\n", executor.getPoolSize());
-            System.out.printf("queue size: %s\n", executor.getQueue().size());
-            System.out.println("---------------------------");
-            sleep(SLEEP_TIME);
-        }
-    }
-
     private static int getCheckTime(final int taskAmount) {
-        return ((taskAmount + 1) * TASK_SLEEP_SECONDS) * MILLIS_IN_SECOND;
-    }
-
-    public static Runnable infiniteLoop() {
-        return () -> {
-            while (true) {
-                System.out.println("In the infinite loop");
-                sleep(1000);
-            }
-        };
+        return (taskAmount * TASK_SLEEP_SECONDS) * MILLIS_IN_SECOND;
     }
 }

@@ -30,10 +30,10 @@ public class HibernateProperties extends ProviderProperties {
         DriverType type = driverProperties.getType();
         String dialect;
         switch (type) {
-            case ORACLE -> dialect = "org.hibernate.dialect.Oracle12cDialect";
-            case POSTGRES -> dialect = "org.hibernate.dialect.PostgreSQL10Dialect";
-            case MY_SQL -> dialect = "org.hibernate.dialect.MySQLDialect";
-            default -> throw new UnsupportedOperationException("Switch-case is not implemented for type: " + type);
+            case ORACLE: dialect = "org.hibernate.dialect.Oracle12cDialect"; break;
+            case POSTGRES: dialect = "org.hibernate.dialect.PostgreSQL10Dialect"; break;
+            case MY_SQL: dialect = "org.hibernate.dialect.MySQLDialect"; break;
+            default: throw new UnsupportedOperationException("Switch-case is not implemented for type: " + type);
         };
 
         Properties props = driverProperties.getProperties();

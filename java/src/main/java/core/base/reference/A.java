@@ -32,13 +32,15 @@ public class A { public int i; public double d; public float f; public long l; p
 
     @Override public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof A a)) return false;
+        if (!(o instanceof A)) return false;
 
-        boolean primitivesAreEqual = arePrimitivesEqual(this, a);
+        A other = (A) o;
+
+        boolean primitivesAreEqual = arePrimitivesEqual(this, other);
         if (!primitivesAreEqual) return false;
 
-        boolean objectsAreEqual = Objects.equals(this.object, a.object);
-        boolean stringsAreEqual = Objects.equals(this.string, a.string);
+        boolean objectsAreEqual = Objects.equals(this.object, other.object);
+        boolean stringsAreEqual = Objects.equals(this.string, other.string);
         return objectsAreEqual && stringsAreEqual;
     }
 

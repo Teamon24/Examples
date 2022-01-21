@@ -4,19 +4,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.RecursiveTask;
 
-class DocumentSearchTask extends RecursiveTask<Long> {
-    private final Document document;
-    private final String searchedWord;
-
-    DocumentSearchTask(Document document, String searchedWord) {
-        super();
-        this.document = document;
-        this.searchedWord = searchedWord;
-    }
-
-    @Override protected Long compute() { return WordCounter.countWord(document, searchedWord); }
-}
-
 public class FolderSearchTask extends RecursiveTask<Long> {
     private final Folder folder;
     private final String searchedWord;
@@ -31,11 +18,11 @@ public class FolderSearchTask extends RecursiveTask<Long> {
     protected Long compute() {
         long count = 0L;
         List<RecursiveTask<Long>> forks = new LinkedList<>();
-        for (Folder subFolder : folder.subFolders()) {
+        for (Folder subFolder : folder.getSubFolders()) {
             forks.add(forkFolderTask(subFolder));
         }
 
-        for (Document document : folder.documents()) {
+        for (Document document : folder.getDocuments()) {
             forks.add(forkDocumentTask(document));
         }
 

@@ -1,8 +1,15 @@
 package patterns.enterprise.unit_of_work;
 
+import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-public record Student(Integer id, String name, String address) {
+@AllArgsConstructor
+public final class Student {
+
+    private Integer id;
+    private String name;
+    private String address;
+
     @Override
     public String toString() {
         return new ToStringBuilder(this)

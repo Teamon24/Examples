@@ -41,7 +41,7 @@ public class EntityManagers {
     static EntityManager createEntityManager(AbstractPersistenceUnitObject persistenceUnitInfo) {
         ProviderType type = persistenceUnitInfo.getType();
         switch (type) {
-            case HIBERNATE -> {
+            case HIBERNATE: {
                 HibernatePersistenceProvider provider = new HibernatePersistenceProvider();
                 EntityManagerFactory factory =
                     provider.createContainerEntityManagerFactory(
@@ -50,8 +50,7 @@ public class EntityManagers {
                     );
                 return factory.createEntityManager();
             }
-            case ECLIPSE_LINK -> {
-            }
+            case ECLIPSE_LINK:
         }
         throw new UnsupportedOperationException("Switch-case is not implemented for type: " + type);
     }

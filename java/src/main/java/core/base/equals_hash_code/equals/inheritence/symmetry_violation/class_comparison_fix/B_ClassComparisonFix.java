@@ -1,5 +1,6 @@
 package core.base.equals_hash_code.equals.inheritence.symmetry_violation.class_comparison_fix;
 
+import core.base.equals_hash_code.equals.inheritence.A;
 import core.base.equals_hash_code.equals.inheritence.B;
 import lombok.Getter;
 
@@ -17,8 +18,8 @@ public class B_ClassComparisonFix extends A_ClassComparisonFix {
     @Override
     public boolean equals(Object o) {
         if (o == this) return true;
-        if (!(o instanceof B_ClassComparisonFix other)) return false;
-
+        if (!(o instanceof B_ClassComparisonFix)) return false;
+        B_ClassComparisonFix other = (B_ClassComparisonFix) o;
         return
             super.getA1() == other.getA1() &&
                 Objects.equals(super.getA2(), other.getA2()) &&

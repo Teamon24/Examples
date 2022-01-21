@@ -1,5 +1,6 @@
 package core.utils;
 
+import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.Comparator;
@@ -12,10 +13,16 @@ public final class TableUtils {
     public static final String SEPARATOR = "     ";
     public static final String LINE_ELEMENT = "-";
 
-    public record Table(List<String> columns, List<Record> records) {
+    @AllArgsConstructor
+    public static final class Table {
+        private List<String> columns;
+        private List<Record> records;
         public void add(Record record) { records.add(record); }
     }
-    public record Record(Map<String, Object> values) {}
+    @AllArgsConstructor
+    public static final class Record {
+        private Map<String, Object> values;
+    }
 
     public static void printResults(Table table) {
         Map<String, Integer> longestValuesByColumns = getLengthOfLongestValuesForColumns(table);
@@ -32,7 +39,7 @@ public final class TableUtils {
     {
         List<Pair<String, Object>> orderedValues = record.values.entrySet().stream()
             .sorted(Comparator.comparing(entry -> table.columns.indexOf(entry.getKey())))
-            .map(entry -> Pair.of(entry.getKey(), entry.getValue())).toList();
+            .map(entry -> Pair.of(entry.getKey(), entry.getValue())).collect(Collectors.toList());
 
         appendSeparator(stringBuilder);
         for (int i = 0, orderedValuesSize = orderedValues.size(); i < orderedValuesSize; i++) {

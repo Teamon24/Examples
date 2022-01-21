@@ -27,8 +27,8 @@ import static core.collection.benchmark.utils.CollectionSuppliers.newCollection;
 import static core.collection.benchmark.utils.ElementSupplier.getEachElement;
 
 public class Tests {
-    private static final int size = 500_000;
-    private static final int testsAmount = 1000;
+    private static final int size = 200_000;
+    private static final int testsAmount = 10000;
 
     private static final int logStep = testsAmount / 5;
 
@@ -58,7 +58,7 @@ public class Tests {
         );
 
         List<List<MethodResult<Integer>>> methodResults = ConcurrencyUtils.getAll(
-            methodResultsTasks.stream().flatMap(Collection::stream).toList()
+            methodResultsTasks.stream().flatMap(Collection::stream).collect(Collectors.toList())
         );
 
         Map<Boolean, List<MethodResult<Integer>>> partitionedResults = methodResults

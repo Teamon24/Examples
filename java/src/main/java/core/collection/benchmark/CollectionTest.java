@@ -1,6 +1,7 @@
 package core.collection.benchmark;
 
 import core.collection.benchmark.utils.ElementSupplier;
+import lombok.AllArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -17,10 +18,14 @@ import static core.collection.benchmark.strategy.strategies.RemoveStrategies.rem
 import static core.collection.benchmark.strategy.strategies.SetStrategies.setByIndexStrategy;
 import static core.collection.benchmark.utils.CollectionSuppliers.newCollection;
 
-public record CollectionTest<E>(int testsAmount, Collection<E> collection,
-                                Supplier<Collection<E>> collectionSupplier,
-                                Supplier<E> newElementSupplier,
-                                Supplier<E> existedElementSupplier) {
+@AllArgsConstructor
+public final class CollectionTest<E> {
+
+    int testsAmount;
+    Collection<E> collection;
+    Supplier<Collection<E>> collectionSupplier;
+    Supplier<E> newElementSupplier;
+    Supplier<E> existedElementSupplier;
 
     public List<MethodTest<E>> getMethodTests(Function<Collection<E>, Integer> indexSupplier) {
 

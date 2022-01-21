@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 public final class ListGenerator {
 
@@ -34,6 +35,6 @@ public final class ListGenerator {
     }
 
     public static List<BigInteger> getBigIntegers(Random random, int integersAmount) {
-        return getRandomIntegerList(random, integersAmount).stream().map(BigInteger::valueOf).toList();
+        return getRandomIntegerList(random, integersAmount).stream().map(BigInteger::valueOf).collect(Collectors.toList());
     }
 }

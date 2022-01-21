@@ -23,13 +23,13 @@ public class MethodsOfExecutorService {
         TwoStepSequence<Integer> taskNumbersRange = TwoStepSequence.first(0).init(it -> it = it + taskAmount);
         ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(11);
 
-        invokeAll(executor, getCallables("INVOKE_ALL_BLOCKING", taskNumbersRange))
+        invokeAll(executor, getTasks("INVOKE_ALL_BLOCKING", taskNumbersRange))
             .forEach(ConcurrencyUtils::getResult);
 
                                                 executeAll(executor, getRunnables("EXECUTE", taskNumbersRange.firstStep()));
-        List<Future<String>> submittedFutures = submitAll(executor, getCallables("SUBMIT", taskNumbersRange.firstStep()));
-        String resultOfAnyFuture              = invokeAny(executor, getCallables("INVOKE_ANY", taskNumbersRange.firstStep()));
-        List<Future<String>> invokedFutures   = invokeAll(executor, getCallables("INVOKE_ALL", taskNumbersRange.firstStep()));
+        List<Future<String>> submittedFutures = submitAll(executor, getTasks("SUBMIT", taskNumbersRange.firstStep()));
+        String resultOfAnyFuture              = invokeAny(executor, getTasks("INVOKE_ANY", taskNumbersRange.firstStep()));
+        List<Future<String>> invokedFutures   = invokeAll(executor, getTasks("INVOKE_ALL", taskNumbersRange.firstStep()));
 
         System.out.println(resultOfAnyFuture);
         submittedFutures.forEach(it -> System.out.println(getResult(it)));

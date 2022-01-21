@@ -4,17 +4,14 @@ import dbms.jpa.ex1.programmatical.driver.DriverProperties;
 import dbms.jpa.ex1.programmatical.driver.DriverType;
 import dbms.jpa.ex1.programmatical.driver.DriverPropertiesFactory;
 
-/**
- *
- */
 public class ProviderPropertiesFactory {
 
     public static ProviderProperties createProps(ProviderType type, DriverProperties driverProperties) {
         switch (type) {
-            case HIBERNATE -> {
+            case HIBERNATE: {
                 return new HibernateProperties(driverProperties);
             }
-            case ECLIPSE_LINK -> {
+            case ECLIPSE_LINK: {
                 return new EclipseLinkProperties(driverProperties);
             }
         }

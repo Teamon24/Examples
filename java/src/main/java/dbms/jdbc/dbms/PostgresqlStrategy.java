@@ -35,24 +35,24 @@ public class PostgresqlStrategy extends SQLStrategy {
 
     @Override
     public String selectByIdsQuery(String tableName, String idName) {
-        return "SELECT * FROM %s WHERE %s = ANY (?)".formatted(tableName, idName);
+        return String.format("SELECT * FROM %s WHERE %s = ANY (?)", tableName, idName);
     }
 
     @Override
     public String selectByIdQuery(String tableName, String idName) {
-        return "SELECT * FROM %s WHERE %s = ?".formatted(tableName, idName);
+        return String.format("SELECT * FROM %s WHERE %s = ?", tableName, idName);
     }
 
     @Override
     public String deleteByIdQuery(String tableName, String idName) {
-        return "DELETE FROM %s WHERE %s = ?".formatted(tableName, idName);
+        return String.format("DELETE FROM %s WHERE %s = ?", tableName, idName);
     }
 
     @Override
     public String insertUserQuery(String tableName, List<String> columns) {
-        String formatted = "INSERT INTO %s (%s) VALUES(%s)"
-            .formatted(tableName, join(columns), placeholders(columns.size()));
-        return formatted;
+        return String.format("INSERT INTO %s (%s) VALUES(%s)",
+            tableName, join(columns), placeholders(columns.size())
+        );
     }
 
     private String placeholders(int size) {
@@ -75,7 +75,7 @@ public class PostgresqlStrategy extends SQLStrategy {
 
     @Override
     public String getUrl() {
-        return URL_TEMPLATE.formatted(this.host, this.port, this.databaseName, this.schema);
+        return String.format(URL_TEMPLATE, this.host, this.port, this.databaseName, this.schema);
     }
 
     @Override

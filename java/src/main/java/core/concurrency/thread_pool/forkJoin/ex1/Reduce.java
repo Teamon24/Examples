@@ -100,7 +100,7 @@ public class Reduce<T> extends RecursiveTask<T> {
             this.reducer,
             this.threshold,
             this.forksAmount);
-        System.out.println("%s: ".formatted(subtask.getName()) + elements(newElements));
+        System.out.printf("%s: \n", subtask.getName() + elements(newElements));
         return subtask;
     }
 

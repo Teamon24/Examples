@@ -3,6 +3,7 @@ package core.base.equals_hash_code.equals.inheritence.symmetry_violation.few_ins
 import core.base.equals_hash_code.equals.inheritence.symmetry_violation.ExceptionUtils;
 import core.base.equals_hash_code.equals.inheritence.A;
 import core.base.equals_hash_code.equals.inheritence.B;
+import core.base.equals_hash_code.equals.inheritence.symmetry_violation.compostion_fix.B_CompositionFix;
 import lombok.Getter;
 
 import java.util.Objects;
@@ -20,14 +21,16 @@ public class B_FewInstanceOf extends A {
     public boolean equals(Object o) {
         if (o == this) return true;
 
-        if (o instanceof B_FewInstanceOf other) {
+        if (o instanceof B_FewInstanceOf) {
+            B_FewInstanceOf other = (B_FewInstanceOf) o;
             return
                 super.a1 == other.a1 &&
                 Objects.equals(super.a2, other.a2) &&
                 Objects.equals(this.store, other.store);
         }
 
-        if (o instanceof A other) {
+        if (o instanceof A) {
+            A other = (A) o;
             return other.equals(this);
         }
 

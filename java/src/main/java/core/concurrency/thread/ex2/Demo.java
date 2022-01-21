@@ -1,12 +1,10 @@
 package core.concurrency.thread.ex2;
 
-import org.apache.commons.lang3.tuple.Pair;
 import core.concurrency.ConcurrencyUtils;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -16,43 +14,51 @@ public class Demo {
     public static void main(String[] args) {
         SyncObject syncObject = new SyncObject();
 
-        BiConsumer<SyncObject, SyncThread> sync1 = SyncObject::sync1;
-        BiConsumer<SyncObject, SyncThread> sync2 = SyncObject::sync2;
-        BiConsumer<SyncObject, SyncThread> notSync = SyncObject::notSync;
-
-        Stream<BiConsumer<SyncObject, SyncThread>> methods =
-            Stream.of(sync1, sync2, notSync);
+        SyncMethod sync1 = SyncObject::sync1;
+        SyncMethod sync2 = SyncObject::sync2;
+        SyncMethod notSync = SyncObject::notSync;
 
         int threadsAmount = 10;
 
-        Map<BiConsumer<SyncObject, SyncThread>, List<SyncThread>> methodsAndThreads =
-            getMethodsAndThreads((id) -> new SyncThread(id, syncObject), methods, threadsAmount);
+        int jobImitationTimeForSync = 5000;
 
-        setMethods(methodsAndThreads);
+        Function<Integer, MethodThread> constructorForSync =
+            (id) -> new MethodThread(id, syncObject, jobImitationTimeForSync);
 
-        Stream.of(sync1, sync2)
-            .map(methodsAndThreads::get)
+        Function<Integer, MethodThread> constructorForNotSync =
+            (id) -> new MethodThread(id, syncObject, threadsAmount * jobImitationTimeForSync);
+
+        List<MethodThread> notSyncThreads = createThreads(threadsAmount, constructorForNotSync, notSync);
+        List<MethodThread> syncThreads = createThreads(threadsAmount, constructorForSync, sync1, sync2);
+
+        syncThreads.forEach(Thread::start);
+        notSyncThreads.forEach(Thread::start);
+        ConcurrencyUtils.threadPrintln("IM OUT");
+    }
+
+    private static List<MethodThread> createThreads(
+        final int threadsAmount,
+        final Function<Integer, MethodThread> constructor,
+        final SyncMethod... syncMethods
+    ) {
+        List<MethodThread> threads = Stream
+            .of(syncMethods)
+            .map(it -> createThreads(threadsAmount, constructor, it))
             .flatMap(Collection::stream)
-            .forEach(Thread::start);
+            .collect(Collectors.toList());
 
-        methodsAndThreads
-            .get(notSync)
-            .forEach(Thread::start);
+        Collections.shuffle(threads);
+
+        return threads;
     }
 
-    private static Map<BiConsumer<SyncObject, SyncThread>, List<SyncThread>>
-    getMethodsAndThreads(final Function<Integer, SyncThread> create,
-                         final Stream<BiConsumer<SyncObject, SyncThread>> methods, int threadsAmount)
-    {
-
-        return methods
-            .map(it -> Pair.of(it, ConcurrencyUtils.createThreads(threadsAmount, create)))
-            .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
-    }
-
-    private static void setMethods(final Map<BiConsumer<SyncObject, SyncThread>, List<SyncThread>> collect) {
-        collect.forEach((syncObjectSyncThreadBiConsumer, syncThreads) ->
-                syncThreads.forEach(syncThread ->
-                    syncThread.setMethod(syncObjectSyncThreadBiConsumer)));
+    private static List<MethodThread> createThreads(
+        final int threadsAmount,
+        final Function<Integer, MethodThread> constructor,
+        final SyncMethod syncMethod
+    ) {
+        List<MethodThread> threads = ConcurrencyUtils.createThreads(threadsAmount, constructor);
+        threads.forEach(it -> it.setMethod(syncMethod));
+        return threads;
     }
 }

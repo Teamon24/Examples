@@ -53,11 +53,11 @@ public class Demo {
         T expected = elements.stream().reduce(reducer::apply).get();
         if (!expected.equals(actual)) {
             String template = "For task '%s' expected result is '%s', but actual - '%s'";
-            String message = template.formatted(task.getName(), expected, actual);
+            String message = String.format(template, task.getName(), expected, actual);
             throw new RuntimeException(message);
         } else {
             String template = "For task '%s' expected and actual results are equal - '%s'";
-            String message = template.formatted(task.getName(), expected);
+            String message = String.format(template, task.getName(), expected);
             System.out.println(message);
         }
     }
@@ -69,7 +69,7 @@ public class Demo {
     }
 
     private static void printResult(Reduce<?> task, Object result) {
-        String message = "Result of '%s': %s".formatted(task.getName(), result);
+        String message = String.format("Result of '%s': %s", task.getName(), result);
         String line = "-".repeat(message.length());
         System.out.println(line);
         System.out.println(message);

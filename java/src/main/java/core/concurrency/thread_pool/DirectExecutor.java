@@ -17,10 +17,10 @@ public class DirectExecutor {
         ListeningExecutorService executorService = MoreExecutors.newDirectExecutorService();
         AtomicBoolean executed = new AtomicBoolean();
 
-        List<Callable<String>> tasks = getCallables("", TwoStepSequence.first(0).init(it -> it + 5));
+        List<Callable<String>> tasks = getTasks(TwoStepSequence.first(0).init(it -> it + 5));
+
         invokeAll(executorService, tasks);
 
         assert executed.get();
-        System.out.println("Task was executed in: " + ConcurrencyUtils.threadName());
     }
 }

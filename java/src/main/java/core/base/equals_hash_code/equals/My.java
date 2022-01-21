@@ -22,12 +22,16 @@ class My {
     }
 
     @Override
-    public boolean equals(Object other) {
-        if (other == this) return true;
-        if (!(other instanceof My my)) return false;
+    public boolean equals(Object o) {
+        if (o == this) return true;
+        if (!(o instanceof My)) {
+            return false;
+        }
 
-        return (this.prim1 == my.prim2 && this.prim2 == my.prim2) &&
-            (this.ref1 == my.ref1 || this.ref1 != null && this.ref1.equals(my.ref1)) &&
-            (this.ref2 == my.ref2 || this.ref2 != null && this.ref2.equals(my.ref2));
+        My other = (My) o;
+
+        return (this.prim1 == other.prim2 && this.prim2 == other.prim2) &&
+            (this.ref1 == other.ref1 || this.ref1 != null && this.ref1.equals(other.ref1)) &&
+            (this.ref2 == other.ref2 || this.ref2 != null && this.ref2.equals(other.ref2));
     }
 }

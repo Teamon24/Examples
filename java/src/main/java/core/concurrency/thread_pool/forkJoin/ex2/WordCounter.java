@@ -12,7 +12,7 @@ public class WordCounter {
 
     public static Long countWord(Document document, String searchedWord) {
         long count = 0;
-        for (String line : document.lines()) {
+        for (String line : document.getLines()) {
             for (String word : wordsIn(line)) {
                 if (searchedWord.equals(word)) {
                     count = count + 1;
@@ -28,10 +28,10 @@ public class WordCounter {
 
     public static Long countWordOnSingleThread(Folder folder, String searchedWord) {
         long count = 0;
-        for (Folder subFolder : folder.subFolders()) {
+        for (Folder subFolder : folder.getSubFolders()) {
             count = count + countWordOnSingleThread(subFolder, searchedWord);
         }
-        for (Document document : folder.documents()) {
+        for (Document document : folder.getDocuments()) {
             count = count + countWord(document, searchedWord);
         }
         return count;

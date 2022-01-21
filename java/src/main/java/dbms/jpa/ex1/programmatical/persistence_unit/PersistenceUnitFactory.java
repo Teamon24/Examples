@@ -16,13 +16,13 @@ public class PersistenceUnitFactory {
     {
         ProviderType type = providerProperties.getType();
         switch (type) {
-            case HIBERNATE -> {
+            case HIBERNATE: {
                 return new HibernatePersistenceUnitObject(
                     "examples-hibernate-postgresql",
                     managedClassNames,
                     providerProperties.getProperties());
             }
-            case ECLIPSE_LINK -> {
+            case ECLIPSE_LINK: {
                 return new EclipseLinkPersistenceUnitObject(
                     "examples-eclipse-link-oracle",
                     managedClassNames,

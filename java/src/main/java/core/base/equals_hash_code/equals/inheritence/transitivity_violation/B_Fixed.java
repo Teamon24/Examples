@@ -2,6 +2,7 @@ package core.base.equals_hash_code.equals.inheritence.transitivity_violation;
 
 import core.base.equals_hash_code.equals.inheritence.A;
 import core.base.equals_hash_code.equals.inheritence.symmetry_violation.ExceptionUtils;
+import core.base.equals_hash_code.equals.inheritence.symmetry_violation.few_instance_of.B_FewInstanceOf;
 import lombok.Getter;
 
 import java.util.Objects;
@@ -23,12 +24,14 @@ public class B_Fixed extends A {
     @Override
     public boolean equals(Object o) {
         if (o == this) return true;
-        if (o instanceof B_Fixed b) {
-            return super.equals(b) && Objects.equals(this.b2, b.b2);
+        if (o instanceof B_Fixed) {
+            B_Fixed other = (B_Fixed) o;
+            return super.equals(other) && Objects.equals(this.b2, other.b2);
         }
 
-        if (o instanceof A a) {
-            return super.equals(a);
+        if (o instanceof A) {
+            A other = (A) o;
+            return super.equals(other);
         }
 
         throw ExceptionUtils.exceptionIfNoInstanceOfCase(this, o);

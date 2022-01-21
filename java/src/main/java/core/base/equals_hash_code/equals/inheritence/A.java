@@ -17,7 +17,8 @@ public class A {
     @Override
     public boolean equals(Object o) {
         if (o == this) return true;
-        if (!(o instanceof A other)) return false;
+        if (!(o instanceof A)) return false;
+        A other = (A) o;
         return this.a1 == other.a1 && Objects.equals(this.a2, other.a2);
     }
 }

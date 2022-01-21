@@ -24,7 +24,7 @@ public class UserDAO extends DAO<String, UserJdbcEntity> {
     public UserDAO(SQLStrategy sqlStrategy) {
         super(sqlStrategy);
         if (isNull(UPDATE_USER)) {
-            UPDATE_USER = "UPDATE %s set password = ? WHERE id = ?".formatted(super.getTableName());
+            UPDATE_USER = String.format("UPDATE %s set password = ? WHERE id = ?", super.getTableName());
         }
     }
 

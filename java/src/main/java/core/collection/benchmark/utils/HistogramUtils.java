@@ -97,7 +97,7 @@ public abstract class HistogramUtils {
     ) {
         List<Histogram> sortedByAverageTime =
             histograms.stream()
-                .sorted(Comparator.comparing(Histogram::getAverageExecutionTimeDouble)).toList();
+                .sorted(Comparator.comparing(Histogram::getAverageExecutionTimeDouble)).collect(Collectors.toList());
 
         for (int i = 0; i < sortedByAverageTime.size(); i++) {
             Histogram histogram = sortedByAverageTime.get(i);
@@ -114,10 +114,6 @@ public abstract class HistogramUtils {
             result.getElement() == null ? "" : result.getElement().toString(),
             "",
             "0.0")).collect(Collectors.toList());
-    }
-
-    public static <T> String getIndent(final T currentValue, final int maxValues) {
-        return " ".repeat(maxValues - currentValue.toString().length());
     }
 
     public static <T extends Comparable<T>> List<Histogram> createEmptyColumnHistograms(

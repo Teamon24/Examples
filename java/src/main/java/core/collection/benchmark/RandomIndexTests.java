@@ -2,7 +2,6 @@ package core.collection.benchmark;
 
 import core.collection.benchmark.pojo.AveragedMethodResult;
 import core.collection.benchmark.pojo.MethodResult;
-import core.collection.benchmark.utils.ElementSupplier;
 import core.collection.benchmark.utils.HistogramWithIndexUtils;
 import core.collection.benchmark.utils.MethodResultGroupingUtils;
 import core.collection.benchmark.utils.Sequence;
@@ -13,7 +12,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -39,32 +37,28 @@ public class RandomIndexTests {
 
         boolean enableLog = true;
         List<List<Callable<List<MethodResult<Integer>>>>> methodResultsTasks = List.of(
-            collectionTest(testsAmount, linkedList, linkedListSequence).getRandomIndexTests(enableLog, logStep),
-            collectionTest(testsAmount, arrayList, arrayListSequence).getRandomIndexTests(enableLog, logStep),
-            collectionTest(testsAmount, treeList, treeListSequence).getRandomIndexTests(enableLog, logStep)
+            collectionTest(testsAmount, linkedList, linkedListSequence).getIndexMethodTests(enableLog, logStep),
+            collectionTest(testsAmount, arrayList, arrayListSequence).getIndexMethodTests(enableLog, logStep),
+            collectionTest(testsAmount, treeList, treeListSequence).getIndexMethodTests(enableLog, logStep)
         );
 
-        List<List<MethodResult<Integer>>> methodResults = ConcurrencyUtils.getAll(
-            methodResultsTasks.stream().flatMap(Collection::stream).toList()
+        List<List<MethodResult<Integer>>> methodResultsList = ConcurrencyUtils.getAll(
+            methodResultsTasks.stream().flatMap(Collection::stream).collect(Collectors.toList())
         );
 
-        Map<Boolean, List<MethodResult<Integer>>> partitionedResults = methodResults
+        List<MethodResult<Integer>> methodResults = methodResultsList
             .stream()
-            .flatMap(Collection::stream)
-            .collect(Collectors.partitioningBy(it -> it.getIndex() != null));
-
+            .flatMap(Collection::stream).collect(Collectors.toList());
 
         List<AveragedMethodResult<Integer>> resultsWithIndex =
             MethodResultGroupingUtils
-                .averageByIndex(partitionedResults.get(true))
+                .averageByIndex(methodResults)
                 .stream()
                 .filter(each(size / 5))
-                .toList();
-
+                .collect(Collectors.toList());
 
         HistogramWithIndexUtils.printHistogram(resultsWithIndex);
     }
-
 
     public static <E> Predicate<AveragedMethodResult<E>> each(int number) {
         return it -> it.getIndex() % number == 0;

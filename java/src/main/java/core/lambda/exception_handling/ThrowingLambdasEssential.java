@@ -3,6 +3,7 @@ package core.lambda.exception_handling;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public final class ThrowingLambdasEssential {
 
@@ -24,7 +25,7 @@ public final class ThrowingLambdasEssential {
     private static void rethrowIfNeeded(boolean rethrows, Throwable actualException) {
         if (rethrows) {
             String template = "Lambda: rethrow caught exception: '%s'.";
-            System.out.println(template.formatted(actualException.getClass().getSimpleName()));
+            System.out.printf(template + "%n", actualException.getClass().getSimpleName());
             throwRTE(actualException);
         };
     }
@@ -71,11 +72,15 @@ public final class ThrowingLambdasEssential {
         Throwable actualException)
     {
         String template = "Lambda: %s was thrown but %s was expected. Throwing actual exception further.";
-        String message = template.formatted(
+        String message = String.format(template,
             actualException.getClass().getSimpleName(),
-            StringUtils.joinWith(", ", expectedClasses.stream().map(Class::getSimpleName).toList())
+            StringUtils.joinWith(", ", getSimpleNames(expectedClasses))
         );
         System.out.println(message);
+    }
+
+    private static <E extends Throwable> List<String> getSimpleNames(List<Class<E>> expectedClasses) {
+        return expectedClasses.stream().map(Class::getSimpleName).collect(Collectors.toList());
     }
 
     private static <E extends Throwable> void printSuccessCaughtMessage(
@@ -83,7 +88,7 @@ public final class ThrowingLambdasEssential {
         Throwable actualException)
     {
         String template = "Lambda: expected '%s' and actual '%s' classes are identical.";
-        String message = template.formatted(expectedClass.getSimpleName(), actualException.getClass().getSimpleName());
+        String message = String.format(template, expectedClass.getSimpleName(), actualException.getClass().getSimpleName());
         System.err.println(message);
     }
 

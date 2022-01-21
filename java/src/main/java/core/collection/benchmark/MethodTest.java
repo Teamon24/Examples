@@ -4,11 +4,17 @@ import core.collection.benchmark.pojo.MethodResult;
 import core.collection.benchmark.pojo.MethodType;
 import core.collection.benchmark.utils.TimeMeasureStrategy;
 import core.collection.benchmark.strategy.abstrct.MethodStrategy;
+import lombok.AllArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public record MethodTest<E>(int testsAmount, MethodStrategy<E> methodStrategy, TimeMeasureStrategy timeMeasureStrategy) {
+@AllArgsConstructor
+public final class MethodTest<E> {
+
+    int testsAmount;
+    MethodStrategy<E> methodStrategy;
+    TimeMeasureStrategy timeMeasureStrategy;
 
     public MethodTest(int testsAmount, MethodStrategy<E> methodStrategy) {
         this(testsAmount, methodStrategy, System::nanoTime);

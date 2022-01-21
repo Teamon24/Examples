@@ -1,16 +1,29 @@
 plugins {
     id 'java'
+    id 'application'
+    id "io.freefair.aspectj.post-compile-weaving" version "5.3.3.3"
+//    id "io.freefair.aspectj.compile-time-weaving" version "3.8.4"
 }
 
 group 'org.example'
 version '1.0-SNAPSHOT'
 
+//repositories {
+//    maven {
+//        url "https://plugins.gradle.org/m2/"
+//    }
+//}
 repositories {
     mavenCentral()
 }
 
+mainClassName = 'core.concurrency.thread.ex2.Demo'
+
 compileJava.options.encoding = 'UTF-8'
 compileTestJava.options.encoding = 'UTF-8'
+
+// the working dir is $PROJECTDIR/build/tmp/compileJava, hence the ../../.. to get to $$PROJECTDIR
+compileJava.ajc.options.compilerArgs = ["-sourceroots", "../../../src/main/java/core/concurrency/thread/ex2"]
 
 dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
@@ -43,19 +56,10 @@ dependencies {
     implementation 'jakarta.persistence:jakarta.persistence-api:3.0.0'
 
     implementation 'com.github.javafaker:javafaker:1.0.2'
+
+    implementation 'org.aspectj:aspectjrt:1.9.5'
 }
 
 test {
     useJUnitPlatform()
-}
-
-task printSourceSetInformation(){
-    doLast{
-        sourceSets.each { srcSet ->
-            println "["+srcSet.name+"]"
-            print "-->Source directories: "+srcSet.allJava.srcDirs+"\n"
-            print "-->Output directories: "+srcSet.output.classesDirs.files+"\n"
-            println ""
-        }
-    }
 }

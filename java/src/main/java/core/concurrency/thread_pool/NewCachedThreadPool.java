@@ -16,13 +16,14 @@ public class NewCachedThreadPool {
 
         int taskAmount = 3;
 
-        final List<Future<String>> futureTasks = submitEach(executor, taskAmount, ThreadPoolExamplesUtils::callable);
+        final List<Future<String>> futureTasks = submitEach(executor, taskAmount, ThreadPoolExamplesUtils::task);
 
         assert taskAmount == executor.getPoolSize();
         assert 0 == executor.getQueue().size();
 
-        print(executor, taskAmount);
+        printPoolAndQueueSizes(executor, taskAmount);
 
         futureTasks.forEach(task -> System.out.println(ConcurrencyUtils.getResult(task)));
+        ConcurrencyUtils.shutdown(executor, 100);
     }
 }

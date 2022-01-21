@@ -37,8 +37,7 @@ public class Main {
                 });
 
         List<String> columns = List.of("Case", "Threads", "Expected", "Actual", "Lost");
-        final TableUtils.Table table =
-            new TableUtils.Table(columns, records);
+        final TableUtils.Table table = new TableUtils.Table(columns, records);
         TableUtils.printResults(table);
     }
 

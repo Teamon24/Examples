@@ -5,6 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public final class PrintResultBuilder<T> {
     private Integer testAmount;
@@ -66,7 +67,7 @@ public final class PrintResultBuilder<T> {
     }
 
     private List<String> getStrings(Map<String, Object> map) {
-        return map.entrySet().stream().map(entry -> entry.getKey() + ": " + entry.getValue()).toList();
+        return map.entrySet().stream().map(entry -> entry.getKey() + ": " + entry.getValue()).collect(Collectors.toList());
     }
 
     private void putIfNotNull(Map<String, Object> fields, String key, Object value) {

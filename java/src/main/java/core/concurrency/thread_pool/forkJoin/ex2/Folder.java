@@ -1,5 +1,8 @@
 package core.concurrency.thread_pool.forkJoin.ex2;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -7,8 +10,12 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
-record Folder(List<Folder> subFolders,
-              List<Document> documents) {
+@Getter
+@AllArgsConstructor
+public final class Folder {
+
+    private List<Folder> subFolders;
+    private List<Document> documents;
 
     static Folder fromDirectory(File dir) throws IOException {
         List<Document> documents = new LinkedList<>();
@@ -24,17 +31,3 @@ record Folder(List<Folder> subFolders,
     }
 }
 
-record Document(List<String> lines) {
-
-    public static Document fromFile(File file) throws IOException {
-        List<String> lines = new LinkedList<>();
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-            String line = reader.readLine();
-            while (line != null) {
-                lines.add(line);
-                line = reader.readLine();
-            }
-        }
-        return new Document(lines);
-    }
-}

@@ -2,6 +2,7 @@ package core.base.equals_hash_code.equals.inheritence.symmetry_violation.compost
 
 import core.base.equals_hash_code.equals.inheritence.A;
 import core.base.equals_hash_code.equals.inheritence.B;
+import core.base.equals_hash_code.equals.inheritence.symmetry_violation.class_comparison_fix.B_ClassComparisonFix;
 import lombok.Getter;
 
 import java.util.Objects;
@@ -20,8 +21,8 @@ public class B_CompositionFix {
     @Override
     public boolean equals(Object o) {
         if (o == this) return true;
-        if (!(o instanceof B_CompositionFix other)) return false;
-
+        if (!(o instanceof B_CompositionFix)) return false;
+        B_CompositionFix other = (B_CompositionFix) o;
         return
             Objects.equals(this.a, other.a) &&
             Objects.equals(this.b1, other.b1);

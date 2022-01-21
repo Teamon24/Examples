@@ -17,12 +17,14 @@ public class C_Fixed extends B_Fixed {
     public boolean equals(Object o) {
         if (this == o) return true;
 
-        if (o instanceof C_Fixed c) {
-            return super.equals(c) && Objects.equals(c1, c.c1);
+        if (o instanceof C_Fixed) {
+            C_Fixed other = (C_Fixed) o;
+            return super.equals(other) && Objects.equals(c1, other.c1);
         }
 
-        if (o instanceof A lowerThanC) {
-            return super.equals(lowerThanC);
+        if (o instanceof A) {
+            A other = (A) o;
+            return super.equals(other);
         }
 
         throw ExceptionUtils.exceptionIfNoInstanceOfCase(this, o);

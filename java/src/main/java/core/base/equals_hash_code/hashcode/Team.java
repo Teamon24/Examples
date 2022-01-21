@@ -14,11 +14,12 @@ class Team {
     public boolean equals(Object o) {
         if (o == null) return false;
         if (this == o) return true;
-        if (!(o instanceof Team team)) return false;
+        if (!(o instanceof Team)) return false;
+        Team other = (Team) o;
 
         return
-            Objects.equals(this.city, team.city) &&
-            Objects.equals(this.department, team.department);
+            Objects.equals(this.city, other.city) &&
+            Objects.equals(this.department, other.department);
     }
 
     @Override

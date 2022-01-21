@@ -98,7 +98,7 @@ public class JDBCDemo {
     private static void printPasswordUpdate(String newPassword, String oldPassword) {
         if (newPassword.equals(oldPassword)) {
             String template = "Password was updated: old = '%s', new = '%s'";
-            System.out.println(template.formatted(newPassword, oldPassword));
+            System.out.printf(template + "%n", newPassword, oldPassword);
         }
     }
 

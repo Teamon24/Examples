@@ -3,6 +3,7 @@ package core.collection.benchmark.utils;
 import core.collection.benchmark.pojo.AveragedMethodResult;
 import core.collection.benchmark.pojo.Histogram;
 import core.collection.benchmark.pojo.MethodType;
+import core.utils.IndentUtils;
 
 import java.util.Comparator;
 import java.util.HashMap;
@@ -30,9 +31,9 @@ public final class HistogramWithIndexUtils extends HistogramUtils {
         Function<? super Histogram, ? extends G> fieldExtractor
     ) {
         if (results.isEmpty()) {
-            System.out.println("No results");
-            return null;
+            return new StringBuilder().append("No results");
         }
+
         Set<String> collectionTypes = StreamUtils.getUniques(results, AveragedMethodResult::getCollectionClass);
         checkSize(collectionTypes);
 
@@ -89,10 +90,10 @@ public final class HistogramWithIndexUtils extends HistogramUtils {
         final int lengthOfLongestMethodName,
         final Integer lengthOfLongestTime
     ) {
-        String collectionTypeIndent = getIndent(histogram.getCollectionType(), lengthOfLongestCollectionName);
-        String executionTimeIndent = getIndent(histogram.getAverageExecutionTime(), lengthOfLongestTime);
-        String groupingFieldIndent = getIndent(groupingField, lengthOfMaxGroupingField);
-        String methodTypeIndent = getIndent(histogram.getMethodType(), lengthOfLongestMethodName);
+        String collectionTypeIndent = IndentUtils.getIndent(histogram.getCollectionType(), lengthOfLongestCollectionName);
+        String executionTimeIndent = IndentUtils.getIndent(histogram.getAverageExecutionTime(), lengthOfLongestTime);
+        String groupingFieldIndent = IndentUtils.getIndent(groupingField, lengthOfMaxGroupingField);
+        String methodTypeIndent = IndentUtils.getIndent(histogram.getMethodType(), lengthOfLongestMethodName);
 
         builderForIndex
             .append(methodTypeIndent).append(histogram.getMethodType()).append(" ")

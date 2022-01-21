@@ -21,8 +21,8 @@ public class B extends A {
     @Override
     public boolean equals(Object o) {
         if (o == this) return true;
-        if (!(o instanceof B other)) return false;
-
+        if (!(o instanceof B)) return false;
+        B other = (B) o;
         return super.equals(other) && Objects.equals(this.b2, other.b2);
     }
 }
