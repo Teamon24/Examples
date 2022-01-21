@@ -9,7 +9,7 @@ import java.util.function.Supplier;
 
 public class SetStrategy<E> extends AddByIndexStrategy<E> {
 
-    public SetStrategy(final Class collectionClass,
+    public SetStrategy(final Class<?> collectionClass,
                        final Supplier<Collection<E>> collectionSupplier,
                        final TriConsumer<Collection<E>, Integer, E> addByIndex,
                        Function<Collection<E>, Integer> indexSupplier,

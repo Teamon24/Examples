@@ -29,7 +29,7 @@ public class AddElementStrategy<E> extends ElementStrategy<E> {
 
     @Override
     public MethodResult<E> createResult(final long executionTime) {
-        return new MethodResult(getCollectionType(), getMethodType(), null, super.element, executionTime);
+        return new MethodResult<>(getCollectionType(), getMethodType(), null, super.element, executionTime);
     }
 
     @Override

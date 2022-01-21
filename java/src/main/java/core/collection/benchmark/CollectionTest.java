@@ -22,18 +22,18 @@ public record CollectionTest<E>(int testsAmount, Collection<E> collection,
                                 Supplier<E> newElementSupplier,
                                 Supplier<E> existedElementSupplier) {
 
-    public List<MethodTest> getMethodTests(Function<Collection<E>, Integer> indexSupplier) {
+    public List<MethodTest<E>> getMethodTests(Function<Collection<E>, Integer> indexSupplier) {
 
-        List<MethodTest> tests = new ArrayList<>();
-        tests.add(new MethodTest(testsAmount, addElementStrategy(collection, collectionSupplier, newElementSupplier)));
-        tests.add(new MethodTest(testsAmount, removeElementStrategy(collection, existedElementSupplier)));
+        List<MethodTest<E>> tests = new ArrayList<>();
+        tests.add(new MethodTest<>(testsAmount, addElementStrategy(collection, collectionSupplier, newElementSupplier)));
+        tests.add(new MethodTest<>(testsAmount, removeElementStrategy(collection, existedElementSupplier)));
 
         if (collection instanceof List) {
-            List<MethodTest> listTest = List.of(
-                new MethodTest(testsAmount, removeByIndexStrategy(collection, indexSupplier)),
-                new MethodTest(testsAmount, addByIndexStrategy(collection, collectionSupplier, indexSupplier, newElementSupplier)),
-                new MethodTest(testsAmount, setByIndexStrategy(collection, indexSupplier, newElementSupplier)),
-                new MethodTest(testsAmount, getByIndexStrategy(collection, indexSupplier))
+            List<MethodTest<E>> listTest = List.of(
+                new MethodTest<>(testsAmount, removeByIndexStrategy(collection, indexSupplier)),
+                new MethodTest<>(testsAmount, addByIndexStrategy(collection, collectionSupplier, indexSupplier, newElementSupplier)),
+                new MethodTest<>(testsAmount, setByIndexStrategy(collection, indexSupplier, newElementSupplier)),
+                new MethodTest<>(testsAmount, getByIndexStrategy(collection, indexSupplier))
             );
             tests.addAll(listTest);
             return tests;
@@ -46,16 +46,16 @@ public record CollectionTest<E>(int testsAmount, Collection<E> collection,
         throw new RuntimeException("Method tests are incompatible with class: " + collection.getClass());
     }
 
-    public List<MethodTest> getListMethodTests(Function<Collection<E>, Integer> indexSupplier) {
+    public List<MethodTest<E>> getListMethodTests(Function<Collection<E>, Integer> indexSupplier) {
 
-        List<MethodTest> tests = new ArrayList<>();
+        List<MethodTest<E>> tests = new ArrayList<>();
 
         if (collection instanceof List) {
-            List<MethodTest> listTest = List.of(
-                new MethodTest(testsAmount, removeByIndexStrategy(collection, indexSupplier)),
-                new MethodTest(testsAmount, addByIndexStrategy(collection, collectionSupplier, indexSupplier, newElementSupplier)),
-                new MethodTest(testsAmount, setByIndexStrategy(collection, indexSupplier, newElementSupplier)),
-                new MethodTest(testsAmount, getByIndexStrategy(collection, indexSupplier))
+            List<MethodTest<E>> listTest = List.of(
+                new MethodTest<>(testsAmount, removeByIndexStrategy(collection, indexSupplier)),
+                new MethodTest<>(testsAmount, addByIndexStrategy(collection, collectionSupplier, indexSupplier, newElementSupplier)),
+                new MethodTest<>(testsAmount, setByIndexStrategy(collection, indexSupplier, newElementSupplier)),
+                new MethodTest<>(testsAmount, getByIndexStrategy(collection, indexSupplier))
             );
             tests.addAll(listTest);
             return tests;
@@ -71,27 +71,27 @@ public record CollectionTest<E>(int testsAmount, Collection<E> collection,
         private Supplier<E> newElementSupplier;
         private Supplier<E> existedElementSupplier;
 
-        public CollectionTestBuilder testsAmount(int testsAmount) {
+        public CollectionTestBuilder<E> testsAmount(int testsAmount) {
             this.testsAmount = testsAmount;
             return this;
         }
 
-        public CollectionTestBuilder collection(Collection<E> collection) {
+        public CollectionTestBuilder<E> collection(Collection<E> collection) {
             this.collection = collection;
             return this;
         }
 
-        public CollectionTestBuilder collectionSupplier(Supplier<Collection<E>> collectionSupplier) {
+        public CollectionTestBuilder<E> collectionSupplier(Supplier<Collection<E>> collectionSupplier) {
             this.collectionSupplier = collectionSupplier;
             return this;
         }
 
-        public CollectionTestBuilder newElementSupplier(Supplier<E> newElementSupplier) {
+        public CollectionTestBuilder<E> newElementSupplier(Supplier<E> newElementSupplier) {
             this.newElementSupplier = newElementSupplier;
             return this;
         }
 
-        public CollectionTestBuilder existedElementSupplier(Supplier<E> existedElementSupplier) {
+        public CollectionTestBuilder<E> existedElementSupplier(Supplier<E> existedElementSupplier) {
             this.existedElementSupplier = existedElementSupplier;
             return this;
         }

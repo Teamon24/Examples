@@ -13,18 +13,18 @@ public record CallableCollectionTest<E>(CollectionTest<E> collectionTest) {
 
     public List<Callable<List<MethodResult<E>>>> getTests(boolean enableLog, final int logStep) {
         Function<Collection<E>, Integer> indexSupplier = IndexSuppliers.getThreeIndexes();
-        List<MethodTest> methodTests = this.collectionTest.getMethodTests(indexSupplier);
+        List<MethodTest<E>> methodTests = this.collectionTest.getMethodTests(indexSupplier);
         return callables(methodTests, enableLog, logStep);
     }
 
     public List<Callable<List<MethodResult<E>>>> getRandomIndexTests(boolean enableLog, final int logStep) {
         Function<Collection<E>, Integer> randomIndex = IndexSuppliers.getRandomIndex();
-        List<MethodTest> methodTests = this.collectionTest.getListMethodTests(randomIndex);
+        List<MethodTest<E>> methodTests = this.collectionTest.getListMethodTests(randomIndex);
         return callables(methodTests, enableLog, logStep);
     }
 
     private List<Callable<List<MethodResult<E>>>> callables(
-        List<MethodTest> methodTests,
+        List<MethodTest<E>> methodTests,
         boolean enableLog,
         int logStep
     ) {
@@ -34,7 +34,7 @@ public record CallableCollectionTest<E>(CollectionTest<E> collectionTest) {
             .collect(Collectors.toList());
     }
 
-    private Callable<List<MethodResult<E>>> callable(MethodTest methodTest, boolean enableLog, int logStep) {
+    private Callable<List<MethodResult<E>>> callable(MethodTest<E> methodTest, boolean enableLog, int logStep) {
         return () -> methodTest.test(enableLog, logStep);
     }
 }

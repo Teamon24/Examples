@@ -10,12 +10,12 @@ import java.util.function.Supplier;
 public abstract class ElementStrategy<E> extends MethodStrategy<E> {
     protected final Supplier<E> elementSupplier;
     protected E element;
-    
-    public ElementStrategy(Class<?> collectionClass,
-                           Supplier<Collection<E>> collectionSupplier,
-                           Supplier<E> elementSupplier
-    )
-    {
+
+    public ElementStrategy(
+        Class<?> collectionClass,
+        Supplier<Collection<E>> collectionSupplier,
+        Supplier<E> elementSupplier
+    ) {
         super(collectionClass, collectionSupplier);
         this.elementSupplier = elementSupplier;
     }

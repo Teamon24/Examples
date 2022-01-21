@@ -26,8 +26,8 @@ public abstract class IndexStrategy<E> extends MethodStrategy<E> {
         return this.timer.count((ignored) -> method(collection, this.index));
     }
 
-    public MethodResult createResult(long executionTime) {
-        return new MethodResult(getCollectionType(), getMethodType(), this.index, null, executionTime);
+    public MethodResult<E> createResult(long executionTime) {
+        return new MethodResult<>(getCollectionType(), getMethodType(), this.index, null, executionTime);
     }
 
     @Override

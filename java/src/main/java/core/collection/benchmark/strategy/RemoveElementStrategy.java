@@ -9,9 +9,9 @@ import java.util.function.Supplier;
 
 public class RemoveElementStrategy<E> extends ElementStrategy<E> {
 
-    private BiConsumer<Collection<E>, E> removeElement;
+    private final BiConsumer<Collection<E>, E> removeElement;
 
-    public RemoveElementStrategy(Class collectionClass,
+    public RemoveElementStrategy(Class<?> collectionClass,
                                  Supplier<Collection<E>> collectionSupplier,
                                  BiConsumer<Collection<E>, E> removeElement,
                                  Supplier<E> elementSupplier)

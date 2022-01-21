@@ -70,12 +70,12 @@ public class RandomIndexTests {
         return it -> it.getIndex() % number == 0;
     }
 
-    private static <T> CallableCollectionTest<T> collectionTest(
+    private static <E> CallableCollectionTest<E> collectionTest(
         final int testsAmount,
-        final Collection<T> collection,
-        final Sequence<T> sequence
+        final Collection<E> collection,
+        final Sequence<E> sequence
     ) {
-        CollectionTest collectionTest = new CollectionTest.CollectionTestBuilder<T>()
+        CollectionTest<E> collectionTest = new CollectionTest.CollectionTestBuilder<E>()
             .testsAmount(testsAmount)
             .collection(collection)
             .collectionSupplier(newCollection(collection))

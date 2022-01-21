@@ -12,7 +12,7 @@ public class AddByIndexStrategy<E> extends IndexAndElementStrategy<E> {
 
     private final TriConsumer<Collection<E>, Integer, E> addByIndex;
 
-    public AddByIndexStrategy(Class collectionClass,
+    public AddByIndexStrategy(Class<?> collectionClass,
                               Supplier<Collection<E>> collectionSupplier,
                               TriConsumer<Collection<E>, Integer, E> addByIndex,
                               Function<Collection<E>, Integer> indexSupplier,

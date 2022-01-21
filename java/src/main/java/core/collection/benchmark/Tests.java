@@ -84,13 +84,13 @@ public class Tests {
         };
     }
 
-    private static <T> CallableCollectionTest<T> buildCallableTest(
+    private static <E> CallableCollectionTest<E> buildCallableTest(
         final int testsAmount,
-        final Collection<T> collection,
-        final Sequence<T> sequence
+        final Collection<E> collection,
+        final Sequence<E> sequence
     ) {
         int period = 100;
-        CollectionTest collectionTest = new CollectionTest.CollectionTestBuilder<T>()
+        CollectionTest<E> collectionTest = new CollectionTest.CollectionTestBuilder<E>()
             .testsAmount(testsAmount)
             .collection(collection)
             .collectionSupplier(newCollection(collection))

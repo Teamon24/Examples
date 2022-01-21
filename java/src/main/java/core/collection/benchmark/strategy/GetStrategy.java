@@ -10,7 +10,7 @@ import java.util.function.Supplier;
 
 public class GetStrategy<E> extends ByIndexStrategy<E> {
 
-    public GetStrategy(final Class collectionClass,
+    public GetStrategy(final Class<?> collectionClass,
                        final Supplier<Collection<E>> collectionSupplier,
                        final BiConsumer<Collection<E>, Integer> getMethod,
                        final Function<Collection<E>, Integer> indexGetter)

@@ -9,7 +9,7 @@ public abstract class ByIndexStrategy<E> extends IndexStrategy<E> {
 
     private BiConsumer<Collection<E>, Integer> method;
 
-    public ByIndexStrategy(final Class collectionClass,
+    public ByIndexStrategy(final Class<?> collectionClass,
                            final Supplier<Collection<E>> collectionSupplier,
                            final BiConsumer<Collection<E>, Integer> method,
                            final Function<Collection<E>, Integer> indexGetter)
