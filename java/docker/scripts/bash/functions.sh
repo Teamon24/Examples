@@ -22,6 +22,8 @@ function replace() {
   sed 's/${'"${key}"'}/'"${value}"'/' <<<"${fileName}"
 }
 
+LINE_LIMIT="60"
+
 function command() {
   commandString=$1
   word="EXECUTING"
@@ -31,8 +33,26 @@ function command() {
   echo "${line}"
 }
 
-function repeat(){
+function logAndEval() {
+  commandString=$1
+  word="EXECUTING"
+  line="$(repeat '=' "$(("${#word}" + 1))")$(repeat '-' "$LINE_LIMIT")"
+
+  echo ""
+  echo "${line}"
+  echo "$word:" "$commandString"
+  echo "${line}"
+  echo ""
+
+  eval "$1"
+}
+
+function repeat() {
   symbol=$1
   n=$2
-	for i in $(seq 1 "$n"); do echo -n "$symbol"; done
+  for i in $(seq 1 "$n"); do echo -n "$symbol"; done
+}
+
+function aspect() {
+
 }

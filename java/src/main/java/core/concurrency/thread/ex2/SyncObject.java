@@ -16,7 +16,6 @@ public class SyncObject {
         NOT_SYNC
     };
 
-
     public synchronized void sync1(MethodThread thread) {
         messageIn("SYNC1", thread);
         ConcurrencyUtils.sleep(thread.jobImitationTime);

@@ -1,6 +1,6 @@
 package aop.ex1;
 
-@interface Synchronizes {}
+import core.concurrency.ConcurrencyUtils;
 
 public aspect Synchronization {
     private static final Object lock = new Object();
@@ -9,6 +9,7 @@ public aspect Synchronization {
 
     Object around(): syncJointPoint() {
         synchronized(lock) {
+            ConcurrencyUtils.threadPrintln("in lock");
             return proceed();
         }
     }
