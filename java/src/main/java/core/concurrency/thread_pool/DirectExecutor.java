@@ -3,13 +3,12 @@ package core.concurrency.thread_pool;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import core.collection.benchmark.utils.TwoStepSequence;
-import core.concurrency.ConcurrencyUtils;
 
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static core.concurrency.ConcurrencyUtils.invokeAll;
+import static utils.ConcurrencyUtils.invokeAll;
 import static core.concurrency.thread_pool.ThreadPoolExamplesUtils.*;
 
 public class DirectExecutor {

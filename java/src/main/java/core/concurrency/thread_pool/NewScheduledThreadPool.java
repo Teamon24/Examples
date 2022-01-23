@@ -1,6 +1,6 @@
 package core.concurrency.thread_pool;
 
-import core.concurrency.ConcurrencyUtils;
+import utils.ConcurrencyUtils;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;

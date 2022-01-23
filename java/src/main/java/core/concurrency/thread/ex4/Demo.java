@@ -1,6 +1,6 @@
 package core.concurrency.thread.ex4;
 
-import core.concurrency.ConcurrencyUtils;
+import utils.ConcurrencyUtils;
 
 import java.util.Collection;
 import java.util.Collections;

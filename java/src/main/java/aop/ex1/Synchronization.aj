@@ -1,6 +1,6 @@
 package aop.ex1;
 
-import core.concurrency.ConcurrencyUtils;
+import utils.ConcurrencyUtils;
 
 public aspect Synchronization {
     private static final Object lock = new Object();

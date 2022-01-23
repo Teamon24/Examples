@@ -36,11 +36,13 @@ function command() {
 function logAndEval() {
   commandString=$1
   word="EXECUTING"
+  separatedCommand="$(echo "$commandString" | tr '\' ' ')"
   line="$(repeat '=' "$(("${#word}" + 1))")$(repeat '-' "$LINE_LIMIT")"
 
   echo ""
   echo "${line}"
-  echo "$word:" "$commandString"
+  echo "$word:"
+  printf '%s\n' "$separatedCommand"
   echo "${line}"
   echo ""
 
@@ -51,8 +53,4 @@ function repeat() {
   symbol=$1
   n=$2
   for i in $(seq 1 "$n"); do echo -n "$symbol"; done
-}
-
-function aspect() {
-
 }

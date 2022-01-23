@@ -1,7 +1,7 @@
 package core.concurrency.thread_pool;
 
 import com.google.common.util.concurrent.MoreExecutors;
-import core.concurrency.ConcurrencyUtils;
+import utils.ConcurrencyUtils;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;

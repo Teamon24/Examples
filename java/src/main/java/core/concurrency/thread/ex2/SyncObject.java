@@ -1,6 +1,6 @@
 package core.concurrency.thread.ex2;
 
-import core.concurrency.ConcurrencyUtils;
+import utils.ConcurrencyUtils;
 import core.utils.IndentUtils;
 
 import static core.utils.IndentUtils.addIndent;

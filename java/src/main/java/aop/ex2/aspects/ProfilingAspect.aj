@@ -1,7 +1,7 @@
 package aop.ex2.aspects;
 
 public aspect ProfilingAspect {
-    pointcut publicOperation() : execution(public * *.*(..));
+    pointcut publicOperation() : execution(@aop.ex2.aspects.Profiled * *.*(..));
 
     Object around() : publicOperation() {
         long start = System.nanoTime();

@@ -1,12 +1,11 @@
 package core.concurrency.thread_pool.forkJoin.ex1;
 
-import core.concurrency.ConcurrencyUtils;
+import utils.ConcurrencyUtils;
 import core.utils.ListGenerator;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;

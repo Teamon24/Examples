@@ -1,18 +1,18 @@
 package core.concurrency.thread_pool;
 
 import core.collection.benchmark.utils.TwoStepSequence;
-import core.concurrency.ConcurrencyUtils;
+import utils.ConcurrencyUtils;
 
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 
-import static core.concurrency.ConcurrencyUtils.executeAll;
-import static core.concurrency.ConcurrencyUtils.invokeAll;
-import static core.concurrency.ConcurrencyUtils.invokeAny;
-import static core.concurrency.ConcurrencyUtils.getResult;
-import static core.concurrency.ConcurrencyUtils.submitAll;
+import static utils.ConcurrencyUtils.executeAll;
+import static utils.ConcurrencyUtils.invokeAll;
+import static utils.ConcurrencyUtils.invokeAny;
+import static utils.ConcurrencyUtils.getResult;
+import static utils.ConcurrencyUtils.submitAll;
 import static core.concurrency.thread_pool.ThreadPoolExamplesUtils.*;
 
 public class MethodsOfExecutorService {

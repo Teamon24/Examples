@@ -5,7 +5,7 @@ import core.collection.benchmark.pojo.MethodResult;
 import core.collection.benchmark.utils.HistogramWithIndexUtils;
 import core.collection.benchmark.utils.MethodResultGroupingUtils;
 import core.collection.benchmark.utils.Sequence;
-import core.concurrency.ConcurrencyUtils;
+import utils.ConcurrencyUtils;
 import org.apache.commons.collections4.list.TreeList;
 
 import java.util.ArrayList;

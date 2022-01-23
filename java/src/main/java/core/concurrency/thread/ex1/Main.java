@@ -1,12 +1,11 @@
 package core.concurrency.thread.ex1;
 
 import core.utils.TableUtils;
-import core.concurrency.ConcurrencyUtils;
+import utils.ConcurrencyUtils;
 import core.concurrency.thread.ex1.state.StateObject;
 import core.concurrency.thread.ex1.state.StateObjectImpl;
 import core.concurrency.thread.ex1.state.SynchronizedStateObject;
 import core.concurrency.thread.ex1.state.VolatileStateObject;
-import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
 import java.util.HashMap;

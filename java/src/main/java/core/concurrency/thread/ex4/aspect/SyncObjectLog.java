@@ -1,6 +1,6 @@
 package core.concurrency.thread.ex4.aspect;
 
-import core.concurrency.ConcurrencyUtils;
+import utils.ConcurrencyUtils;
 import core.concurrency.thread.ex4.MethodThread;
 import core.concurrency.thread.ex4.SyncObject;
 import core.utils.IndentUtils;

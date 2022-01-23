@@ -1,16 +1,12 @@
 package aop.ex2.aspects;
 
+import utils.ConcurrencyUtils;
+
 public aspect SecurityAspect {
 
-    pointcut secureAccess()
-        : execution(* aop.ex2.targets.MessageCommunicator.deliver(..));
+    pointcut secureAccess() : execution(@aop.ex2.aspects.Secured * *.*(..));
 
     before() : secureAccess() {
-        System.out.println("Checking and authenticating user");
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        ConcurrencyUtils.threadPrintln("Checking and authenticating user");
     }
 }

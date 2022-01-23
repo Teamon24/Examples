@@ -1,6 +1,6 @@
 package core.concurrency.thread.ex4;
 
-import core.concurrency.ConcurrencyUtils;
+import utils.ConcurrencyUtils;
 import core.concurrency.thread.ex4.aspect.LogInvocation;
 
 public class SyncObject {

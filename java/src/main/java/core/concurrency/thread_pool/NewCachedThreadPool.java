@@ -1,6 +1,6 @@
 package core.concurrency.thread_pool;
 
-import core.concurrency.ConcurrencyUtils;
+import utils.ConcurrencyUtils;
 
 import java.util.List;
 import java.util.concurrent.Executors;

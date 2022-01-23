@@ -1,6 +1,6 @@
 package core.concurrency.thread.ex3;
 
-import core.concurrency.ConcurrencyUtils;
+import utils.ConcurrencyUtils;
 
 import java.util.ArrayList;
 import java.util.List;

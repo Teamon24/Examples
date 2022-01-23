@@ -1,7 +1,7 @@
 package core.concurrency.thread_pool;
 
 import core.collection.benchmark.utils.Sequence;
-import core.concurrency.ConcurrencyUtils;
+import utils.ConcurrencyUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,10 +11,10 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.function.Function;
 
-import static core.concurrency.ConcurrencyUtils.MILLIS_IN_SECOND;
-import static core.concurrency.ConcurrencyUtils.call;
-import static core.concurrency.ConcurrencyUtils.sleep;
-import static core.concurrency.ConcurrencyUtils.threadName;
+import static utils.ConcurrencyUtils.MILLIS_IN_SECOND;
+import static utils.ConcurrencyUtils.call;
+import static utils.ConcurrencyUtils.sleep;
+import static utils.ConcurrencyUtils.threadName;
 
 public final class ThreadPoolExamplesUtils {
 
