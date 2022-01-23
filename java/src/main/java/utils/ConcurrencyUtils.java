@@ -1,5 +1,7 @@
 package utils;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -18,13 +20,13 @@ public final class ConcurrencyUtils {
     public static final int MILLIS_IN_SECOND = 1000;
 
     public static void threadPrintln(String template, String message) {
-        if (message != null && !message.isEmpty()) {
+        if (StringUtils.isNotEmpty(message)) {
             ConcurrencyUtils.safePrintf(String.format(template, threadName(), message));
         }
     }
 
     public static void threadPrintln(String message) {
-        if (message != null && !message.isEmpty()) {
+        if (StringUtils.isNotEmpty(message)) {
             ConcurrencyUtils.safePrintf("%s: %s\n", threadName(), message);
         }
     }
