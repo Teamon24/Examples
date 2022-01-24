@@ -26,15 +26,15 @@ public class Demo {
         entityManager.getTransaction().begin();
 
         resultList.forEach(it -> {
-                it.setFullName("John Wick");
+                it.setFullName(new UserEntity.Name("John","Wick"));
                 entityManager.merge(it);
             });
 
         entityManager.getTransaction().commit();
 
+        UserEntity.Name name = new UserEntity.Name("Monica", "Vertuchi");
+        UserEntity newUser = new UserEntity("new-user-uuid-Av23ad23", name, "Hk2#sk!b)32k{E0:", getEmail(name));
 
-        UserEntity newUser = new UserEntity(
-            "new-user-uuid-Av23ad23", "Monica", "Hk2#sk!b)32k{E0:", "monica@domain.com");
         persistUser(entityManager, newUser);
         changeAndMerge(entityManager, newUser);
         removeUser(entityManager, resultList.get(resultList.size()/2));
@@ -42,11 +42,15 @@ public class Demo {
         entityManager.getTransaction().commit();
     }
 
+    private static String getEmail(UserEntity.Name name) {
+        return name.getFirstName().toLowerCase() + "_" + name.getLastName().toLowerCase() + "@domain.com";
+    }
+
     private static void changeAndMerge(EntityManager entityManager, UserEntity user) {
         String userId = user.getId();
         UserEntity foundUserEntity = entityManager.find(UserEntity.class, userId);
-        String newUserName = "Golde Brown";
-        foundUserEntity.setFullName(newUserName);
+        UserEntity.Name fullName = new UserEntity.Name("Golde", "Brown");
+        foundUserEntity.setFullName(fullName);
         entityManager.merge(foundUserEntity);
         UserEntity mergedUserEntity = entityManager.find(UserEntity.class, userId);
         try {

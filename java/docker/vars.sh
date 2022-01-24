@@ -3,10 +3,10 @@ DOCKER_COMPOSE_TEMPLATE_FILE=docker-compose.template.yml
 DOCKER_COMPOSE_FILE=docker-compose.yml
 
 #VOLUME
-POSTGRES_VOLUME_NAME=examples_jpa_postgres
+POSTGRES_VOLUME_NAME=examples_jpa_postgres_volume
 HOST_POSTGRES_VOLUME_PATH=/var/lib/docker/volumes/examples/jpa/postgres
 
-MYSQL_VOLUME_NAME=examples_jpa_mysql
+MYSQL_VOLUME_NAME=examples_jpa_mysql_volume
 HOST_MYSQL_VOLUME_PATH=/var/lib/docker/volumes/examples/jpa/mysql
 #VOLUME ends
 

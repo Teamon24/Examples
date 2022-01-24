@@ -107,17 +107,16 @@ class ThrowingLambdasTest {
             Throwable cause = actual.getCause();
             if (unexpectedException != null) {
                 String template = "Test: actual is %s, but expected is %s";
-                String message = template.formatted(
+                System.out.printf(template + "%n",
                     cause.getClass().getSimpleName(), expectedExceptionClass.getSimpleName()
                 );
-                System.out.println(message);
                 Assertions.assertNotEquals(expectedExceptionClass, cause.getClass());
                 Assertions.assertEquals(unexpectedException.getClass(), cause.getClass());
             } else {
                 if (rethrowsExpected) {
                     Assertions.assertEquals(expectedExceptionClass, cause.getClass());
                     String template = "Test: rethrown exception is '%s";
-                    System.out.println(template.formatted(expectedExceptionClass.getSimpleName()));
+                    System.out.printf((template) + "%n", expectedExceptionClass.getSimpleName());
                 }
             }
         }

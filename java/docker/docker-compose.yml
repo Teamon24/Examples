@@ -10,7 +10,7 @@ services:
       - POSTGRES_USER=selectel
       - POSTGRES_PASSWORD=selectel
     volumes:
-      - examples_jpa_postgres:/var/lib/postgresql/data
+      - examples_jpa_postgres_volume:/var/lib/postgresql/data
       - ./sql_scripts/1.example.sql:/docker-entrypoint-initdb.d/1.example.sql
       - ./sql_scripts/2.example.sql:/docker-entrypoint-initdb.d/2.example.sql
     ports:
@@ -34,16 +34,16 @@ services:
       # Opens port 3306 on the container
       - '3306'
     volumes:
-      - examples_jpa_mysql:/var/lib/mysql
+      - examples_jpa_mysql_volume:/var/lib/mysql
 
 volumes:
-  examples_jpa_postgres:
+  examples_jpa_postgres_volume:
     driver: local
     driver_opts:
       device: /var/lib/docker/volumes/examples/jpa/postgres
       type: none
       o: bind
-  examples_jpa_mysql:
+  examples_jpa_mysql_volume:
       driver: local
       driver_opts:
         device: /var/lib/docker/volumes/examples/jpa/mysql

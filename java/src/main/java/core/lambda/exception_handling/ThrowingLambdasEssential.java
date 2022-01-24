@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 
 public final class ThrowingLambdasEssential {
 
-    public static <E extends Throwable> void throwAnotherIfWasCaught(
+    public static <E extends Throwable> void rethrowIfAnotherIsCaught(
         Class<E> expectedClass,
         Throwable actualException,
         boolean rethrows)

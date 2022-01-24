@@ -16,7 +16,8 @@ logAndEval \
 -injars $APACHE_LANG3 \\
 -sourceroots $MODULE_PATH/utils:$EX2_ABS_PATH/targets:$EX2_ABS_PATH/aspects \\
 -d $BUILD \\
--showWeaveInfo -1.8"
+-showWeaveInfo \\
+-1.8"
 
 
 ENTRY_POINT_PATH="$EX2_PATH/targets/Main"

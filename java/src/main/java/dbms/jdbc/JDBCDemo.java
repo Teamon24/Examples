@@ -1,5 +1,6 @@
 package dbms.jdbc;
 
+import core.lambda.exception_handling.ThrowingSupplier;
 import dbms.jdbc.dbms.ConnectionSupplierType;
 import dbms.jdbc.dbms.PostgresStrategyBuilder;
 import dbms.jdbc.dbms.SQLStrategy;
@@ -15,7 +16,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import static core.lambda.exception_handling.Throwing.rethrow;
-import static core.lambda.exception_handling.ThrowingSupplier.get;
 
 public class JDBCDemo {
     public static final Map<String, String> VARIABLES = new HashMap<>();
@@ -31,13 +31,10 @@ public class JDBCDemo {
             throw new RuntimeException(e);
         }
     }
-    public static void main(String args[])
-        throws
-        ClassNotFoundException,
-        FileNotFoundException
-    {
+
+    public static void main(String args[]) throws ClassNotFoundException, FileNotFoundException {
         Class.forName("org.postgresql.Driver");
-        Connection connection = get(SQL_STRATEGY::getConnection, SQLException.class);
+        Connection connection = ThrowingSupplier.rethrow(SQL_STRATEGY::getConnection, SQLException.class);
         rethrow(SQLException.class,
             () -> connection.setAutoCommit(false),
             () -> close(connection)
@@ -51,9 +48,9 @@ public class JDBCDemo {
         rethrow(SQLException.class,
             () -> insert(connection, usersEntities),
             () -> close(connection)
-         );
+        );
 
-        Savepoint insertingUsers = get(connection::setSavepoint, SQLException.class);
+        Savepoint insertingUsers = ThrowingSupplier.rethrow(connection::setSavepoint, SQLException.class);
 
         try {
             UserJdbcEntity firstUser = usersEntities.get(0);
@@ -74,14 +71,14 @@ public class JDBCDemo {
             }
             throw new SQLException();
         } catch (SQLException e) {
-            try {
-                connection.rollback(insertingUsers);
-                connection.commit();
-                System.out.println("Rollback to the insertion of users was done.");
-            } catch (SQLException ex) {
-                close(connection);
-                throw new RuntimeException(e);
-            }
+            rethrow(SQLException.class,
+                () -> {
+                    connection.rollback(insertingUsers);
+                    connection.commit();
+                    System.out.println("Rollback to the insertion of users was done.");
+                },
+                () -> close(connection)
+            );
         }
     }
 

@@ -1,21 +1,27 @@
 package patterns.enterprise.unit_of_work;
 
 import lombok.AllArgsConstructor;
-import org.apache.commons.lang3.builder.ToStringBuilder;
+import lombok.Getter;
+import lombok.Setter;
+import patterns.enterprise.unit_of_work.abstraction.Entity;
+
+import java.util.StringJoiner;
 
 @AllArgsConstructor
-public final class Student {
+public final class Student implements Entity<Integer> {
 
+    @Getter
     private Integer id;
     private String name;
+    @Setter
     private String address;
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this)
-            .append("id", id)
-            .append("name", name)
-            .append("address", address)
+        return new StringJoiner(", ", Student.class.getSimpleName() + "[", "]")
+            .add("id=" + id)
+            .add("name='" + name + "'")
+            .add("address='" + address + "'")
             .toString();
     }
 }

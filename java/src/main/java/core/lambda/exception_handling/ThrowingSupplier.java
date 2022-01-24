@@ -1,10 +1,11 @@
 package core.lambda.exception_handling;
 
-import static core.lambda.exception_handling.ThrowingLambdasEssential.throwAnotherIfWasCaught;
+import java.util.Optional;
+
+import static core.lambda.exception_handling.ThrowingLambdasEssential.rethrowIfAnotherIsCaught;
 
 @FunctionalInterface
 public interface ThrowingSupplier<T, E extends Throwable> {
-    T get() throws E;
 
     /**
      * <p>Метод позволяет обрабатывать исключения, которые могут возникнуть при выполнении лямбды,
@@ -12,35 +13,51 @@ public interface ThrowingSupplier<T, E extends Throwable> {
      *
      * <p>Описание:
      * <p>- если выброса исключения не произошло, - метод возвращает результат выполнения лямбды.
-     * <p>- если произошел выброс ожидаемого исключения, то будет возврат пустого Optional или проброс (если установлен соответствующий флаг).
+     * <p>- если произошел выброс ожидаемого исключения, то будет возврат пустого Optional или проброс пойманного исключения (если установлен соответствующий флаг).
      * <p>- если произошел выброс исключения другого типа, то будет проброс.
+     * <p>- catch-блок выполняется в любом случае.
      *
-     * @param supplier лямбда, которая может выбросить любое исключние.
+     * @param supplier      лямбда, которая может выбросить любое исключние.
      * @param expectedClass класс исключения, выброс которого ожидается при выполенении лямбды.
-     * @param rethrows пробрасывать ли ожидаемое исключние дальше в случае его поимки.
-     * @param <R> тип возвращаемого значения лямбды.
-     * @param <Ex> тип ожидаемого исключения.
+     * @param rethrows      пробрасывать ли ожидаемое исключние дальше в случае его поимки.
+     * @param <R>           тип возвращаемого значения лямбды.
+     * @param <Ex>          тип ожидаемого исключения.
      * @return результат выполнения лямбды.
      */
-    static <R, Ex extends Throwable> R get(
+    static <R, Ex extends Throwable> R rethrow(
         ThrowingSupplier<R, Ex> supplier,
         Class<Ex> expectedClass,
         boolean rethrows,
-        Voider catchBlock)
-    {
+        Voider catchBlock
+    ) {
         try {
             return supplier.get();
         } catch (Throwable actualException) {
-            throwAnotherIfWasCaught(expectedClass, actualException, rethrows);
             catchBlock.invoke();
+            rethrowIfAnotherIsCaught(expectedClass, actualException, rethrows);
         }
         return null;
     }
 
-    static <T, E extends Throwable> T get(
+    static <T, E extends Throwable> T rethrow(
         ThrowingSupplier<T, E> tryBlock,
-        Class<E> expectedExceptionClass)
-    {
-        return ThrowingSupplier.get(tryBlock, expectedExceptionClass, true, () -> {});
+        Class<E> expectedExceptionClass
+    ) {
+        boolean rethrows = true;
+        Voider emptyCatchBlock = () -> {};
+        return ThrowingSupplier.rethrow(tryBlock, expectedExceptionClass, rethrows, emptyCatchBlock);
     }
+
+    static <T, E extends Throwable> Optional<T> get(
+        ThrowingSupplier<T, E> tryBlock,
+        Class<E> expectedExceptionClass
+    ) {
+        boolean rethrows = false;
+        Voider emptyCatchBlock = () -> {};
+        return Optional.ofNullable(
+            ThrowingSupplier.rethrow(
+                tryBlock, expectedExceptionClass, rethrows, emptyCatchBlock));
+    }
+
+    T get() throws E;
 }

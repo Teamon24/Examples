@@ -1,10 +1,10 @@
 package patterns.enterprise.unit_of_work;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Stream;
 
-import static patterns.enterprise.unit_of_work.UnitOfWork.*;
+import static patterns.enterprise.unit_of_work.abstraction.UnitOfWork.*;
 
 public class Client {
 
@@ -12,23 +12,44 @@ public class Client {
      * @param args no argument sent
      */
     public static void main(String[] args) {
-        Student ram = new Student(1, "Ram", "Street 9, Cupertino");
-        Student shyam = new Student(2, "Shyam", "Z bridge, Pune");
-        Student gopi = new Student(3, "Gopi", "Street 10, Mumbai");
-        Student pier = new Student(4, "Pier", "Street 12, France");
-        Student petr = new Student(5, "Petr", "Street 10, Russia");
-        Student adolf = new Student(6, "Adolf", "Street 10, Germany");
 
         HashMap<OperationType, List<Student>> context = new HashMap<>();
         StudentUnitOfWork studentUnitOfwork =
-            new StudentUnitOfWork(context, new StudentDatabase());
+            new StudentUnitOfWork(context, new StudentDatabase(), new StudentIdentityMap());
 
-        Stream.of(ram, pier, petr, adolf)
-            .forEach(studentUnitOfwork::registerNew);
+        Student last = studentUnitOfwork.getLast();
 
-        studentUnitOfwork.registerModified(shyam);
-        studentUnitOfwork.registerDeleted(gopi);
+        List<Student> newStudents = getNewStudents(last.getId());
+
+        newStudents.forEach(studentUnitOfwork::registerNew);
+        List<Student> studentsToModify = newStudents.subList(0, newStudents.size() / 2);
+
+        studentsToModify.forEach(student -> {
+            student.setAddress("Somewhere, where is quite");
+            studentUnitOfwork.registerModified(student);
+        });
+
+        Student studentToRemove = studentUnitOfwork.get(1);
+        studentUnitOfwork.registerDeleted(studentToRemove);
 
         studentUnitOfwork.commit();
+    }
+
+    private static List<Student> getNewStudents(Integer lastId) {
+        Student ram = new Student(lastId + 1, "Ram", "Street 9, Cupertino");
+        Student shyam = new Student(lastId + 2, "Shyam", "Z bridge, Pune");
+        Student gopi = new Student(lastId + 3, "Gopi", "Street 10, Mumbai");
+        Student pier = new Student(lastId + 4, "Pier", "Street 12, France");
+        Student petr = new Student(lastId + 5, "Petr", "Street 10, Russia");
+        Student adolf = new Student(lastId + 6, "Adolf", "Street 10, Germany");
+
+        List<Student> newStudents = new ArrayList<>();
+        newStudents.add(ram);
+        newStudents.add(shyam);
+        newStudents.add(gopi);
+        newStudents.add(pier);
+        newStudents.add(petr);
+        newStudents.add(adolf);
+        return newStudents;
     }
 }

@@ -2,7 +2,7 @@ package core.lambda.exception_handling;
 
 import java.util.function.Consumer;
 
-import static core.lambda.exception_handling.ThrowingLambdasEssential.throwAnotherIfWasCaught;
+import static core.lambda.exception_handling.ThrowingLambdasEssential.rethrowIfAnotherIsCaught;
 
 @FunctionalInterface
 public interface ThrowingConsumer<T, E extends Throwable> {
@@ -25,7 +25,7 @@ public interface ThrowingConsumer<T, E extends Throwable> {
             try {
                 tryBlock.accept(arg);
             } catch (Throwable actualException) {
-                throwAnotherIfWasCaught(expectedClass, actualException, rethrows);
+                rethrowIfAnotherIsCaught(expectedClass, actualException, rethrows);
                 catchBlock.invoke();
             }
         };
