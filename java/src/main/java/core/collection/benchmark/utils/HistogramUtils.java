@@ -29,14 +29,16 @@ public abstract class HistogramUtils {
 
     static {
         marks.add("*");
+        marks.add(".");
+        marks.add("#");
         marks.add("-");
         marks.add("o");
         marks.add("\\");
         marks.add("|");
         marks.add("+");
         marks.add("=");
-        marks.add("#");
         marks.add("0");
+        marks.add("@");
     }
 
     public static <T> void checkSize(final Set<T> set) {

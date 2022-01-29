@@ -25,8 +25,8 @@ public abstract class ElementStrategy<E> extends MethodStrategy<E> {
         return super.timer.count((ignored) -> method(collection, this.element));
     }
 
-    public MethodResult createResult(long executionTime) {
-        return new MethodResult(getCollectionType(), getMethodType(), null, this.element, executionTime);
+    public MethodResult<E> createResult(long executionTime) {
+        return new MethodResult<>(getCollectionType(), getMethodType(), null, this.element, executionTime);
     }
 
     @Override
@@ -48,9 +48,4 @@ public abstract class ElementStrategy<E> extends MethodStrategy<E> {
     }
 
     public abstract void method(Collection<E> collection, E element);
-
-    @Override
-    public MethodType getMethodType() {
-        return null;
-    }
 }

@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.Column;
 import javax.persistence.Convert;
@@ -16,6 +17,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.io.Serializable;
+import java.util.UUID;
 
 @Entity
 @Table(name = "user", schema = "examples")
@@ -26,9 +28,10 @@ public class UserEntity implements Serializable {
     public UserEntity() { }
 
     @Id
-    @Column(name = "id", nullable = false)
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    String id;
+    @Column(name = "id", unique = true, nullable = false)
+    @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="UUID")
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    UUID id;
 
     @Convert(converter = NameAttributeConverter.class)
     @Column(name = "full_name")
@@ -49,6 +52,7 @@ public class UserEntity implements Serializable {
             .append("email", email)
             .toString();
     }
+
 
     @Getter
     @Setter

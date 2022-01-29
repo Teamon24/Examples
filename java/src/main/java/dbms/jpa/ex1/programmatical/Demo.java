@@ -6,6 +6,7 @@ import dbms.jpa.ex1.programmatical.driver.DriverType;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.util.List;
+import java.util.UUID;
 
 public class Demo {
     public static void main(String[] args) {
@@ -33,7 +34,7 @@ public class Demo {
         entityManager.getTransaction().commit();
 
         UserEntity.Name name = new UserEntity.Name("Monica", "Vertuchi");
-        UserEntity newUser = new UserEntity("new-user-uuid-Av23ad23", name, "Hk2#sk!b)32k{E0:", getEmail(name));
+        UserEntity newUser = new UserEntity(UUID.randomUUID(), name, "Hk2#sk!b)32k{E0:", getEmail(name));
 
         persistUser(entityManager, newUser);
         changeAndMerge(entityManager, newUser);
@@ -47,7 +48,7 @@ public class Demo {
     }
 
     private static void changeAndMerge(EntityManager entityManager, UserEntity user) {
-        String userId = user.getId();
+        UUID userId = user.getId();
         UserEntity foundUserEntity = entityManager.find(UserEntity.class, userId);
         UserEntity.Name fullName = new UserEntity.Name("Golde", "Brown");
         foundUserEntity.setFullName(fullName);
@@ -64,7 +65,7 @@ public class Demo {
 
     private static void removeUser(EntityManager entityManager, UserEntity user) {
         entityManager.remove(user);
-        String userId = user.getId();
+        UUID userId = user.getId();
         UserEntity userEntity = entityManager.find(UserEntity.class, userId);
         if (userEntity == null) {
             System.out.printf("User (id='%s') was removed.%n", userId);

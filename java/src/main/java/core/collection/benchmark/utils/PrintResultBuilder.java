@@ -1,10 +1,12 @@
 package core.collection.benchmark.utils;
 
 import org.apache.commons.lang3.StringUtils;
+import utils.ConcurrencyUtils;
 
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public final class PrintResultBuilder<T> {
@@ -51,7 +53,6 @@ public final class PrintResultBuilder<T> {
         return this;
     }
 
-
     public String build() {
         Map<String, Object> fields = new LinkedHashMap<>();
         putIfNotNull(fields, "test", "{" + ((double)testNumber/testAmount) * 100 + " " + collection + " " + method + "}");
@@ -60,14 +61,18 @@ public final class PrintResultBuilder<T> {
         putIfNotNull(fields, "index", index);
         putIfNotNull(fields, "element", element);
         putIfNotNull(fields, "execution time", executionTime);
-        return "[" + Thread.currentThread().getName() + "]"
-            + StringUtils
-                .joinWith(", ", getStrings(fields))
-                .replaceAll("[\\[\\]]", "");
+        return new StringBuilder()
+            .append(ConcurrencyUtils.threadName())
+            .append(
+                StringUtils
+                    .joinWith(", ", getStrings(fields))
+                    .replaceAll("[\\[\\]]", "")
+            ).toString();
     }
 
     private List<String> getStrings(Map<String, Object> map) {
-        return map.entrySet().stream().map(entry -> entry.getKey() + ": " + entry.getValue()).collect(Collectors.toList());
+        Set<Map.Entry<String, Object>> entries = map.entrySet();
+        return entries.stream().map(entry -> entry.getKey() + ": " + entry.getValue()).collect(Collectors.toList());
     }
 
     private void putIfNotNull(Map<String, Object> fields, String key, Object value) {

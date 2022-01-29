@@ -1,7 +1,6 @@
 package core.collection.benchmark.utils;
 
 import java.util.Collection;
-import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
@@ -32,8 +31,7 @@ public final class IndexSuppliers {
     }
 
     public static <E> Function<Collection<E>, Integer> getRandomIndex() {
-        final Random random = new Random();
-        return (Collection<E> collection) -> random.nextInt(collection.size());
+        return RandomUtils::randomIndexFrom;
     }
 
     public static <E> Function<Collection<E>, Integer> getThreeIndexes() {

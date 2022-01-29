@@ -1,4 +1,6 @@
+
 CREATE SCHEMA IF NOT EXISTS examples;
+CREATE SEQUENCE examples.hibernate_sequence START 1;
 
 CREATE TABLE examples.user
 (

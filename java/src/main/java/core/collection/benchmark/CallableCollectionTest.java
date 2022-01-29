@@ -15,15 +15,20 @@ public class CallableCollectionTest<E> {
 
     CollectionTest<E> collectionTest;
 
-    public List<Callable<List<MethodResult<E>>>> getTests(boolean enableLog, final int logStep) {
-        Function<Collection<E>, Integer> indexSupplier = IndexSuppliers.getThreeIndexes();
-        List<MethodTest<E>> methodTests = this.collectionTest.getMethodTests(indexSupplier);
+    public List<Callable<List<MethodResult<E>>>> getSetMethodTests(boolean enableLog, final int logStep) {
+        List<MethodTest<E>> methodTests = this.collectionTest.getSetMethodTests();
         return callables(methodTests, enableLog, logStep);
     }
 
-    public List<Callable<List<MethodResult<E>>>> getIndexMethodTests(boolean enableLog, final int logStep) {
+    public List<Callable<List<MethodResult<E>>>> getRandomIndexListTests(boolean enableLog, final int logStep) {
         Function<Collection<E>, Integer> randomIndex = IndexSuppliers.getRandomIndex();
         List<MethodTest<E>> methodTests = this.collectionTest.getListMethodTests(randomIndex);
+        return callables(methodTests, enableLog, logStep);
+    }
+
+    public List<Callable<List<MethodResult<E>>>> getListMethodTests(boolean enableLog, final int logStep) {
+        Function<Collection<E>, Integer> threeIndexes = IndexSuppliers.getThreeIndexes();
+        List<MethodTest<E>> methodTests = this.collectionTest.getListMethodTests(threeIndexes);
         return callables(methodTests, enableLog, logStep);
     }
 

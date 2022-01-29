@@ -27,24 +27,12 @@ public final class CollectionTest<E> {
     Supplier<E> newElementSupplier;
     Supplier<E> existedElementSupplier;
 
-    public List<MethodTest<E>> getMethodTests(Function<Collection<E>, Integer> indexSupplier) {
-
-        List<MethodTest<E>> tests = new ArrayList<>();
-        tests.add(new MethodTest<>(testsAmount, addElementStrategy(collection, collectionSupplier, newElementSupplier)));
-        tests.add(new MethodTest<>(testsAmount, removeElementStrategy(collection, existedElementSupplier)));
-
-        if (collection instanceof List) {
-            List<MethodTest<E>> listTest = List.of(
-                new MethodTest<>(testsAmount, removeByIndexStrategy(collection, indexSupplier)),
-                new MethodTest<>(testsAmount, addByIndexStrategy(collection, collectionSupplier, indexSupplier, newElementSupplier)),
-                new MethodTest<>(testsAmount, setByIndexStrategy(collection, indexSupplier, newElementSupplier)),
-                new MethodTest<>(testsAmount, getByIndexStrategy(collection, indexSupplier))
-            );
-            tests.addAll(listTest);
-            return tests;
-        }
+    public List<MethodTest<E>> getSetMethodTests() {
 
         if (collection instanceof Set) {
+            List<MethodTest<E>> tests = new ArrayList<>();
+            tests.add(new MethodTest<>(testsAmount, addElementStrategy(collection, collectionSupplier, newElementSupplier)));
+            tests.add(new MethodTest<>(testsAmount, removeElementStrategy(collection, existedElementSupplier)));
             return tests;
         }
 

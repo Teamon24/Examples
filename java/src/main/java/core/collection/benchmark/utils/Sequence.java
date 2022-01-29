@@ -1,5 +1,6 @@
 package core.collection.benchmark.utils;
 
+import java.util.Collection;
 import java.util.function.Function;
 
 public class Sequence<In> {
@@ -24,21 +25,31 @@ public class Sequence<In> {
     }
 
     public In next() {
-        if (counter == 0) {
-            counter++;
-            return this.first;
+        if (generateNext == null) throw new RuntimeException("Sequence has no logic of next element generation.");
+
+        if (this.counter == 0) {
+            this.counter++;
+            if (this.first == null) {
+                if (this.current == null) throw new RuntimeException("Sequence has no first element");
+                return generateNext.apply(current);
+            } else {
+                return this.first;
+            }
         }
 
-        if (generateNext == null) throw new RuntimeException("sequence has no logic of next element generation");
 
         In next = generateNext.apply(current);
         this.current = next;
 
-        counter++;
+        this.counter++;
         return next;
     }
 
     public static Sequence<Integer> intSequence() {
         return Sequence.first(0).init((it -> it = it + 1));
+    }
+
+    public static <In> Sequence<In> randomFrom(Collection<In> collection) {
+        return Sequence.first(RandomUtils.randomFrom(collection)).init((it -> RandomUtils.randomFrom(collection)));
     }
 }

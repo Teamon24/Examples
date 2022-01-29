@@ -30,9 +30,11 @@ MYSQL_DATABASE=selectel
 
 POSTGRES_INIT_SCRIPTS_1=./sql_scripts/1.example.sql
 POSTGRES_INIT_SCRIPTS_2=./sql_scripts/2.example.sql
+POSTGRES_INIT_SCRIPTS_4=./sql_scripts/4.example.sql
 
 CONTAINER_POSTGRES_INIT_SCRIPTS_1=/docker-entrypoint-initdb.d/1.example.sql
 CONTAINER_POSTGRES_INIT_SCRIPTS_2=/docker-entrypoint-initdb.d/2.example.sql
+CONTAINER_POSTGRES_INIT_SCRIPTS_4=/docker-entrypoint-initdb.d/4.example.sql
 
 
 POSTGRES_DATA=./volumes/postgres/data

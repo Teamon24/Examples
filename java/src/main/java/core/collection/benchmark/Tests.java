@@ -20,17 +20,18 @@ import java.util.TreeSet;
 import java.util.concurrent.Callable;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static core.collection.benchmark.utils.CollectionCreationUtils.list;
 import static core.collection.benchmark.utils.CollectionCreationUtils.set;
 import static core.collection.benchmark.utils.CollectionSuppliers.newCollection;
-import static core.collection.benchmark.utils.ElementSupplier.getEachElement;
+import static core.collection.benchmark.utils.ElementSupplier.periodicallyFrom;
 
 public class Tests {
-    private static final int size = 200_000;
-    private static final int testsAmount = 10000;
+    private static final int size = 10_000;
+    private static final int testsAmount = 50000;
 
-    private static final int logStep = testsAmount / 5;
+    private static final int logStep = testsAmount / 2;
 
     public static void main(String[] args) {
         Sequence<Integer> hashSetSequence = Sequence.intSequence();
@@ -47,18 +48,25 @@ public class Tests {
         List<Integer> arrayList = list(ArrayList.class, size, arrayListSequence::next);
         List<Integer> treeList = list(TreeList.class, size, treeListSequence::next);
 
+        final int period = size/10;
         boolean enableLog = true;
-        List<List<Callable<List<MethodResult<Integer>>>>> methodResultsTasks = List.of(
-            buildCallableTest(testsAmount, linkedList,    linkedListSequence).    getTests(enableLog, logStep),
-            buildCallableTest(testsAmount, arrayList,     arrayListSequence).     getTests(enableLog, logStep),
-            buildCallableTest(testsAmount, treeList,      treeListSequence).      getTests(enableLog, logStep),
-            buildCallableTest(testsAmount, hashSet,       hashSetSequence).       getTests(enableLog, logStep),
-            buildCallableTest(testsAmount, treeSet,       treeSetSequence).       getTests(enableLog, logStep),
-            buildCallableTest(testsAmount, linkedHashSet, linkedHashSetSequence). getTests(enableLog, logStep)
+        List<List<Callable<List<MethodResult<Integer>>>>> listMethodResultsTasks = List.of(
+            test(testsAmount, linkedList, linkedListSequence, period).getListMethodTests(enableLog, logStep),
+            test(testsAmount, arrayList,  arrayListSequence,  period).getListMethodTests(enableLog, logStep),
+            test(testsAmount, treeList,   treeListSequence,   period).getListMethodTests(enableLog, logStep)
+        );
+
+        List<List<Callable<List<MethodResult<Integer>>>>> setMethodResultsTasks = List.of(
+            test(testsAmount, hashSet,       Sequence.randomFrom(hashSet),       period).getSetMethodTests(enableLog, logStep),
+            test(testsAmount, treeSet,       Sequence.randomFrom(treeSet),       period).getSetMethodTests(enableLog, logStep),
+            test(testsAmount, linkedHashSet, Sequence.randomFrom(linkedHashSet), period).getSetMethodTests(enableLog, logStep)
         );
 
         List<List<MethodResult<Integer>>> methodResults = ConcurrencyUtils.getAll(
-            methodResultsTasks.stream().flatMap(Collection::stream).collect(Collectors.toList())
+            Stream.of(listMethodResultsTasks, setMethodResultsTasks)
+                .flatMap(Collection::stream)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList())
         );
 
         Map<Boolean, List<MethodResult<Integer>>> partitionedResults = methodResults
@@ -66,36 +74,37 @@ public class Tests {
             .flatMap(Collection::stream)
             .collect(Collectors.partitioningBy(it -> it.getIndex() != null));
 
-
         List<AveragedMethodResult<Integer>> resultsWithIndex =
             MethodResultGroupingUtils.averageByIndex(partitionedResults.get(true));
 
         List<AveragedMethodResult<Integer>> resultsWithNoIndex =
-            MethodResultGroupingUtils.averageByMethod(partitionedResults.get(false));
+            MethodResultGroupingUtils.averageByElement(partitionedResults.get(false));
 
         HistogramWithIndexUtils.printHistogram(resultsWithIndex);
-        HistogramWithIndexUtils.printHistogramNoIndex(resultsWithNoIndex);
+        HistogramWithIndexUtils.printHistogramNoIndex(resultsWithNoIndex.stream().filter(by(period)).collect(Collectors.toList()));
     }
 
-    public static <E> Predicate<E> each(int number) {
+    private static Predicate<AveragedMethodResult<Integer>> by(int period) {
         final int[] counter = {0};
         return it -> {
-            counter[0]++; return counter[0] % number == 0;
+            boolean filtered = counter[0] % period == 0;
+            counter[0] += 1;
+            return filtered;
         };
     }
 
-    private static <E> CallableCollectionTest<E> buildCallableTest(
+    private static <E> CallableCollectionTest<E> test(
         final int testsAmount,
         final Collection<E> collection,
-        final Sequence<E> sequence
+        final Sequence<E> sequence,
+        final int period
     ) {
-        int period = 100;
         CollectionTest<E> collectionTest = new CollectionTest.CollectionTestBuilder<E>()
             .testsAmount(testsAmount)
             .collection(collection)
             .collectionSupplier(newCollection(collection))
             .newElementSupplier(sequence::next)
-            .existedElementSupplier(getEachElement(period, collection))
+            .existedElementSupplier(periodicallyFrom(collection, period))
             .build();
 
         return new CallableCollectionTest<>(collectionTest);

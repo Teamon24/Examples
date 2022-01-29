@@ -9,12 +9,12 @@ package dbms.hibernate.mapping.identifiers;
  * @Entity
  * public class User {
  *     @Id
- *     @GeneratedValue(generator = "sequence-generator")
+ *     @GeneratedValue(generator = "user-id-sequence-generator")
  *     @GenericGenerator(
- *       name = "sequence-generator",
+ *       name = "user-id-sequence-generator",
  *       strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
  *       parameters = {
- *         @Parameter(name = "sequence_name", value = "user_sequence"),
+ *         @Parameter(name = "entity_user_id_sequence", value = "db_user_id_sequence"),
  *         @Parameter(name = "initial_value", value = "4"),
  *         @Parameter(name = "increment_size", value = "1")
  *         }

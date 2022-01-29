@@ -13,26 +13,6 @@ import java.util.stream.Stream;
 
 public final class MethodResultGroupingUtils {
 
-    public static <E> List<AveragedMethodResult<E>> averageByIndex(List<MethodResult<E>> testResults) {
-        Function<MethodResult<E>, Object> fieldExtractor = MethodResult::getIndex;
-        return averageBy(
-            testResults,
-            fieldExtractor,
-            (Map.Entry<Object, Double> entry,
-             String collection,
-             MethodType method) -> new AveragedMethodResult<>(collection, method, (Integer) entry.getKey(), null , entry.getValue()));
-    }
-
-    public static <E> List<AveragedMethodResult<E>> averageByElement(List<MethodResult<E>> testResults) {
-        Function<MethodResult<E>, Object> getElement = MethodResult::getElement;
-        return averageBy(
-            testResults,
-            getElement,
-            (Map.Entry<Object, Double> entry,
-             String collection,
-             MethodType method) -> new AveragedMethodResult<E>(collection, method, null, (E) entry.getKey(), entry.getValue()));
-    }
-
     public static <F, E> List<AveragedMethodResult<E>> averageBy(
         List<MethodResult<E>> testResults,
         Function<MethodResult<E>, F> getter,
@@ -64,6 +44,26 @@ public final class MethodResultGroupingUtils {
             .collect(Collectors.toList());
 
         return collect;
+    }
+
+    public static <E> List<AveragedMethodResult<E>> averageByElement(List<MethodResult<E>> testResults) {
+        Function<MethodResult<E>, Object> getElement = MethodResult::getElement;
+        return averageBy(
+            testResults,
+            getElement,
+            (Map.Entry<Object, Double> entry,
+             String collection,
+             MethodType method) -> new AveragedMethodResult<>(collection, method, null, (E) entry.getKey(), entry.getValue()));
+    }
+
+    public static <E> List<AveragedMethodResult<E>> averageByIndex(List<MethodResult<E>> testResults) {
+        Function<MethodResult<E>, Object> fieldExtractor = MethodResult::getIndex;
+        return averageBy(
+            testResults,
+            fieldExtractor,
+            (Map.Entry<Object, Double> entry,
+             String collection,
+             MethodType method) -> new AveragedMethodResult<>(collection, method, (Integer) entry.getKey(), null , entry.getValue()));
     }
 
     public static <E> List<AveragedMethodResult<E>> averageByMethod(List<MethodResult<E>> testResults) {

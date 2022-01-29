@@ -1,5 +1,6 @@
 package utils;
 
+import core.collection.benchmark.pojo.MethodResult;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;

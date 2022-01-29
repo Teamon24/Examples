@@ -23,7 +23,7 @@ public abstract class IndexStrategy<E> extends MethodStrategy<E> {
 
     public long execute(Collection<E> collection) {
         this.index = this.indexGetter.apply(collection);
-        return this.timer.count((ignored) -> method(collection, this.index));
+        return super.timer.count((ignored) -> method(collection, this.index));
     }
 
     public MethodResult<E> createResult(long executionTime) {

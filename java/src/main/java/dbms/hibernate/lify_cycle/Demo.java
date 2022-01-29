@@ -1,23 +1,24 @@
 package dbms.hibernate.lify_cycle;
 
 import com.github.javafaker.Faker;
+import dbms.hibernate.HibernateUtils;
 import dbms.jpa.ex1.UserEntity;
 import dbms.jpa.ex1.programmatical.provider.ProviderProperties;
 import dbms.jpa.ex1.programmatical.provider.ProviderPropertiesBuilder;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import org.hibernate.boot.Metadata;
 import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.service.ServiceRegistry;
 
-import javax.persistence.metamodel.EntityType;
-import java.util.Set;
+import java.util.Arrays;
 
 public class Demo {
     public static void main(String[] args) {
-        Session session = getCurrentSession();
+        Session session = HibernateUtils
+            .getSessionFactory("/META-INF/hibernate-postgresql.cfg.xml", UserEntity.class)
+            .getCurrentSession();
         Transaction transaction = session.getTransaction();
         transaction.begin();
 
@@ -26,31 +27,6 @@ public class Demo {
         newUserEntity.setPassword(Faker.instance().internet().password());
         newUserEntity.setEmail(Faker.instance().internet().emailAddress());
         session.persist(newUserEntity);
-        Set<EntityType<?>> managedEntities = HibernateLifecycleUtil.getManagedEntities(session);
-        System.out.println();
-    }
-
-    public static Session getCurrentSession() {
-        ProviderProperties providerProperties = new ProviderPropertiesBuilder()
-            .port(5432)
-            .databaseName("selectel")
-            .userName("selectel")
-            .password("selectel")
-            .schema("examples")
-            .build();
-
-        ServiceRegistry serviceRegistry =
-            new StandardServiceRegistryBuilder()
-                .applySettings(providerProperties.getProperties())
-                .build();
-
-        SessionFactory sessionFactory = new MetadataSources(serviceRegistry)
-            .addAnnotatedClass(UserEntity.class)
-            .buildMetadata()
-            .getSessionFactoryBuilder()
-            .build();
-
-
-        return sessionFactory.getCurrentSession();
+        transaction.commit();
     }
 }

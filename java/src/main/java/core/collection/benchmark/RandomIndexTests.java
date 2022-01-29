@@ -21,8 +21,8 @@ import static core.collection.benchmark.utils.CollectionSuppliers.newCollection;
 import static core.collection.benchmark.utils.ElementSupplier.getElementAndDiscard;
 
 public class RandomIndexTests {
-    private static final int size = 5_000;
-    private static final int testsAmount = 50_000;
+    private static final int size = 1_000;
+    private static final int testsAmount = 10_000;
 
     private static final int logStep = testsAmount / 5;
 
@@ -37,9 +37,9 @@ public class RandomIndexTests {
 
         boolean enableLog = true;
         List<List<Callable<List<MethodResult<Integer>>>>> methodResultsTasks = List.of(
-            collectionTest(testsAmount, linkedList, linkedListSequence).getIndexMethodTests(enableLog, logStep),
-            collectionTest(testsAmount, arrayList, arrayListSequence).getIndexMethodTests(enableLog, logStep),
-            collectionTest(testsAmount, treeList, treeListSequence).getIndexMethodTests(enableLog, logStep)
+            test(testsAmount, linkedList, linkedListSequence).getRandomIndexListTests(enableLog, logStep),
+            test(testsAmount, arrayList, arrayListSequence).getRandomIndexListTests(enableLog, logStep),
+            test(testsAmount, treeList, treeListSequence).getRandomIndexListTests(enableLog, logStep)
         );
 
         List<List<MethodResult<Integer>>> methodResultsList = ConcurrencyUtils.getAll(
@@ -48,13 +48,14 @@ public class RandomIndexTests {
 
         List<MethodResult<Integer>> methodResults = methodResultsList
             .stream()
-            .flatMap(Collection::stream).collect(Collectors.toList());
+            .flatMap(Collection::stream)
+            .collect(Collectors.toList());
 
         List<AveragedMethodResult<Integer>> resultsWithIndex =
             MethodResultGroupingUtils
                 .averageByIndex(methodResults)
                 .stream()
-                .filter(each(size / 5))
+                .filter(each(size / 3))
                 .collect(Collectors.toList());
 
         HistogramWithIndexUtils.printHistogram(resultsWithIndex);
@@ -64,7 +65,7 @@ public class RandomIndexTests {
         return it -> it.getIndex() % number == 0;
     }
 
-    private static <E> CallableCollectionTest<E> collectionTest(
+    private static <E> CallableCollectionTest<E> test(
         final int testsAmount,
         final Collection<E> collection,
         final Sequence<E> sequence

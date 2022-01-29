@@ -9,7 +9,7 @@ import java.util.List;
 
 public final class PrintUtils {
 
-    public static void printTable(List<AveragedMethodResult> results) {
+    public static void printTable(List<AveragedMethodResult<?>> results) {
         if (results.isEmpty()) System.out.println("Empty table");
 
         HashMap<String, Integer> titlesAndIndent = new LinkedHashMap<>() {{
@@ -33,7 +33,7 @@ public final class PrintUtils {
         System.out.println(line);
 
         String rowFormat = getRowFormat(indents);
-        for(AveragedMethodResult result: results) {
+        for(AveragedMethodResult<?> result: results) {
             System.out.format(
                 rowFormat,
                 result.getCollectionClass(),

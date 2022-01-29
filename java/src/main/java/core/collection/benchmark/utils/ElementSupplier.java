@@ -45,6 +45,7 @@ public final class ElementSupplier {
                 counterValue = 0;
                 counter.set(counterValue);
             }
+
             E e = list.get(counterValue);
             list.remove(e);
             counter.set(counterValue + 1);
@@ -52,7 +53,10 @@ public final class ElementSupplier {
         };
     }
 
-    public static <E> Supplier<E> getEachElement(final int period, final Collection<E> collection) {
+    public static <E> Supplier<E> periodicallyFrom(
+        final Collection<E> collection,
+        final int period
+    ) {
         int counter = 0;
         ArrayList<E> eachElements = new ArrayList<>();
         for (E e : collection) {
