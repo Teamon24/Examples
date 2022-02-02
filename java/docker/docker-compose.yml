@@ -11,6 +11,7 @@ services:
       - POSTGRES_PASSWORD=selectel
     volumes:
       - examples_jpa_postgres_volume:/var/lib/postgresql/data
+      - ./sql_scripts/0.schemas.sql:/docker-entrypoint-initdb.d/0.schemas.sql
       - ./sql_scripts/1.example.sql:/docker-entrypoint-initdb.d/1.example.sql
       - ./sql_scripts/2.example.sql:/docker-entrypoint-initdb.d/2.example.sql
       - ./sql_scripts/4.example.sql:/docker-entrypoint-initdb.d/4.example.sql

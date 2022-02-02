@@ -1,7 +1,3 @@
-
-CREATE SCHEMA IF NOT EXISTS examples;
-CREATE SEQUENCE examples.hibernate_sequence START 1;
-
 CREATE TABLE examples.user
 (
     id        varchar(50) NOT NULL PRIMARY KEY,

@@ -25,21 +25,18 @@ SET default_tablespace = '';
 
 SET default_with_oids = false;
 
-
-
-
 --
 -- TOC entry 169 (class 1259 OID 32770)
 -- Name: facilities; Type: TABLE; Schema: cd; Owner: -; Tablespace:
 --
-
-CREATE TABLE facilities (
-                            id integer NOT NULL,
-                            name character varying(100) NOT NULL,
-                            member_cost numeric NOT NULL,
-                            guest_cost numeric NOT NULL,
-                            initial_outlay numeric NOT NULL,
-                            monthly_maintenance numeric NOT NULL
+CREATE TABLE facilities
+(
+    id                  integer                NOT NULL,
+    name                character varying(100) NOT NULL,
+    member_cost         numeric                NOT NULL,
+    guest_cost          numeric                NOT NULL,
+    initial_outlay      numeric                NOT NULL,
+    monthly_maintenance numeric                NOT NULL
 );
 
 
@@ -47,45 +44,42 @@ CREATE TABLE facilities (
 -- TOC entry 170 (class 1259 OID 32800)
 -- Name: members; Type: TABLE; Schema: cd; Owner: -; Tablespace:
 --
-
-CREATE TABLE members (
-                         id integer NOT NULL,
-                         sur_name character varying(200) NOT NULL,
-                         first_name character varying(200) NOT NULL,
-                         address character varying(300) NOT NULL,
-                         zip_code integer NOT NULL,
-                         telephone character varying(20) NOT NULL,
-                         recommended_by integer,
-                         join_date timestamp without time zone NOT NULL
+CREATE TABLE members
+(
+    id             integer                     NOT NULL,
+    sur_name       character varying(200)      NOT NULL,
+    first_name     character varying(200)      NOT NULL,
+    address        character varying(300)      NOT NULL,
+    zip_code       integer                     NOT NULL,
+    telephone      character varying(20)       NOT NULL,
+    recommended_by integer,
+    join_date      timestamp without time zone NOT NULL
 );
 
 --
 -- TOC entry 171 (class 1259 OID 32818)
 -- Name: bookings; Type: TABLE; Schema: cd; Owner: -; Tablespace:
 --
-
-CREATE TABLE bookings (
-                          id integer NOT NULL,
-                          fac_id integer NOT NULL,
-                          mem_id integer NOT NULL,
-                          start_time timestamp without time zone NOT NULL,
-                          slots integer NOT NULL
+CREATE TABLE bookings
+(
+    id         integer                     NOT NULL,
+    fac_id     integer                     NOT NULL,
+    mem_id     integer                     NOT NULL,
+    start_time timestamp without time zone NOT NULL,
+    slots      integer                     NOT NULL
 );
 
 --
 -- TOC entry 2192 (class 2606 OID 32777)
 -- Name: facilities_pk; Type: CONSTRAINT; Schema: cd; Owner: -; Tablespace:
 --
-
 ALTER TABLE ONLY facilities
     ADD CONSTRAINT facilities_pk PRIMARY KEY (id);
-
 
 --
 -- TOC entry 2194 (class 2606 OID 32807)
 -- Name: members_pk; Type: CONSTRAINT; Schema: cd; Owner: -; Tablespace:
 --
-
 ALTER TABLE ONLY members
     ADD CONSTRAINT members_pk PRIMARY KEY (id);
 
@@ -93,41 +87,33 @@ ALTER TABLE ONLY members
 -- TOC entry 2196 (class 2606 OID 32822)
 -- Name: bookings_pk; Type: CONSTRAINT; Schema: cd; Owner: -; Tablespace:
 --
-
 ALTER TABLE ONLY bookings
     ADD CONSTRAINT bookings_pk PRIMARY KEY (id);
-
 
 --
 -- TOC entry 2197 (class 2606 OID 32808)
 -- Name: fk_members__recommended_by; Type: FK CONSTRAINT; Schema: cd; Owner: -
 --
-
 ALTER TABLE ONLY members
-    ADD CONSTRAINT fk_members__recommended_by FOREIGN KEY (recommended_by) REFERENCES members(id) ON DELETE SET NULL;
+    ADD CONSTRAINT fk_members__recommended_by FOREIGN KEY (recommended_by) REFERENCES members (id) ON DELETE SET NULL;
 
 --
 -- TOC entry 2198 (class 2606 OID 32823)
 -- Name: fk_bookings__fac_id; Type: FK CONSTRAINT; Schema: cd; Owner: -
 --
-
 ALTER TABLE ONLY bookings
-    ADD CONSTRAINT fk_bookings__fac_id FOREIGN KEY (fac_id) REFERENCES facilities(id);
-
+    ADD CONSTRAINT fk_bookings__fac_id FOREIGN KEY (fac_id) REFERENCES facilities (id);
 
 --
 -- TOC entry 2199 (class 2606 OID 32828)
 -- Name: fk_bookings__mem_id; Type: FK CONSTRAINT; Schema: cd; Owner: -
 --
-
 ALTER TABLE ONLY bookings
-    ADD CONSTRAINT fk_bookings__mem_id FOREIGN KEY (mem_id) REFERENCES members(id);
-
+    ADD CONSTRAINT fk_bookings__mem_id FOREIGN KEY (mem_id) REFERENCES members (id);
 
 --
 -- PostgreSQL database dump complete
 --
-
 CREATE INDEX "bookings.mem_id__fac_id"
     ON cd.bookings
         USING btree
@@ -162,8 +148,6 @@ CREATE INDEX "members.recommended_by"
     ON cd.members
         USING btree
         (recommended_by);
-
-
 ANALYZE;
 
 --
@@ -171,7 +155,6 @@ ANALYZE;
 -- Dependencies: 169
 -- Data for Name: facilities; Type: TABLE DATA; Schema: cd; Owner: -
 --
-
 INSERT INTO facilities (id, name, member_cost, guest_cost, initial_outlay, monthly_maintenance)
 VALUES (0, 'Tennis Court 1', 5, 25, 10000, 200),
        (1, 'Tennis Court 2', 5, 25, 8000, 200),
