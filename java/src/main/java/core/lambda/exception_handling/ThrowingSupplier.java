@@ -1,5 +1,7 @@
 package core.lambda.exception_handling;
 
+import utils.Voider;
+
 import java.util.Optional;
 
 import static core.lambda.exception_handling.ThrowingLambdasEssential.rethrowIfAnotherIsCaught;
@@ -40,8 +42,8 @@ public interface ThrowingSupplier<T, E extends Throwable> {
     }
 
     static <T, E extends Throwable> T rethrow(
-        ThrowingSupplier<T, E> tryBlock,
-        Class<E> expectedExceptionClass
+        Class<E> expectedExceptionClass,
+        ThrowingSupplier<T, E> tryBlock
     ) {
         boolean rethrows = true;
         Voider emptyCatchBlock = () -> {};

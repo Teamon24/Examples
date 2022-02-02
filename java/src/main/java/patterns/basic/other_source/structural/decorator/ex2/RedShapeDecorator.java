@@ -1,5 +1,7 @@
 package patterns.basic.other_source.structural.decorator.ex2;
 
+import static utils.PrintUtils.println;
+
 public class RedShapeDecorator extends ShapeDecorator {
 
    public RedShapeDecorator(Shape decoratedShape) {
@@ -13,6 +15,6 @@ public class RedShapeDecorator extends ShapeDecorator {
    }
 
    private void setRedBorder(Shape decoratedShape) {
-      System.out.println("Border Color: Red");
+      println("Border Color: Red");
    }
 }

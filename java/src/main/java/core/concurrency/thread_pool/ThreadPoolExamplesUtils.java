@@ -15,6 +15,7 @@ import static utils.ConcurrencyUtils.MILLIS_IN_SECOND;
 import static utils.ConcurrencyUtils.call;
 import static utils.ConcurrencyUtils.sleep;
 import static utils.ConcurrencyUtils.threadName;
+import static utils.PrintUtils.println;
 
 public final class ThreadPoolExamplesUtils {
 
@@ -85,7 +86,7 @@ public final class ThreadPoolExamplesUtils {
     public static Runnable infiniteLoop() {
         return () -> {
             while (true) {
-                System.out.println("In the infinite loop");
+                println("In the infinite loop");
                 sleep(1000);
             }
         };

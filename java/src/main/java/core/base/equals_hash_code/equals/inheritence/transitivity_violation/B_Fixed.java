@@ -1,8 +1,7 @@
 package core.base.equals_hash_code.equals.inheritence.transitivity_violation;
 
 import core.base.equals_hash_code.equals.inheritence.A;
-import core.base.equals_hash_code.equals.inheritence.symmetry_violation.ExceptionUtils;
-import core.base.equals_hash_code.equals.inheritence.symmetry_violation.few_instance_of.B_FewInstanceOf;
+import core.base.equals_hash_code.equals.inheritence.symmetry_violation.ExampleUtils;
 import lombok.Getter;
 
 import java.util.Objects;
@@ -34,6 +33,6 @@ public class B_Fixed extends A {
             return super.equals(other);
         }
 
-        throw ExceptionUtils.exceptionIfNoInstanceOfCase(this, o);
+        throw ExampleUtils.exceptionIfNoInstanceOfCase(this, o);
     }
 }

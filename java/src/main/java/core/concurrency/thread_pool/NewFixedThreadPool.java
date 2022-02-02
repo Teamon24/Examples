@@ -11,8 +11,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 
-import static core.concurrency.thread_pool.ThreadPoolExamplesUtils.*;
+import static core.concurrency.thread_pool.ThreadPoolExamplesUtils.printPoolAndQueueSizes;
 import static core.concurrency.thread_pool.ThreadPoolExamplesUtils.submitEach;
+import static utils.PrintUtils.println;
 
 public class NewFixedThreadPool {
 
@@ -36,6 +37,6 @@ public class NewFixedThreadPool {
 
         printPoolAndQueueSizes(executor, taskAmount);
 
-        futureTasks.forEach(task -> System.out.println(ConcurrencyUtils.getResult(task)));
+        futureTasks.forEach(task -> println(ConcurrencyUtils.getResult(task)));
     }
 }

@@ -5,6 +5,9 @@ import lombok.NoArgsConstructor;
 
 import java.util.function.Consumer;
 
+import static utils.PrintUtils.printfln;
+import static utils.PrintUtils.println;
+
 @NoArgsConstructor
 @AllArgsConstructor
 class Source {
@@ -23,41 +26,33 @@ class Driver {
 
     private static void test(Source original, Consumer<Source> setter) {
         int valueBeforeReplacing = original.value;
-        printlnTitle(original);
+        String title = "Reference before passing: ";
+        String refWithClassName = refNumber(original);
+        printlnLine(title.length() + refWithClassName.length());
+        println(title + refWithClassName);
         setter.accept(original);
-        System.out.printf("Before setting: %s%n", valueBeforeReplacing);
-        System.out.printf("After setting: %s%n", original.value);
+        printfln("Before setting a new value: %s", valueBeforeReplacing);
+        printfln("After setting a new value: %s", original.value);
     }
 
     public static void replaceObject(Source copy, String methodName) {
-        System.out.println(methodName + ": reference after passing - " + refNumber(copy));
-        System.out.println(methodName + ": changing reference's object");
+        println("\"" + methodName + "\": reference after passing - " + refNumber(copy));
+        println("\"" + methodName + "\": changing reference's object");
         copy = new Source();
+        println("\"" + methodName + "\": set a new value - " + NEW_VALUE);
         copy.value = NEW_VALUE;
     }
 
-    public static void updateObject(Source copy, String updateObject) {
-        System.out.println(updateObject + ": reference after passing - " + refNumber(copy));
+    public static void updateObject(Source copy, String methodName) {
+        println("\"" + methodName + "\": reference after passing - " + refNumber(copy));
         copy.value = NEW_VALUE;
     }
 
-    private static void printlnTitle(Source original) {
-        String title = "Reference before passing: ";
-        String refWithClassName = refWithClassNameNumber(original);
-        printlnLine(title, refWithClassName);
-        System.out.println(title + refWithClassName);
-    }
-
-    private static void printlnLine(String title, String refWithClassName) {
-        System.out.println("-".repeat(title.length()+ refWithClassName.length()));
+    private static void printlnLine(int length) {
+        println("-".repeat(length));
     }
 
     private static String refNumber(Source copy) {
         return copy.toString().split("@")[1];
-    }
-
-    private static String refWithClassNameNumber(Source copy) {
-        String[] split = copy.toString().split("\\.");
-        return split[split.length - 1];
     }
 }

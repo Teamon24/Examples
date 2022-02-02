@@ -1,21 +1,20 @@
 package dbms.jdbc;
 
-import dbms.jdbc.entity.JDBCUtils;
 import dbms.jdbc.dbms.SQLStrategy;
 import dbms.jdbc.entity.DAO;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.function.BiConsumer;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
+import static dbms.jdbc.entity.JDBCUtils.getString;
+import static dbms.jdbc.entity.JDBCUtils.setString;
 import static java.util.Objects.isNull;
+import static utils.PrintUtils.printfln;
 
 public class UserDAO extends DAO<String, UserJdbcEntity> {
 
@@ -39,58 +38,45 @@ public class UserDAO extends DAO<String, UserJdbcEntity> {
         stmt.setString(2, uuid);
 
         stmt.executeUpdate();
-        System.out.printf("User (id='%s') was updated: new password = '%s'%n", uuid, password);
+        printfln("User (id='%s') was updated: new password = '%s'", uuid, password);
     }
 
     @Override
-    public Map<String, Pair<Function<ResultSet, Object>, BiConsumer<UserJdbcEntity, Object>>>
+    public Map<String, Pair<ResultGetter, FieldSetter<UserJdbcEntity>>>
     resultGettersAndEntitySetters() {
         return resultGettersAndEntitySetters;
     }
 
     @Override
-    public Map<String, Pair<BiConsumer<PreparedStatement, Object>, Function<UserJdbcEntity, Object>>>
+    public Map<String, Pair<FieldGetter<UserJdbcEntity>, StatementSetter<?>>>
     statementSettersAndEntityGetters() {
         return statementSettersAndEntityGetters;
     }
 
     private final static
-    Map<String, Pair<Function<ResultSet, Object>, BiConsumer<UserJdbcEntity, Object>>>
-        resultGettersAndEntitySetters;
+    Map<String, Pair<ResultGetter, FieldSetter<UserJdbcEntity>>> resultGettersAndEntitySetters;
 
     private final static
-    Map<String, Pair<BiConsumer<PreparedStatement, Object>, Function<UserJdbcEntity, Object>>>
-        statementSettersAndEntityGetters;
+    Map<String, Pair<FieldGetter<UserJdbcEntity>, StatementSetter<?>>> statementSettersAndEntityGetters;
 
     static {
+        String id = UserJdbcEntity.idColumn;
+        String fullName = UserJdbcEntity.fullNameColumn;
+        String email = UserJdbcEntity.emailColumn;
+        String password = UserJdbcEntity.passwordColumn;
+
         resultGettersAndEntitySetters = new LinkedHashMap<>() {{
-            put(UserJdbcEntity.idColumn,
-                Pair.of(JDBCUtils.getString(UserJdbcEntity.idColumn), (UserJdbcEntity user, Object id) -> user.setId((String) id)));
-
-            put(UserJdbcEntity.fullNameColumn,
-                Pair.of(JDBCUtils.getString(UserJdbcEntity.fullNameColumn), (UserJdbcEntity user, Object fullName) -> user.setFullName((String) fullName)));
-
-            put(UserJdbcEntity.passwordColumn,
-                Pair.of(JDBCUtils.getString(UserJdbcEntity.passwordColumn), (UserJdbcEntity user, Object password) -> user.setPassword((String) password)));
-
-            put(UserJdbcEntity.emailColumn,
-                Pair.of(JDBCUtils.getString(UserJdbcEntity.emailColumn), (UserJdbcEntity user, Object mail) -> user.setEmail((String) mail)));
-
+            put(id,       Pair.of(getString(id),       (user, id) -> user.setId((String) id)));
+            put(fullName, Pair.of(getString(fullName), (user, fullName) -> user.setFullName((String) fullName)));
+            put(password, Pair.of(getString(password), (user, password) -> user.setPassword((String) password)));
+            put(email,    Pair.of(getString(email),    (user, mail) -> user.setEmail((String) mail)));
         }};
 
         statementSettersAndEntityGetters = new LinkedHashMap<>() {{
-            put(UserJdbcEntity.idColumn,
-                Pair.of(JDBCUtils.setString(1), UserJdbcEntity::getId));
-
-            put(UserJdbcEntity.fullNameColumn,
-                Pair.of(JDBCUtils.setString(2), UserJdbcEntity::getFullName));
-
-            put(UserJdbcEntity.passwordColumn,
-                Pair.of(JDBCUtils.setString(3), UserJdbcEntity::getPassword));
-
-            put(UserJdbcEntity.emailColumn,
-                Pair.of(JDBCUtils.setString(4), UserJdbcEntity::getEmail));
-
+            put(id,       Pair.of(UserJdbcEntity::getId,       setString(1)));
+            put(fullName, Pair.of(UserJdbcEntity::getFullName, setString(2)));
+            put(password, Pair.of(UserJdbcEntity::getPassword, setString(3)));
+            put(email,    Pair.of(UserJdbcEntity::getEmail,    setString(4)));
         }};
     }
 }

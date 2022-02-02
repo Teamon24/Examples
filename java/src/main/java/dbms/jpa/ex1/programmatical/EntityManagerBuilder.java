@@ -1,8 +1,12 @@
 package dbms.jpa.ex1.programmatical;
 
+import dbms.jpa.ex1.UserEntity;
 import dbms.jpa.ex1.programmatical.driver.DriverType;
 
 import javax.persistence.EntityManager;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class EntityManagerBuilder {
 
@@ -13,6 +17,7 @@ public class EntityManagerBuilder {
     private String userName;
     private String password;
     private String schema;
+    private List<String> managedClassesNames;
 
     public EntityManagerBuilder type(DriverType type) {
         this.type = type;
@@ -49,6 +54,11 @@ public class EntityManagerBuilder {
         return this;
     }
 
+    public EntityManagerBuilder managedClassesNames(String ... classes) {
+        this.managedClassesNames = Arrays.asList(classes);
+        return this;
+    }
+
     public EntityManager build() {
 
 
@@ -59,7 +69,8 @@ public class EntityManagerBuilder {
             this.databaseName,
             this.userName,
             this.password == null ? "" : this.password,
-            this.schema == null ? "" : this.schema
+            this.schema == null ? "" : this.schema,
+            this.managedClassesNames
         );
     }
 }

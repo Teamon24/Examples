@@ -1,8 +1,15 @@
 package core.collection.benchmark.utils;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Random;
+import java.util.function.Function;
+
+import static utils.ClassUtils.*;
+import static utils.ClassUtils.simpleName;
+import static utils.PrintUtils.printfln;
 
 public final class RandomUtils {
 
@@ -25,5 +32,35 @@ public final class RandomUtils {
             }
         }
         throw new RuntimeException("Random element was not found");
+    }
+
+    public static <T> T randomFrom(List<Class<? extends T>> classes, Function<Class<?>, T> constructor) {
+        Class<?> randomClass = randomFrom(classes);
+        T t = constructor.apply(randomClass);
+        if (t != null) {
+            printfln("Random object type (%s) from classes: %s", simpleName(t), joinSimpleNames(classes));
+            return t;
+        }
+        throw new RuntimeException("");
+    }
+
+    public static <Ancestor, Descendant extends Ancestor> Descendant randomDescendant(
+        Class<? extends Descendant> ancestorClass,
+        List<Class<? extends Ancestor>> hierarchy,
+        Function<Class<?>, Descendant> createObject
+    ) {
+        List<Class<? extends Descendant>> classes = new ArrayList<>();
+        boolean dropping = true;
+        for (Class<?> it : hierarchy) {
+            if (dropping) {
+                if (!it.equals(ancestorClass)) {
+                    continue;
+                }
+                dropping = false;
+            }
+            classes.add((Class<? extends Descendant>) it);
+        }
+        printfln("Types (%s) below to class: %s", joinSimpleNames(classes), ancestorClass.getSimpleName());
+        return randomFrom(classes, createObject);
     }
 }

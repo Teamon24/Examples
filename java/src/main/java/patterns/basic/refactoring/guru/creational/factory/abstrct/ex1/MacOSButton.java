@@ -1,5 +1,7 @@
 package patterns.basic.refactoring.guru.creational.factory.abstrct.ex1;
 
+import static utils.PrintUtils.println;
+
 /**
  * Все семейства продуктов имеют одни и те же вариации (MacOS/Windows).
  *
@@ -9,6 +11,6 @@ public class MacOSButton implements Button {
 
     @Override
     public void paint() {
-        System.out.println("You have created MacOSButton.");
+        println("You have created MacOSButton.");
     }
 }

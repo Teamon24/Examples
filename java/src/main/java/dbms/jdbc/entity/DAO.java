@@ -1,5 +1,9 @@
 package dbms.jdbc.entity;
 
+import dbms.jdbc.FieldGetter;
+import dbms.jdbc.FieldSetter;
+import dbms.jdbc.ResultGetter;
+import dbms.jdbc.StatementSetter;
 import dbms.jdbc.dbms.SQLStrategy;
 import lombok.Getter;
 import org.apache.commons.lang3.tuple.Pair;
@@ -13,11 +17,12 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiConsumer;
-import java.util.function.Function;
+import java.util.Optional;
 import java.util.function.Supplier;
 
-public abstract class DAO<Id, T extends Entity<Id>> {
+import static utils.PrintUtils.println;
+
+public abstract class DAO<Id, E extends JdbcEntity<Id>> {
 
     private final SQLStrategy sqlStrategy;
     private final String selectByIds;
@@ -25,34 +30,19 @@ public abstract class DAO<Id, T extends Entity<Id>> {
     private final String deleteById;
     private final String insertUser;
 
-    public final T emptyEntity = emptyEntityCreator().get();
+    public final E emptyEntity = emptyEntityCreator().get();
     private final String idName = emptyEntity.getIdName();
 
     @Getter
     private final String tableName;
 
-    public abstract
-    Map<
-        String,
-        Pair<
-            Function<ResultSet, Object>,
-            BiConsumer<T, Object>
-            >
-        >
-    resultGettersAndEntitySetters();
+    public abstract Supplier<E> emptyEntityCreator();
 
-    public abstract
-    Map<
-        String,
-        Pair<
-            BiConsumer<PreparedStatement, Object>,
-            Function<T, Object>
-            >
-        >
-    statementSettersAndEntityGetters();
+    public abstract Map<String, Pair<ResultGetter, FieldSetter<E>>> resultGettersAndEntitySetters();
+    public abstract Map<String, Pair<FieldGetter<E>, StatementSetter<?>>> statementSettersAndEntityGetters();
 
 
-    private final BiConsumer<PreparedStatement, Id> idSetter = emptyEntity.idResultSetter();
+    private final StatementSetter<Id> idSetter = (StatementSetter<Id>) statementSettersAndEntityGetters().get(idName).getRight();
 
 
     protected DAO(SQLStrategy sqlStrategy) {
@@ -66,35 +56,33 @@ public abstract class DAO<Id, T extends Entity<Id>> {
         insertUser = sqlStrategy.insertUserQuery(tableName, emptyEntity.getTableColumns());
     }
 
-    public abstract Supplier<T> emptyEntityCreator();
-
     public void truncate(Connection con) throws SQLException {
         Statement stmt = con.createStatement();
 
         int inserted = stmt.executeUpdate("TRUNCATE " + tableName);
-        System.out.println(inserted > 0 ? "Successfully Inserted" : "Insert Failed");
+        println(inserted > 0 ? "Successfully Inserted" : "Insert Failed");
     }
 
-    public T selectById(Connection connection, Id id) throws SQLException {
+    public Optional<E> selectById(Connection connection, Id id) throws SQLException {
         PreparedStatement stmt = connection.prepareStatement(selectById);
         idSetter.accept(stmt, id);
         ResultSet resultSet = stmt.executeQuery();
         if(resultSet.next()) {
-            return convert(resultSet);
+            return Optional.of(convert(resultSet));
         } else {
-            return null;
+            return Optional.empty();
         }
     }
 
-    public List<T> selectByIds(Connection connection, List<Id> ids) throws SQLException {
+    public List<E> selectByIds(Connection connection, List<Id> ids) throws SQLException {
         PreparedStatement stmt = connection.prepareStatement(selectByIds);
         Object[] idsArray = ids.stream().toArray();
         Array array = stmt.getConnection().createArrayOf(getType(), idsArray);
         stmt.setArray(1, array);
         ResultSet resultSet = stmt.executeQuery();
-        List<T> entities = new ArrayList<>();
+        List<E> entities = new ArrayList<>();
         while (resultSet.next()) {
-            T entity = convert(resultSet);
+            E entity = convert(resultSet);
             entities.add(entity);
         }
         return entities;
@@ -106,20 +94,24 @@ public abstract class DAO<Id, T extends Entity<Id>> {
         stmt.execute();
     }
 
-    public void insert(Connection con, T entity) throws SQLException {
+    public void insert(Connection con, E entity) throws SQLException {
         PreparedStatement stmt = con.prepareStatement(insertUser);
         statementSettersAndEntityGetters().forEach((column, statementSetterAndEntityGetter) -> {
-            Object entityValue = getFieldValue(statementSetterAndEntityGetter, entity);
-            setStatementValue(statementSetterAndEntityGetter, stmt, entityValue);
+            FieldGetter<E> entityFieldGetter = statementSetterAndEntityGetter.getLeft();
+            Object entityValue = entityFieldGetter.apply(entity);
+            StatementSetter statementSetter = statementSetterAndEntityGetter.getRight();
+            statementSetter.accept(stmt, entityValue);
         });
         stmt.execute();
     }
 
-    private T convert(ResultSet resultSet) {
-        T entity = emptyEntityCreator().get();
+    private E convert(ResultSet resultSet) {
+        E entity = emptyEntityCreator().get();
         resultGettersAndEntitySetters().forEach((columns, functions) -> {
-            Object value = getResultSetValue(functions, resultSet);
-            setField(functions, entity, value);
+            ResultGetter resultGetter = functions.getLeft();
+            Object value = resultGetter.apply(resultSet);
+            FieldSetter<E> fieldSetter = functions.getRight();
+            fieldSetter.accept(entity, value);
         });
         return entity;
     }
@@ -129,44 +121,5 @@ public abstract class DAO<Id, T extends Entity<Id>> {
         if (idType.equals(String.class)) return sqlStrategy.getVarcharTypeName();
         if (idType.equals(Integer.class)) return sqlStrategy.getIntegerTypeName();
         throw new RuntimeException("There is no dataType for ");
-    }
-
-    private void setField(
-        Pair<Function<ResultSet, Object>,
-        BiConsumer<T, Object>> functions, T entity,
-        Object value)
-    {
-        BiConsumer<T, Object> entityFieldSetter = functions.getRight();
-        entityFieldSetter.accept(entity, value);
-    }
-
-    private Object getResultSetValue(
-        Pair<Function<ResultSet, Object>,
-        BiConsumer<T, Object>> functions,
-        ResultSet resultSet)
-    {
-        Function<ResultSet, Object> columnValueGetter = functions.getLeft();
-        Object value = columnValueGetter.apply(resultSet);
-        return value;
-    }
-
-
-    private void setStatementValue(
-        Pair<BiConsumer<PreparedStatement,
-        Object>, Function<T, Object>> statementSetterAndEntityGetter,
-        PreparedStatement stmt,
-        Object entityValue)
-    {
-        BiConsumer<PreparedStatement, Object> statementSetter = statementSetterAndEntityGetter.getLeft();
-        statementSetter.accept(stmt, entityValue);
-    }
-
-    private Object getFieldValue(
-        Pair<BiConsumer<PreparedStatement, Object>, Function<T, Object>> statementSetterAndEntityGetter,
-        T entity)
-    {
-        Function<T, Object> entityFieldGetter = statementSetterAndEntityGetter.getRight();
-        Object entityValue = entityFieldGetter.apply(entity);
-        return entityValue;
     }
 }

@@ -2,9 +2,12 @@ package patterns.basic.refactoring.guru.behavioral.memento.ex1;
 
 import org.apache.commons.lang3.tuple.Pair;
 import patterns.basic.refactoring.guru.behavioral.memento.ex1.command.Command;
+import utils.PrintUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static utils.PrintUtils.*;
 
 public class History {
     private List<Pair<Command, Memento>> snapshots = new ArrayList<>();
@@ -25,7 +28,7 @@ public class History {
         }
         Command command = pair.getLeft();
         Memento memento = pair.getRight();
-        System.out.println("Undoing: " + command.getName());
+        println("Undoing: " + command.getName());
         memento.restore();
         return true;
     }
@@ -36,7 +39,7 @@ public class History {
             return false;
         }
         Command command = snapshot.getKey();
-        System.out.println("Redoing: " + command.getName());
+        println("Redoing: " + command.getName());
         Memento memento = snapshot.getRight();
         memento.restore();
         command.execute();

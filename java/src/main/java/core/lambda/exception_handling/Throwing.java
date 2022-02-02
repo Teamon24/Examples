@@ -1,5 +1,7 @@
 package core.lambda.exception_handling;
 
+import utils.Voider;
+
 import static core.lambda.exception_handling.ThrowingLambdasEssential.rethrowIfAnotherIsCaught;
 
 @FunctionalInterface

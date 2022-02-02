@@ -2,12 +2,11 @@ package core.base.equals_hash_code.equals.inheritence.symmetry_violation;
 
 import core.base.equals_hash_code.equals.inheritence.A;
 import core.base.equals_hash_code.equals.inheritence.B;
-import core.base.equals_hash_code.equals.inheritence.symmetry_violation.class_comparison_fix.A_ClassComparisonFix;
-import core.base.equals_hash_code.equals.inheritence.symmetry_violation.class_comparison_fix.B_ClassComparisonFix;
-import core.base.equals_hash_code.equals.inheritence.symmetry_violation.compostion_fix.B_CompositionFix;
-import core.base.equals_hash_code.equals.inheritence.symmetry_violation.few_instance_of.B_FewInstanceOf;
+import utils.ClassUtils;
+import utils.PrintUtils;
 
 import static java.lang.String.*;
+import static utils.PrintUtils.*;
 
 public class Demo {
     public static void main(String[] args) {
@@ -36,17 +35,17 @@ public class Demo {
     }
 
     private static String name(Object o) {
-        return o.getClass().getSimpleName();
+        return ClassUtils.simpleName(o);
     }
 
     private static boolean checkSymmetry(final String title,
                                          final boolean moneyEqualsVoucher, final boolean voucherEqualsMoney)
     {
         String line = "-".repeat(title.length());
-        System.out.println(line + "\n" + title + "\n" + line);
-        System.out.println("a " + equalSymbol(moneyEqualsVoucher) + " b");
-        System.out.println("b " + equalSymbol(voucherEqualsMoney) + " a");
-        System.out.println();
+        println(line + "\n" + title + "\n" + line);
+        println("a " + equalSymbol(moneyEqualsVoucher) + " b");
+        println("b " + equalSymbol(voucherEqualsMoney) + " a");
+        println();
         return moneyEqualsVoucher && voucherEqualsMoney;
     }
 

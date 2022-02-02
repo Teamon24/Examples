@@ -1,5 +1,7 @@
 package patterns.basic.refactoring.guru.structural.decorator.ex3;
 
+import static utils.PrintUtils.println;
+
 public class Client {
     public static void main(String[] args) {
         String salaryRecords = "Name,Salary\nJohn Smith,100000\nSteven Jobs,912000";
@@ -9,11 +11,11 @@ public class Client {
         encoded.writeData(salaryRecords);
         DataSource plain = new FileDataSource("out/OutputDemo.txt");
 
-        System.out.println("- Input ----------------");
-        System.out.println(salaryRecords);
-        System.out.println("- Encoded --------------");
-        System.out.println(plain.readData());
-        System.out.println("- Decoded --------------");
-        System.out.println(encoded.readData());
+        println("- Input ----------------");
+        println(salaryRecords);
+        println("- Encoded --------------");
+        println(plain.readData());
+        println("- Decoded --------------");
+        println(encoded.readData());
     }
 }

@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import static utils.PrintUtils.println;
+
 /**
  * Конкретная стратегия. Реализует оплату корзины интернет магазина кредитной
  * картой клиента.
@@ -40,7 +42,7 @@ public class PayByCreditCard implements PayStrategy {
     @Override
     public boolean pay(int paymentAmount) {
         if (cardIsPresent()) {
-            System.out.println("Paying " + paymentAmount + " using Credit Card.");
+            println("Paying " + paymentAmount + " using Credit Card.");
             card.setAmount(card.getAmount() - paymentAmount);
             return true;
         } else {

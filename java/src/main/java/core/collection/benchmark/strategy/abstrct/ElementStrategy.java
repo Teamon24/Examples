@@ -7,6 +7,8 @@ import core.collection.benchmark.utils.PrintResultBuilder;
 import java.util.Collection;
 import java.util.function.Supplier;
 
+import static utils.PrintUtils.println;
+
 public abstract class ElementStrategy<E> extends MethodStrategy<E> {
     protected final Supplier<E> elementSupplier;
     protected E element;
@@ -44,7 +46,7 @@ public abstract class ElementStrategy<E> extends MethodStrategy<E> {
             .method(methodType.getValue())
             .element(this.element)
             .executionTime(executionTime).build();
-        System.out.println(build);
+        println(build);
     }
 
     public abstract void method(Collection<E> collection, E element);

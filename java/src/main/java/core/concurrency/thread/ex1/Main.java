@@ -1,17 +1,19 @@
 package core.concurrency.thread.ex1;
 
-import core.utils.TableUtils;
+import utils.TableUtils;
 import utils.ConcurrencyUtils;
-import core.concurrency.thread.ex1.state.StateObject;
-import core.concurrency.thread.ex1.state.StateObjectImpl;
-import core.concurrency.thread.ex1.state.SynchronizedStateObject;
-import core.concurrency.thread.ex1.state.VolatileStateObject;
+import core.concurrency.thread.ex1.state.State;
+import core.concurrency.thread.ex1.state.StateImpl;
+import core.concurrency.thread.ex1.state.SynchronizedState;
+import core.concurrency.thread.ex1.state.VolatileState;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Stream;
+
+import static utils.ClassUtils.simpleName;
 
 public class Main {
 
@@ -20,19 +22,18 @@ public class Main {
         int doubleAccuracy = 3;
         int threadsAmount = 5;
 
-        final StateObject stateObject1 = new StateObjectImpl();
-        final StateObject stateObject2 = new VolatileStateObject();
-        final StateObject stateObject3 = new SynchronizedStateObject();
+        final State state1 = new StateImpl();
+        final State state2 = new VolatileState();
+        final State state3 = new SynchronizedState();
 
         int expected = Counter.LIMIT;
         final List<TableUtils.Record> records = new ArrayList<>();
         Stream
-            .of(stateObject1, stateObject2, stateObject3)
+            .of(state1, state2, state3)
             .forEach(
-                stateObject -> {
-                    int actual = increment(threadsAmount, stateObject);
-                    TableUtils.Record record = getRecord(stateObject, doubleAccuracy, threadsAmount, expected, actual);
-                    records.add(record);
+                state -> {
+                    int actual = increment(threadsAmount, state);
+                    records.add(getRecord(state, doubleAccuracy, threadsAmount, expected, actual));
                 });
 
         List<String> columns = List.of("Case", "Threads", "Expected", "Actual", "Lost");
@@ -40,7 +41,7 @@ public class Main {
         TableUtils.printResults(table);
     }
 
-    private static TableUtils.Record getRecord(final StateObject stateObject,
+    private static TableUtils.Record getRecord(final State state,
                                                final int doubleAccuracy,
                                                final int threadsAmount,
                                                final int expected,
@@ -52,20 +53,20 @@ public class Main {
                 put("Actual", String.valueOf(actual));
                 put("Threads", String.valueOf(threadsAmount));
                 put("Lost", String.valueOf(getLossString(actual, expected, doubleAccuracy)));
-                put("Case", stateObject.getClass().getSimpleName());
+                put("Case", simpleName(state));
             }}
         );
     }
 
     private static int increment(int threadsAmount,
-                                 final StateObject stateObject)
+                                 final State state
+    )
     {
-        Counter checker = new Counter();
-        Function<Integer, Thread> integerThreadFunction = (Integer id) -> new IncrementThread(checker, stateObject);
-        final List<Thread> threads = ConcurrencyUtils.createThreads(threadsAmount, integerThreadFunction);
+        Counter counter = new Counter();
+        final List<Thread> threads = ConcurrencyUtils.createThreads(threadsAmount, (Integer id) -> new IncrementThread(counter, state));
         threads.forEach(Thread::start);
         ConcurrencyUtils.join(threads);
-        return stateObject.getI();
+        return state.getI();
     }
 
     private static String getLossString(final double actual, double expected, int doubleAccuracy) {

@@ -8,12 +8,14 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 
+import static core.concurrency.thread_pool.ThreadPoolExamplesUtils.getRunnables;
+import static core.concurrency.thread_pool.ThreadPoolExamplesUtils.getTasks;
 import static utils.ConcurrencyUtils.executeAll;
+import static utils.ConcurrencyUtils.getResult;
 import static utils.ConcurrencyUtils.invokeAll;
 import static utils.ConcurrencyUtils.invokeAny;
-import static utils.ConcurrencyUtils.getResult;
 import static utils.ConcurrencyUtils.submitAll;
-import static core.concurrency.thread_pool.ThreadPoolExamplesUtils.*;
+import static utils.PrintUtils.println;
 
 public class MethodsOfExecutorService {
     public static void main(String[] args) {
@@ -31,8 +33,8 @@ public class MethodsOfExecutorService {
         String resultOfAnyFuture              = invokeAny(executor, getTasks("INVOKE_ANY", taskNumbersRange.firstStep()));
         List<Future<String>> invokedFutures   = invokeAll(executor, getTasks("INVOKE_ALL", taskNumbersRange.firstStep()));
 
-        System.out.println(resultOfAnyFuture);
-        submittedFutures.forEach(it -> System.out.println(getResult(it)));
-        invokedFutures.forEach(it -> System.out.println(getResult(it)));
+        println(resultOfAnyFuture);
+        submittedFutures.forEach(it -> println(getResult(it)));
+        invokedFutures.forEach(it -> println(getResult(it)));
     }
 }

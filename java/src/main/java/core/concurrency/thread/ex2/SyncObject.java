@@ -1,9 +1,10 @@
 package core.concurrency.thread.ex2;
 
 import utils.ConcurrencyUtils;
-import core.utils.IndentUtils;
+import utils.IndentUtils;
 
-import static core.utils.IndentUtils.addIndent;
+import static utils.IndentUtils.addIndent;
+import static utils.PrintUtils.printfln;
 
 public class SyncObject {
     public static final String SYNC_1 = "SYNC-1";
@@ -38,7 +39,7 @@ public class SyncObject {
         final String methodName,
         final MethodThread thread
     ) {
-        System.out.printf("#%s: %s invokes and waits for %s seconds\n",
+        printfln("#%s: %s invokes and waits for %s seconds",
             IndentUtils.addIndent(methodName, names),
             getThreadName(thread),
             thread.jobImitationTime / 1000
@@ -49,7 +50,7 @@ public class SyncObject {
         final String methodName,
         final MethodThread thread)
     {
-        System.out.printf("#%s: %s is out\n",
+        printfln("#%s: %s is out",
             IndentUtils.addIndent(methodName, names),
             getThreadName(thread));
     }

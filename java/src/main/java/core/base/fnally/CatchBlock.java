@@ -1,9 +1,12 @@
 package core.base.fnally;
 
+import utils.PrintUtils;
+
 import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static org.apache.commons.lang3.ClassUtils.getSimpleName;
+import static utils.PrintUtils.printfln;
 
 public interface CatchBlock<T> extends Function<Exception, T> {
 
@@ -22,9 +25,9 @@ public interface CatchBlock<T> extends Function<Exception, T> {
         return (exception) -> {
             String message = exception.getMessage();
             String simpleName = getSimpleName(exception);
-            System.out.printf("Catch block: exception handled - %s (%s)\n", simpleName, message);
+            printfln("Catch block: exception handled - %s (%s)\n", simpleName, message);
             if (exceptionSupplier.get() != null) {
-                System.out.println("Catch block: throwing an exception");
+                PrintUtils.println("Catch block: throwing an exception");
                 throw exceptionSupplier.get();
             }
             return defaultValue;

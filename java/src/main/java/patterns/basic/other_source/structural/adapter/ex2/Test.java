@@ -1,6 +1,8 @@
 package patterns.basic.other_source.structural.adapter.ex2;
 
 
+import static utils.PrintUtils.printfln;
+
 public class Test {
     public static void main(String[] args) {
         int specificValue = 100;
@@ -10,8 +12,8 @@ public class Test {
 
         String adaptedValue = target.getValue();
 
-        System.out.printf(
-            "before: %s, after: %s%n",
+        printfln(
+            "before: %s, after: %s",
             specificValue,
             adaptedValue
         );

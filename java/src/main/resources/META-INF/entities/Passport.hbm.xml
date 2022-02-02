@@ -1,0 +1,19 @@
+<hibernate-mapping package="dbms.hibernate.hbm.entity">
+    <class name="dbms.hibernate.hbm.entity.Passport" table="PASSPORTS">
+        <id name="id" type="int" column="id">
+            <generator class="identity"/>
+        </id>
+        <property name="series" type="string" column="SERIES"/>
+        <property name="no" type="string" column="NO"/>
+        <property name="issueDate" type="timestamp" column="ISSUE_DATE"/>
+        <join table="PERSON_PASSPORT"
+              optional="true"
+              inverse="true">
+            <key column="PASSPORT_ID"/>
+            <many-to-one name="person"
+                         column="PERSON_ID"
+                         not-null="true"
+                         unique="true"/>
+        </join>
+    </class>
+</hibernate-mapping>

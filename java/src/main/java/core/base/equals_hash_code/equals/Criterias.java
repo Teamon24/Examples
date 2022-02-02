@@ -1,5 +1,7 @@
 package core.base.equals_hash_code.equals;
 
+import static utils.PrintUtils.println;
+
 /**
  * <p><strong>Критерии</strong>:
  * <ul>
@@ -27,13 +29,13 @@ public class Criterias {
         a2.setPrim1(10);
         boolean consistency = a1EqualsA2BeforeSet && !a1.equals(a2);
 
-        boolean nullInequivalence = !a1.equals(null);
+        boolean nonNullCriteria = !a1.equals(null);
 
-        System.out.println("1. Reflectiveness: " + reflectiveness);
-        System.out.println("2. Symmetry: " + symmetry);
-        System.out.println("3. Transitivity: " + transitivity);
-        System.out.println("4. Consistency: " + consistency);
-        System.out.println("5. Null-Inequivalence: " + nullInequivalence);
+        println("1. Reflectiveness: " + reflectiveness);
+        println("2. Symmetry: " + symmetry);
+        println("3. Transitivity: " + transitivity);
+        println("4. Consistency: " + consistency);
+        println("5. Non-null criteria: " + nonNullCriteria);
     }
 }
 

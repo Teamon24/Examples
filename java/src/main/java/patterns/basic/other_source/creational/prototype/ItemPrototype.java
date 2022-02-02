@@ -1,6 +1,6 @@
 package patterns.basic.other_source.creational.prototype;
 
-public abstract class ItemPrototype implements Cloneable{
+public abstract class ItemPrototype implements Cloneable {
     private String title;
     private double price;
 

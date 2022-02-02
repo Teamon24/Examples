@@ -1,10 +1,14 @@
 package patterns.basic.refactoring.guru.behavioral.strategy.ex1;
 
+import utils.PrintUtils;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
+
+import static utils.PrintUtils.*;
 
 /**
  * Конкретная стратегия. Реализует оплату корзины интернет магазина через
@@ -30,13 +34,13 @@ public class PayByPayPal implements PayStrategy {
         try {
             while (!signedIn) {
                 System.out.print("Enter the user's email: ");
-                email = READER.readLine();
+                this.email = READER.readLine();
                 System.out.print("Enter the password: ");
-                password = READER.readLine();
+                this.password = READER.readLine();
                 if (verify()) {
-                    System.out.println("Data verification has been successful.");
+                    println("Data verification has been successful.");
                 } else {
-                    System.out.println("Wrong email or password!");
+                    println("Wrong email or password!");
                 }
             }
         } catch (IOException ex) {
@@ -45,8 +49,8 @@ public class PayByPayPal implements PayStrategy {
     }
 
     private boolean verify() {
-        setSignedIn(email.equals(DATA_BASE.get(password)));
-        return signedIn;
+        setSignedIn(this.email.equals(DATA_BASE.get(this.password)));
+        return this.signedIn;
     }
 
     /**
@@ -55,8 +59,8 @@ public class PayByPayPal implements PayStrategy {
      */
     @Override
     public boolean pay(int paymentAmount) {
-        if (signedIn) {
-            System.out.println("Paying " + paymentAmount + " using PayPal.");
+        if (this.signedIn) {
+            println("Paying " + paymentAmount + " using PayPal.");
             return true;
         } else {
             return false;

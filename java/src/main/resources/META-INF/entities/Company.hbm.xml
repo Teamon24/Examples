@@ -1,0 +1,17 @@
+<hibernate-mapping package="dbms.hibernate">
+    <class name="dbms.hibernate.hbm.entity.Company" table="COMPANIES">
+        <id name="id" type="int" column="id">
+            <generator class="identity"/>
+        </id>
+        <property name="name" type="string" column="NAME"/>
+        <set name="persons"
+             table="PERSON_COMPANY"
+             inverse="true"
+             cascade="refresh"
+             lazy="true">
+            <key column="COMPANY_ID"/>
+            <many-to-many column="PERSON_ID"
+                          class="dbms.hibernate.hbm.entity.Person"/>
+        </set>
+    </class>
+</hibernate-mapping>

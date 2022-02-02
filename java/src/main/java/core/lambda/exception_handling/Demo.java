@@ -6,6 +6,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.stream.Stream;
 
 import static core.lambda.exception_handling.ThrowingFunction.wrap;
+import static utils.PrintUtils.println;
 
 public class Demo {
     public static void main(String[] args) {
@@ -32,7 +33,7 @@ public class Demo {
     }
 
     private static void message(Throwable t) {
-        System.out.println(t.getMessage());
+        println(t.getMessage());
     }
 
     public static <Ex extends RuntimeException> Object unchecked(Class<Ex> aClass) {

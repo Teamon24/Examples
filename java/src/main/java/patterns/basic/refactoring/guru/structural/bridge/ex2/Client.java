@@ -3,6 +3,9 @@ package patterns.basic.refactoring.guru.structural.bridge.ex2;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import static utils.ClassUtils.simpleName;
+import static utils.PrintUtils.println;
+
 public class Client {
     public static void main(String[] args) {
         Tv tv = new Tv();
@@ -25,7 +28,7 @@ public class Client {
     {
 
         T basicRemote = create.apply(device);
-        printTest(basicRemote.getClass().getSimpleName());
+        printTest(simpleName(basicRemote));
 
         for (Consumer<T> command : commands) {
             command.accept(basicRemote);
@@ -34,9 +37,9 @@ public class Client {
     }
 
     private static void printTest(final String name) {
-        System.out.println("------------------------------------");
-        System.out.println("Tests with " + name + " remote.");
-        System.out.println("------------------------------------");
+        println("------------------------------------");
+        println("Tests with " + name + " remote.");
+        println("------------------------------------");
     }
 
     private static void doAdvancedCommands(final AdvancedRemote advancedRemote) {

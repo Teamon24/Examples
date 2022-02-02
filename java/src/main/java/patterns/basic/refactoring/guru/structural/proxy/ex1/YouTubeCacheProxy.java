@@ -2,6 +2,8 @@ package patterns.basic.refactoring.guru.structural.proxy.ex1;
 
 import java.util.HashMap;
 
+import static utils.PrintUtils.println;
+
 public class YouTubeCacheProxy implements YoutubeApi {
 
     private YoutubeApi youtubeService;
@@ -14,28 +16,28 @@ public class YouTubeCacheProxy implements YoutubeApi {
 
     @Override
     public HashMap<String, Video> popularVideos() {
-        if (cachePopular.isEmpty()) {
-            cachePopular = youtubeService.popularVideos();
+        if (this.cachePopular.isEmpty()) {
+            this.cachePopular = this.youtubeService.popularVideos();
         } else {
-            System.out.println("Retrieved list from cache.");
+            println("Retrieved list from cache.");
         }
-        return cachePopular;
+        return this.cachePopular;
     }
 
     @Override
     public Video getVideo(String videoId) {
-        Video video = cacheAll.get(videoId);
+        Video video = this.cacheAll.get(videoId);
         if (video == null) {
-            video = youtubeService.getVideo(videoId);
-            cacheAll.put(videoId, video);
+            video = this.youtubeService.getVideo(videoId);
+            this.cacheAll.put(videoId, video);
         } else {
-            System.out.println("Retrieved video '" + videoId + "' from cache.");
+            println("Retrieved video '" + videoId + "' from cache.");
         }
         return video;
     }
 
     public void reset() {
-        cachePopular.clear();
-        cacheAll.clear();
+        this.cachePopular.clear();
+        this.cacheAll.clear();
     }
 }

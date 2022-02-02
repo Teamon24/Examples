@@ -1,5 +1,7 @@
 package patterns.basic.other_source.structural.adapter.ex1;
 
+import static utils.PrintUtils.println;
+
 public class Test {
 
     public static void main(String[] args) {
@@ -17,7 +19,7 @@ public class Test {
 
         Target target = new Target(adapted);
         Storage storage = new Storage(target);
-        System.out.println(getMessage(source, target));
+        println(getMessage(source, target));
     }
 
     private static void testClassAdapter() {
@@ -25,7 +27,7 @@ public class Test {
         Adapter adapter = new AdapterClassImpl(source);
         String adaptedValue = adapter.adapt();
         Target target = new Target(adaptedValue);
-        System.out.println(getMessage(source, target));
+        println(getMessage(source, target));
     }
 
     private static String getMessage(Source source, Target target) {

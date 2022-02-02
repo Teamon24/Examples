@@ -1,16 +1,28 @@
 package core.exceptions;
 
+import java.io.FileNotFoundException;
+
+import static utils.PrintUtils.println;
+
 public interface Handler {
-    void handle();
-    void handle2() throws Throwable;
+    void throwable() throws Throwable;
+    void checked() throws Exception;
+    <T extends RuntimeException> void  unchecked() throws T;
 }
 
 class HandlerImpl implements Handler {
-    public void handle() throws RuntimeException {
-        System.out.println("Handling");
+
+    public void throwable() throws RuntimeException, Exception {
+        println("throws Throwable descendants");
     }
 
-    public void handle2() throws Throwable {
-        System.out.println("Handling 2");
+    @Override
+    public void checked() throws FileNotFoundException, ClassNotFoundException  {
+        println("throws Exception descendants");
+    }
+
+    @Override
+    public void unchecked() throws ArithmeticException, ArrayIndexOutOfBoundsException  {
+        println("throws RuntimeException descendants");
     }
 }

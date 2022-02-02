@@ -1,6 +1,6 @@
 package dbms.jdbc;
 
-import dbms.jdbc.entity.Entity;
+import dbms.jdbc.entity.JdbcEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,7 +15,7 @@ import java.util.function.BiConsumer;
 @NoArgsConstructor
 @Setter
 @Getter
-public class UserJdbcEntity extends Entity<String> {
+public class UserJdbcEntity extends JdbcEntity<String> {
 
     public static final String idColumn = "id";
     private String id;
@@ -28,7 +28,6 @@ public class UserJdbcEntity extends Entity<String> {
 
     public static final String emailColumn = "email";
     private String email;
-
 
     @Override
     public String getTableName() {
@@ -48,17 +47,6 @@ public class UserJdbcEntity extends Entity<String> {
     @Override
     public Class<String> getIdType() {
         return String.class;
-    }
-
-    @Override
-    public BiConsumer<PreparedStatement, String> idResultSetter() {
-        return (preparedStatement, id) -> {
-            try {
-                preparedStatement.setString(1, id);
-            } catch (SQLException e) {
-                throw new RuntimeException(e.getCause());
-            }
-        };
     }
 
     @Override

@@ -16,6 +16,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static utils.PrintUtils.printfln;
+
 public final class ConcurrencyUtils {
 
     public static final int MILLIS_IN_SECOND = 1000;
@@ -38,13 +40,13 @@ public final class ConcurrencyUtils {
 
     public static void safePrintln(String s) {
         synchronized (System.out) {
-            System.out.println(s);
+            PrintUtils.println(s);
         }
     }
 
     public static void safePrintf(String template, Object... args) {
         synchronized (System.out) {
-            System.out.printf(template, args);
+            printfln(template, args);
         }
     }
 

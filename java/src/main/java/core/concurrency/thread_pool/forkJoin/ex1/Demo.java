@@ -1,17 +1,22 @@
 package core.concurrency.thread_pool.forkJoin.ex1;
 
+import org.apache.commons.lang3.tuple.Pair;
 import utils.ConcurrencyUtils;
-import core.utils.ListGenerator;
+import utils.ListGenerator;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;
 import java.util.function.BiFunction;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static utils.PrintUtils.println;
 
 public class Demo {
 
@@ -37,12 +42,17 @@ public class Demo {
 
         final ForkJoinPool forkJoinPool = new ForkJoinPool(parallelism);
 
-        Stream.of(sum, max, min, mult, sub)
-            .forEach(task -> {
+        Map<Reduce<? extends Number>, Object> results = Stream.of(sum, max, min, mult, sub)
+            .map(task -> {
                 Object result = execute(forkJoinPool, task);
-                assertResult(task, result);
-                printResult(task, result);
-            });
+                return Pair.of(task, result);
+            }).collect(Collectors.toMap(Pair::getKey, Pair::getValue));
+
+        results.forEach((task, result) -> {
+            assertResult(task, result);
+            printResult(task, result);
+        });
+
         ConcurrencyUtils.sleep(100);
     }
 
@@ -57,22 +67,23 @@ public class Demo {
         } else {
             String template = "For task '%s' expected and actual results are equal - '%s'";
             String message = String.format(template, task.getName(), expected);
-            System.out.println(message);
+            println(message);
         }
     }
 
     private static int getParallelism(int availableProcessors) {
         if (availableProcessors == 1) return 1;
         if (availableProcessors == 2) return 1;
+        if (availableProcessors == 3) return 2;
         return availableProcessors / 2;
     }
 
     private static void printResult(Reduce<?> task, Object result) {
         String message = String.format("Result of '%s': %s", task.getName(), result);
         String line = "-".repeat(message.length());
-        System.out.println(line);
-        System.out.println(message);
-        System.out.println(line.repeat(4));
+        println(line);
+        println(message);
+        println(line.repeat(4));
     }
 
     private static <T> T execute(ForkJoinPool forkJoinPool, ForkJoinTask<T> task) {

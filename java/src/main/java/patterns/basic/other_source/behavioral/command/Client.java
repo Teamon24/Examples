@@ -5,6 +5,8 @@ import patterns.basic.other_source.behavioral.command.commands.IncrementCommand;
 
 import java.util.Random;
 
+import static utils.PrintUtils.printfln;
+
 public class Client {
 
     public static void main(String[] args) {
@@ -29,6 +31,6 @@ public class Client {
             counter.click();
         }
 
-        System.out.printf("увеличено раз: %d;\nуменьшено раз: %d;\nрезультат: %d\n", incr, decr, incrementer.getI());
+        printfln("увеличено раз: %d;\nуменьшено раз: %d;\nрезультат: %d", incr, decr, incrementer.getI());
     }
 }

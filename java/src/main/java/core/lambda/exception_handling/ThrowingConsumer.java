@@ -1,5 +1,7 @@
 package core.lambda.exception_handling;
 
+import utils.Voider;
+
 import java.util.function.Consumer;
 
 import static core.lambda.exception_handling.ThrowingLambdasEssential.rethrowIfAnotherIsCaught;

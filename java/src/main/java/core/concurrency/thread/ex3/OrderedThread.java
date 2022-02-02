@@ -1,5 +1,8 @@
 package core.concurrency.thread.ex3;
 
+import static utils.PrintUtils.printfln;
+import static utils.PrintUtils.println;
+
 public class OrderedThread extends Thread {
 
     public final int id;
@@ -33,12 +36,12 @@ public class OrderedThread extends Thread {
     }
 
     private void waitMessage(final int ID, final int turn) {
-        System.out.printf("turn: #%s, current: #%s\n", turn, ID);
+        printfln("turn: #%s, current: #%s", turn, ID);
     }
 
     private void passedMessage(final int ID) {
-        System.out.println("--------------------------");
-        System.out.println("#" + ID + " passed through");
-        System.out.println("--------------------------");
+        println("--------------------------");
+        println("#" + ID + " passed through");
+        println("--------------------------");
     }
 }

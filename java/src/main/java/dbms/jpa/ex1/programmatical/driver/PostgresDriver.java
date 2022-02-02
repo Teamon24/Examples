@@ -8,6 +8,11 @@ public final class PostgresDriver extends DriverProperties {
     private PostgresDriver() {}
 
     @Override
+    public String getUrlTemplate() {
+        return URL_TEMPLATE;
+    }
+
+    @Override
     public DriverType getType() {
         return DriverType.POSTGRES;
     }

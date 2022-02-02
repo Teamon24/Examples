@@ -16,4 +16,9 @@ public final class MySqlDriver extends DriverProperties {
     public String getDriverName() {
         return "com.mysql.jdbc.Driver";
     }
+
+    @Override
+    public String getUrlTemplate() {
+        return URL_TEMPLATE;
+    }
 }

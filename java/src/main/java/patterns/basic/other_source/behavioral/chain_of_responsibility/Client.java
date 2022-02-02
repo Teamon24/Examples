@@ -1,6 +1,10 @@
 package patterns.basic.other_source.behavioral.chain_of_responsibility;
 
+import utils.PrintUtils;
+
 import java.util.Arrays;
+
+import static utils.PrintUtils.*;
 
 public class Client {
     public static final ATMDispenseChain ATM_DISPENSER =
@@ -29,15 +33,15 @@ public class Client {
 
     private static void printDispensed(final Integer nominal, final Integer amount) {
         String message = String.format("nominal: %s$, amounts: %s", nominal, amount);
-        System.out.println(message);
+        println(message);
     }
 
     private static void printErrorMessage() {
-        System.out.println("Can't be dispensed");
+        println("Can't be dispensed");
     }
 
     private static void printAmount(Integer amount) {
-        System.out.println("-------------------------");
-        System.out.println(String.format("Amount: %s$", amount));
+        println("-------------------------");
+        println(String.format("Amount: %s$", amount));
     }
 }

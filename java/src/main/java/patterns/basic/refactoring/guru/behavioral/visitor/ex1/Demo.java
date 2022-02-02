@@ -1,5 +1,7 @@
 package patterns.basic.refactoring.guru.behavioral.visitor.ex1;
 
+import static utils.PrintUtils.println;
+
 public class Demo {
     public static void main(String[] args) {
         Dot dot = new Dot(1, 10, 55);
@@ -20,6 +22,6 @@ public class Demo {
 
     private static void export(Shape... shapes) {
         XMLExportVisitor exportVisitor = new XMLExportVisitor();
-        System.out.println(exportVisitor.export(shapes));
+        println(exportVisitor.export(shapes));
     }
 }

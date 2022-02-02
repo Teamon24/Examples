@@ -10,6 +10,9 @@ import java.util.concurrent.RecursiveTask;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
 
+import static utils.PrintUtils.printfln;
+import static utils.PrintUtils.println;
+
 public class Reduce<T> extends RecursiveTask<T> {
 
     protected static final String TEMPLATE = "[%s]: reduce('%s') = '%s'";
@@ -75,7 +78,7 @@ public class Reduce<T> extends RecursiveTask<T> {
 
     private List<Reduce<T>> getSubtasksWithNewSize(int newSize) {
         List<Reduce<T>> tasks = new ArrayList<>();
-        System.out.println("Task's list: " + elements(this.elements));
+        println("Task's list: " + elements(this.elements));
 
         for (int i = 0; i < this.forksAmount; i++) {
             int fromInclusively = newSize * i;
@@ -100,14 +103,14 @@ public class Reduce<T> extends RecursiveTask<T> {
             this.reducer,
             this.threshold,
             this.forksAmount);
-        System.out.printf("%s: \n", subtask.getName() + elements(newElements));
+        printfln("%s:", subtask.getName() + elements(newElements));
         return subtask;
     }
 
     private void printResult(T reduced) {
         String threadName = Thread.currentThread().getName();
         String elementsString = elements(this.elements);
-        System.out.printf((TEMPLATE) + "%n", threadName, elementsString, reduced);
+        printfln(TEMPLATE, threadName, elementsString, reduced);
     }
 
     private String elements(List<T> elements) {

@@ -5,6 +5,8 @@ import patterns.enterprise.unit_of_work.abstraction.Database;
 import java.util.Collection;
 import java.util.HashMap;
 
+import static utils.PrintUtils.println;
+
 public final class StudentDatabase implements Database<Integer, Student> {
 
     private final HashMap<Integer, Student> entities = new HashMap<>() {{
@@ -18,7 +20,7 @@ public final class StudentDatabase implements Database<Integer, Student> {
 
     @Override
     public void insert(Student student) {
-        System.out.println("Inserting: " + student.toString());
+        println("Inserting: " + student.toString());
         Integer id = student.getId();
         if (id == null) {
             this.entities.put(findLast().getId() + 1, student);
@@ -28,13 +30,13 @@ public final class StudentDatabase implements Database<Integer, Student> {
     @Override
     public void modify(Student student) {
         this.entities.put(student.getId(), student);
-        System.out.println("Modifying: " + student);
+        println("Modifying: " + student);
     }
 
     @Override
     public void delete(Student student) {
         this.entities.remove(student.getId(), student);
-        System.out.println("Deleting: " + student);
+        println("Deleting: " + student);
     }
 
     @Override
@@ -45,7 +47,7 @@ public final class StudentDatabase implements Database<Integer, Student> {
     @Override
     public Student find(Integer id) {
         Student student = this.entities.get(id);
-        System.out.println("Found: " + student.toString());
+        println("Found: " + student.toString());
         return student;
     }
 }

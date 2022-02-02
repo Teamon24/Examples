@@ -14,8 +14,10 @@ public abstract class DriverProperties implements Cloneable {
     @Getter
     protected Properties properties = new Properties();
 
+
     public abstract DriverType getType();
     public abstract String getDriverName();
+    public abstract String getUrlTemplate();
 
     public DriverProperties() {
         this.properties.setProperty(DRIVER_PROP, getDriverName());

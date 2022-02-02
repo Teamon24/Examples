@@ -2,14 +2,16 @@ package patterns.basic.other_source.structural.filter;
 
 import patterns.basic.other_source.structural.filter.filter.AndFilter;
 import patterns.basic.other_source.structural.filter.filter.Filter;
-import patterns.basic.other_source.structural.filter.filter.OrFilter;
 import patterns.basic.other_source.structural.filter.filter.FilterFemale;
 import patterns.basic.other_source.structural.filter.filter.FilterJunior;
 import patterns.basic.other_source.structural.filter.filter.FilterMale;
 import patterns.basic.other_source.structural.filter.filter.FilterSenior;
+import patterns.basic.other_source.structural.filter.filter.OrFilter;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static utils.PrintUtils.println;
 
 public class Demo {
     public static void main(String[] args) {
@@ -44,16 +46,16 @@ public class Demo {
         Filter seniorFemale = new AndFilter(seniorEmployees, femaleEmployees);
         Filter juniorOrMale = new OrFilter(juniorEmployees, maleEmployees);
         
-        System.out.println("Male employees: ");
+        println("Male employees: ");
         printEmployeeInfo(maleEmployees.filter(employees));
         
-        System.out.println("\nFemale employees: ");
+        println("\nFemale employees: ");
         printEmployeeInfo(femaleEmployees.filter(employees));
         
-        System.out.println("\nSenior female employees: ");
+        println("\nSenior female employees: ");
         printEmployeeInfo(seniorFemale.filter(employees));
         
-        System.out.println("\nJunior or male employees: ");
+        println("\nJunior or male employees: ");
         printEmployeeInfo(juniorOrMale.filter(employees));
     }
     
@@ -61,7 +63,7 @@ public class Demo {
     //simple method to print out employee info
     public static void printEmployeeInfo(List<Employee> employeeList) {
         for (Employee employee : employeeList) {
-            System.out.println("Employee info: | Name: " 
+            println("Employee info: | Name: "
                     + employee.getName() + ", Gender: " 
                     + employee.getGender() + ", Position: " 
                     + employee.getPosition() + " |");

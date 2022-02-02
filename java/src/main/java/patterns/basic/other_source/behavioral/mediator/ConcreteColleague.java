@@ -1,5 +1,7 @@
 package patterns.basic.other_source.behavioral.mediator;
 
+import static utils.PrintUtils.printfln;
+
 /**
  * 28.12.2016.
  * _____________________________________________________________________________________________________________________________________________________________________________________________________________________________
@@ -11,6 +13,6 @@ public class ConcreteColleague extends Colleague {
     }
 
     public void receive(String message) {
-        System.out.printf("%s received: %s\n", this.getName(), message);
+        printfln("%s received: %s", this.getName(), message);
     }
 }

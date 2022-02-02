@@ -6,6 +6,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import utils.Cartesian;
 import utils.CollectionUtils;
+import utils.Voider;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -17,6 +18,9 @@ import java.util.stream.Stream;
 import static core.lambda.exception_handling.Throwing.*;
 import static core.lambda.exception_handling.ThrowingConsumer.*;
 import static core.lambda.exception_handling.ThrowingObject.createEx;
+import static utils.ClassUtils.simpleName;
+import static utils.PrintUtils.printfln;
+
 /**
  *
  */
@@ -107,16 +111,14 @@ class ThrowingLambdasTest {
             Throwable cause = actual.getCause();
             if (unexpectedException != null) {
                 String template = "Test: actual is %s, but expected is %s";
-                System.out.printf(template + "%n",
-                    cause.getClass().getSimpleName(), expectedExceptionClass.getSimpleName()
-                );
+                printfln(template, simpleName(cause), expectedExceptionClass.getSimpleName());
                 Assertions.assertNotEquals(expectedExceptionClass, cause.getClass());
                 Assertions.assertEquals(unexpectedException.getClass(), cause.getClass());
             } else {
                 if (rethrowsExpected) {
                     Assertions.assertEquals(expectedExceptionClass, cause.getClass());
                     String template = "Test: rethrown exception is '%s";
-                    System.out.printf((template) + "%n", expectedExceptionClass.getSimpleName());
+                    printfln(template, expectedExceptionClass.getSimpleName());
                 }
             }
         }

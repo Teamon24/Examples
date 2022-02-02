@@ -1,0 +1,38 @@
+<hibernate-mapping package="dbms.hibernate">
+    <class name="dbms.hibernate.hbm.entity.Person" abstract="true" table="PERSONS">
+        <id name="id" type="int" column="id">
+            <generator class="identity"/>
+        </id>
+        <property name="firstName" type="string" column="FIRST_NAME"/>
+        <property name="lastName" type="string" column="LAST_NAME"/>
+        <property name="birthDate" type="timestamp" column="BIRTH_DATE"/>
+
+        <!-- Person(1) - Passport(N) -->
+        <set name="passports"
+             table="PERSON_PASSPORT"
+             cascade="save-update, all-delete-orphan">
+            <key column="PERSON_ID"/>
+            <many-to-many column="PASSPORT_ID"
+                          class="dbms.hibernate.hbm.entity.Passport"/>
+        </set>
+
+        <!-- Person(N) - COMPANY(1) -->
+        <set name="companies"
+             table="PERSON_COMPANY">
+            <key column="PERSON_ID"/>
+            <many-to-many column="COMPANY_ID"
+                          unique="true"
+                          class="dbms.hibernate.hbm.entity.Company"/>
+        </set>
+
+        <!-- Person(N) - Address(M) -->
+        <join table="PERSON_ADDRESS"
+              inverse="true">
+            <key column="PERSON_ID"/>
+            <many-to-one name="address"
+                         lazy="proxy"
+                         column="ADDRESS_ID"
+                         not-null="true"/>
+        </join>
+    </class>
+</hibernate-mapping>

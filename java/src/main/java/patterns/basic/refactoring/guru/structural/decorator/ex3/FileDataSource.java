@@ -1,6 +1,12 @@
 package patterns.basic.refactoring.guru.structural.decorator.ex3;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.OutputStream;
+
+import static utils.PrintUtils.println;
 
 public class FileDataSource implements DataSource {
     private String name;
@@ -15,7 +21,7 @@ public class FileDataSource implements DataSource {
         try (OutputStream fos = new FileOutputStream(file)) {
             fos.write(data.getBytes(), 0, data.length());
         } catch (IOException ex) {
-            System.out.println(ex.getMessage());
+            println(ex.getMessage());
         }
     }
 
@@ -27,7 +33,7 @@ public class FileDataSource implements DataSource {
             buffer = new char[(int) file.length()];
             reader.read(buffer);
         } catch (IOException ex) {
-            System.out.println(ex.getMessage());
+            println(ex.getMessage());
         }
         return new String(buffer);
     }

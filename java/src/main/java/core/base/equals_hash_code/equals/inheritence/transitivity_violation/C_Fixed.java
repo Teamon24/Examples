@@ -1,7 +1,7 @@
 package core.base.equals_hash_code.equals.inheritence.transitivity_violation;
 
 import core.base.equals_hash_code.equals.inheritence.A;
-import core.base.equals_hash_code.equals.inheritence.symmetry_violation.ExceptionUtils;
+import core.base.equals_hash_code.equals.inheritence.symmetry_violation.ExampleUtils;
 
 import java.util.Objects;
 
@@ -27,6 +27,6 @@ public class C_Fixed extends B_Fixed {
             return super.equals(other);
         }
 
-        throw ExceptionUtils.exceptionIfNoInstanceOfCase(this, o);
+        throw ExampleUtils.exceptionIfNoInstanceOfCase(this, o);
     }
 }

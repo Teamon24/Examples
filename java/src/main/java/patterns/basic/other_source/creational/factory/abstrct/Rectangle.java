@@ -1,8 +1,10 @@
 package patterns.basic.other_source.creational.factory.abstrct;
 
+import static utils.PrintUtils.println;
+
 public class Rectangle implements Shape {
    @Override
    public void draw() {
-      System.out.println("Inside Rectangle::draw() method.");
+      println("Inside Rectangle::draw() method.");
    }
 }

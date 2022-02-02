@@ -2,6 +2,8 @@ package patterns.basic.refactoring.guru.structural.proxy.ex1;
 
 import java.util.HashMap;
 
+import static utils.PrintUtils.println;
+
 public class YouTubeDownloader {
     private YoutubeApi api;
 
@@ -11,21 +13,21 @@ public class YouTubeDownloader {
 
     public void renderVideoPage(String videoId) {
         Video video = api.getVideo(videoId);
-        System.out.println("\n-------------------------------");
-        System.out.println("Video page (imagine fancy HTML)");
-        System.out.println("ID: " + video.id);
-        System.out.println("Title: " + video.title);
-        System.out.println("Video: " + video.data);
-        System.out.println("-------------------------------\n");
+        println("\n-------------------------------");
+        println("Video page (imagine fancy HTML)");
+        println("ID: " + video.id);
+        println("Title: " + video.title);
+        println("Video: " + video.data);
+        println("-------------------------------\n");
     }
 
     public void renderPopularVideos() {
         HashMap<String, Video> list = api.popularVideos();
-        System.out.println("\n-------------------------------");
-        System.out.println("Most popular videos on YouTube (imagine fancy HTML)");
+        println("\n-------------------------------");
+        println("Most popular videos on YouTube (imagine fancy HTML)");
         for (Video video : list.values()) {
-            System.out.println("ID: " + video.id + " / Title: " + video.title);
+            println("ID: " + video.id + " / Title: " + video.title);
         }
-        System.out.println("-------------------------------\n");
+        println("-------------------------------\n");
     }
 }

@@ -28,7 +28,7 @@
  * <p>Интерфейс имеет единственный метод executor#execute(Runnable):
  * <pre>{@code
  * Executor executor = Executors.newSingleThreadExecutor();
- * executor.execute(() -> System.out.println("Hello World"));}
+ * executor.execute(() -> PrintUtils.println("Hello World"));}
  * </pre>
  * ---------------------------------------------------------------------------------------------------------------------
  * <p><strong>ExecutorService</strong></p>
@@ -39,7 +39,7 @@
  * Future может возвращать результат выполнения задачи (метод future#get()):
  * <pre>{@code
  * ExecutorService executorService = Executors.newFixedThreadPool(10);
- * Future<?> runnableFuture = executorService.submit(() -> System.out.println("Hello World"));
+ * Future<?> runnableFuture = executorService.submit(() -> PrintUtils.println("Hello World"));
  * Future<String> callableFuture = executorService.submit(() -> "Hello World");
  * String runnableResult = runnableFuture.get();
  * String callableResult = callableFuture.get();}

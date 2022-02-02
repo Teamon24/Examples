@@ -3,7 +3,7 @@ package core.concurrency.thread.ex4.aspect;
 import utils.ConcurrencyUtils;
 import core.concurrency.thread.ex4.MethodThread;
 import core.concurrency.thread.ex4.SyncObject;
-import core.utils.IndentUtils;
+import utils.IndentUtils;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
@@ -13,7 +13,8 @@ import org.aspectj.lang.reflect.MethodSignature;
 
 import java.lang.reflect.Method;
 
-import static core.utils.IndentUtils.addIndent;
+import static utils.IndentUtils.addIndent;
+import static utils.PrintUtils.printfln;
 
 @Aspect
 public class SyncObjectLog {
@@ -52,7 +53,7 @@ public class SyncObjectLog {
         final String methodName,
         final MethodThread thread
     ) {
-        System.out.printf("#%s: %s invokes and waits for %s seconds\n",
+        printfln("#%s: %s invokes and waits for %s seconds",
             IndentUtils.addIndent(methodName, names),
             getThreadName(thread),
             thread.jobImitationTime / 1000
@@ -63,7 +64,7 @@ public class SyncObjectLog {
         final String methodName,
         final MethodThread thread)
     {
-        System.out.printf("#%s: %s is out\n",
+        printfln("#%s: %s is out",
             IndentUtils.addIndent(methodName, names),
             getThreadName(thread));
     }

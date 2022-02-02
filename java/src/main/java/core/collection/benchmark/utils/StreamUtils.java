@@ -1,6 +1,5 @@
 package core.collection.benchmark.utils;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -17,5 +16,9 @@ public final class StreamUtils {
             .map(uniqueFieldExtractor)
             .collect(Collectors.toSet());
         return collectionTypes;
+    }
+
+    public static <T> Stream<? extends T> flat(List<? extends T> ... belows) {
+        return Stream.of(belows).flatMap(Collection::stream);
     }
 }

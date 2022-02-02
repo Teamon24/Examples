@@ -7,6 +7,9 @@ import java.util.function.Supplier;
 
 import static core.base.fnally.CatchBlock.catchBlock;
 import static core.base.fnally.FinallyBlock.finallyBlock;
+import static utils.ClassUtils.simpleName;
+import static utils.PrintUtils.printfln;
+import static utils.PrintUtils.println;
 
 public class TryCatchFinallyDemo {
 
@@ -41,13 +44,12 @@ public class TryCatchFinallyDemo {
     ) {
         try {
             Pair<T, String> resultAndMessage = tryCatchFinally(tryBlock, catchBlock, finallyBlock, expectedExceptionClass);
-            System.out.printf(Global("Try") + ": %s\n\n", resultAndMessage.getRight());
+            printfln(Global("Try") + ": %s\n\n", resultAndMessage.getRight());
             return resultAndMessage.getLeft();
         } catch (Throwable throwable) {
-            String simpleName = throwable.getClass().getSimpleName();
-            System.out.printf(
+            printfln(
                 Global("Catch") + ": %s (\"%s\") was handled\n\n",
-                simpleName,
+                simpleName(throwable),
                 throwable.getMessage());
         }
         return null;
@@ -87,10 +89,10 @@ public class TryCatchFinallyDemo {
     }
 
     private static int divide(int a, int value) {
-        System.out.println("------------------------------------");
-        System.out.printf("Try block: %s / %s%n", a, value);
+        println("------------------------------------");
+        printfln("Try block: %s / %s", a, value);
         int result = a / value;
-        System.out.printf("Try block: %s / %s = %s%n", a, value, result);
+        printfln("Try block: %s / %s = %s", a, value, result);
         return result;
     }
 

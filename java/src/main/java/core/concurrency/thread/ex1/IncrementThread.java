@@ -1,23 +1,22 @@
 package core.concurrency.thread.ex1;
 
-import core.concurrency.thread.ex1.state.StateObject;
-
 public class IncrementThread extends Thread {
 
     private final Counter checker;
-    private final StateObject stateObject;
+    private final core.concurrency.thread.ex1.state.State state;
 
     public IncrementThread(final Counter checker,
-                           final StateObject stateObject)
+                           final core.concurrency.thread.ex1.state.State state
+    )
     {
         this.checker = checker;
-        this.stateObject = stateObject;
+        this.state = state;
     }
 
     @Override
     public void run() {
-        while (!checker.stop()) {
-            stateObject.increment();
+        while (!this.checker.stop()) {
+            this.state.increment();
         }
     }
 }

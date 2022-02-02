@@ -3,6 +3,8 @@ package patterns.basic.refactoring.guru.creational.builder.ex1.code;
 import java.util.function.BiConsumer;
 import java.util.stream.Stream;
 
+import static utils.PrintUtils.println;
+
 /**
  * Демо-класс. Здесь всё сводится воедино.
  */
@@ -38,8 +40,8 @@ public class Client {
         // Готовый продукт возвращает строитель, так как Директор чаще всего не
         // знает и не зависит от конкретных классов строителей и продуктов.
         Car car = builder.getResult();
-        System.out.println("---------------------------------");
-        System.out.println("Car built: " + car.getCarType());
+        println("---------------------------------");
+        println("Car built: " + car.getCarType());
     }
 
     private static void constructManual(final Director director,
@@ -48,6 +50,6 @@ public class Client {
     {
         constructCar.accept(director, manualBuilder);
         Manual carManual = manualBuilder.getResult();
-        System.out.println("Car manual built:\n" + carManual.print());
+        println("Car manual built:\n" + carManual.print());
     }
 }

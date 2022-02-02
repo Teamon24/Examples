@@ -12,6 +12,9 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Supplier;
 
+import static utils.ClassUtils.simpleName;
+import static utils.PrintUtils.printfln;
+
 public final class CollectionCreationUtils {
 
     public static <T> List<T> list(final Class listClass, final int size, final Supplier<T> supplier) {
@@ -53,12 +56,12 @@ public final class CollectionCreationUtils {
         Collection<E> collection,
         Supplier<E> getElement)
     {
-        System.out.printf("Filling %s (%s)%n", collection.getClass().getSimpleName(), size);
+        printfln("Filling %s (%s)", simpleName(collection), size);
         for (int i = 0; i < size; i++) {
             E e = getElement.get();
             collection.add(e);
         }
-        System.out.printf("%s is full, size: %s%n", collection.getClass().getSimpleName(), collection.size());
+        printfln("%s is full, size: %s", simpleName(collection), collection.size());
 
         return collection;
     }

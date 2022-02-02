@@ -1,9 +1,11 @@
 package aop.ex1;
 
+import static utils.PrintUtils.println;
+
 public class Target {
 
     @Synchronizes
     public void execute() {
-        System.out.println("Execution");
+        println("Execution");
     }
 }

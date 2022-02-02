@@ -1,5 +1,7 @@
 package patterns.basic.refactoring.guru.creational.builder.ex1.code;
 
+import static utils.PrintUtils.println;
+
 /**
  * Одна из фишек автомобиля.
  */
@@ -12,14 +14,14 @@ public class TripComputer {
     }
 
     public void showFuelLevel() {
-        System.out.println("Fuel level: " + car.getFuel());
+        println("Fuel level: " + this.car.getFuel());
     }
 
     public void showStatus() {
         if (this.car.getEngine().isStarted()) {
-            System.out.println("Car is started");
+            println("Car is started");
         } else {
-            System.out.println("Car isn't started");
+            println("Car isn't started");
         }
     }
 }

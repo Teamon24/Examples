@@ -1,0 +1,16 @@
+<hibernate-mapping package="dbms.hibernate">
+    <class name="dbms.hibernate.hbm.entity.Address" table="ADDRESSES">
+        <id name="id" type="int" column="id">
+            <generator class="identity"/>
+        </id>
+        <property name="city" type="string" column="CITY"/>
+        <property name="street" type="string" column="STREET"/>
+        <property name="building" type="string" column="BUILDING"/>
+        <set name="persons"
+             table="PERSON_ADDRESS">
+            <key column="ADDRESS_ID"/>
+            <many-to-many column="PERSON_ID"
+                          class="dbms.hibernate.hbm.entity.Person"/>
+        </set>
+    </class>
+</hibernate-mapping>

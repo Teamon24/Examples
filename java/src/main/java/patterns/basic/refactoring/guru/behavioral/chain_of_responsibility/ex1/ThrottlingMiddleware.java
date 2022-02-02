@@ -1,5 +1,7 @@
 package patterns.basic.refactoring.guru.behavioral.chain_of_responsibility.ex1;
 
+import static utils.PrintUtils.println;
+
 /**
  * Конкретный элемент цепи обрабатывает запрос по-своему.
  */
@@ -30,7 +32,7 @@ public class ThrottlingMiddleware extends Middleware {
         request++;
         
         if (request > requestPerMinute) {
-            System.out.println("Request limit exceeded!");
+            println("Request limit exceeded!");
             Thread.currentThread().stop();
         }
         return nextProcess(email, password);

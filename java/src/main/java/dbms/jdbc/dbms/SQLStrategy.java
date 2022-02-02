@@ -45,7 +45,7 @@ public abstract class SQLStrategy {
     public abstract String getUrl();
     public abstract DataSource getDatasource();
 
-    public Connection getConnection() throws SQLException {
+    public Connection getConnection() {
         return this.connectionSupplier.apply(this);
     }
 }

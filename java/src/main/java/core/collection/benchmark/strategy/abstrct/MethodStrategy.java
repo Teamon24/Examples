@@ -3,7 +3,7 @@ package core.collection.benchmark.strategy.abstrct;
 import core.collection.benchmark.pojo.MethodResult;
 import core.collection.benchmark.pojo.MethodType;
 import core.collection.benchmark.utils.TimeMeasureStrategy;
-import core.utils.Timer;
+import utils.Timer;
 
 import java.util.Collection;
 import java.util.function.Supplier;

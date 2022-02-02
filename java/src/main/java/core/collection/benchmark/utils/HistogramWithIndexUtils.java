@@ -3,7 +3,7 @@ package core.collection.benchmark.utils;
 import core.collection.benchmark.pojo.AveragedMethodResult;
 import core.collection.benchmark.pojo.Histogram;
 import core.collection.benchmark.pojo.MethodType;
-import core.utils.IndentUtils;
+import utils.IndentUtils;
 
 import java.util.Comparator;
 import java.util.HashMap;
@@ -13,17 +13,18 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static core.collection.benchmark.utils.StreamUtils.getUniques;
+import static utils.PrintUtils.println;
 
 public final class HistogramWithIndexUtils extends HistogramUtils {
 
     public static <E extends Comparable<E>> void printHistogram(final List<AveragedMethodResult<E>> results) {
         StringBuilder stringBuilder = getStringHistograms(results, Histogram::getIndex);
-        System.out.println(stringBuilder);
+        println(stringBuilder);
     }
 
     public static <E extends Comparable<E>> void printHistogramNoIndex(final List<AveragedMethodResult<E>> results) {
         StringBuilder stringBuilder = HistogramWithIndexUtils.getStringHistograms(results, Histogram::getElement);
-        System.out.println(stringBuilder);
+        println(stringBuilder);
     }
 
     public static <E extends Comparable<E>, G extends Comparable<? super G>> StringBuilder getStringHistograms(

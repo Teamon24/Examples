@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 
 import java.util.function.Supplier;
 
+import static utils.PrintUtils.println;
+
 @AllArgsConstructor
 public class FinallyBlock<T> implements Supplier<T>{
     private Boolean returns;
@@ -37,10 +39,10 @@ public class FinallyBlock<T> implements Supplier<T>{
     ) {
         return new FinallyBlock<>(returns, () -> {
             if (exceptionSupplier.get() != null) {
-                System.out.println("Finally block: throwing an exception\n");
+                println("Finally block: throwing an exception\n");
                 throw exceptionSupplier.get();
             }
-            System.out.println("Finally block: execution was done\n");
+            println("Finally block: execution was done\n");
             return returnedValue;
         });
     }

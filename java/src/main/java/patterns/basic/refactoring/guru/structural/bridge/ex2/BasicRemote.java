@@ -1,5 +1,7 @@
 package patterns.basic.refactoring.guru.structural.bridge.ex2;
 
+import static utils.PrintUtils.println;
+
 public class BasicRemote implements Remote {
     protected Device device;
 
@@ -11,7 +13,7 @@ public class BasicRemote implements Remote {
 
     @Override
     public void power() {
-        System.out.println("Remote: power toggle");
+        println("Remote: power toggle");
         if (device.isEnabled()) {
             device.disable();
         } else {
@@ -21,25 +23,25 @@ public class BasicRemote implements Remote {
 
     @Override
     public void volumeDown() {
-        System.out.println("Remote: volume down");
+        println("Remote: volume down");
         device.setVolume(device.getVolume() - 10);
     }
 
     @Override
     public void volumeUp() {
-        System.out.println("Remote: volume up");
+        println("Remote: volume up");
         device.setVolume(device.getVolume() + 10);
     }
 
     @Override
     public void channelDown() {
-        System.out.println("Remote: channel down");
+        println("Remote: channel down");
         device.setChannel(device.getChannel() - 1);
     }
 
     @Override
     public void channelUp() {
-        System.out.println("Remote: channel up");
+        println("Remote: channel up");
         device.setChannel(device.getChannel() + 1);
     }
 }

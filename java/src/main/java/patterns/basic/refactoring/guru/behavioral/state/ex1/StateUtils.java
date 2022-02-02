@@ -1,17 +1,20 @@
 package patterns.basic.refactoring.guru.behavioral.state.ex1;
 
+import static utils.ClassUtils.simpleName;
+import static utils.PrintUtils.printfln;
+
 /**
  *
  */
 public class StateUtils {
     public static void changedStateMessage(final State prevState, State newState) {
-        String prevStateName = prevState.getClass().getSimpleName();
-        String newStateName = newState.getClass().getSimpleName();
-        System.out.printf("\"%s\" has been changed for \"%s\"\n", prevStateName, newStateName);
+        String prevStateName = simpleName(prevState);
+        String newStateName = simpleName(newState);
+        printfln("\"%s\" has been changed for \"%s\"", prevStateName, newStateName);
     }
 
     public static String stateMessageWithTrack(State state, Integer trackNumber) {
-        String simpleName = state.getClass().getSimpleName();
+        String simpleName = simpleName(state);
         String stateString = null;
         if(PlayingState.class.getSimpleName().equals(simpleName)) {
             stateString = "Playing";

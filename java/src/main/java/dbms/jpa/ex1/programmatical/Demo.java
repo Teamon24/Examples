@@ -8,6 +8,8 @@ import javax.persistence.Query;
 import java.util.List;
 import java.util.UUID;
 
+import static utils.PrintUtils.printfln;
+
 public class Demo {
     public static void main(String[] args) {
         EntityManager entityManager = new EntityManagerBuilder()
@@ -18,6 +20,7 @@ public class Demo {
             .userName("selectel")
             .password("selectel")
             .schema("examples")
+            .managedClassesNames(UserEntity.class.getName())
             .build();
 
         Query findAllQuery = entityManager.createQuery("from " + UserEntity.class.getName());
@@ -68,7 +71,7 @@ public class Demo {
         UUID userId = user.getId();
         UserEntity userEntity = entityManager.find(UserEntity.class, userId);
         if (userEntity == null) {
-            System.out.printf("User (id='%s') was removed.%n", userId);
+            printfln("User (id='%s') was removed.", userId);
         }
     }
 

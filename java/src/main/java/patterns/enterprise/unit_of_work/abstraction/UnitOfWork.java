@@ -1,9 +1,14 @@
 package patterns.enterprise.unit_of_work.abstraction;
 
+import utils.PrintUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
+
+import static utils.PrintUtils.*;
+import static utils.PrintUtils.printfln;
 
 public abstract class UnitOfWork<Id extends Comparable<Id>, T extends Entity<Id>> {
 
@@ -79,7 +84,7 @@ public abstract class UnitOfWork<Id extends Comparable<Id>, T extends Entity<Id>
             return;
         }
 
-        System.out.println("Commit started");
+        println("Commit started");
 
         if (operationsContext.containsKey(OperationType.INSERT)) {
             commit(OperationType.INSERT, Database::insert);
@@ -93,14 +98,14 @@ public abstract class UnitOfWork<Id extends Comparable<Id>, T extends Entity<Id>
             commit(OperationType.DELETE, Database::delete);
         }
 
-        System.out.println("Commit finished.");
+        println("Commit finished.");
     }
 
     private void register(T t, OperationType operation, String messageTemplate) {
         System.out.printf(messageTemplate, t);
         List<T> tsToOperate = operationsContext.computeIfAbsent(operation, ignored -> new ArrayList<>());
         tsToOperate.add(t);
-        System.out.printf("Context for '%s': %s%n", operation, operationsContext.get(operation));
+        printfln("Context for '%s': %s", operation, operationsContext.get(operation));
     }
 
     private void commit(OperationType operationType, BiConsumer<Database<Id, T>, T> operation) {

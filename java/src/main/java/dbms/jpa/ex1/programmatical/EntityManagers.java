@@ -1,6 +1,5 @@
 package dbms.jpa.ex1.programmatical;
 
-import dbms.jpa.ex1.UserEntity;
 import dbms.jpa.ex1.programmatical.driver.DriverProperties;
 import dbms.jpa.ex1.programmatical.driver.DriverType;
 import dbms.jpa.ex1.programmatical.persistence_unit.AbstractPersistenceUnitObject;
@@ -25,16 +24,17 @@ public class EntityManagers {
         String databaseName,
         String userName,
         String password,
-        String schema)
+        String schema,
+        List<String> managedClasses
+    )
     {
         DriverProperties driverProperties = DriverPropertiesFactory.create(
             type, host, port, databaseName, userName, password, schema
         );
 
         ProviderProperties providerProperties = createProps(ProviderType.HIBERNATE, driverProperties);
-        List<String> managedClassNames = List.of(UserEntity.class.getSimpleName());
 
-        AbstractPersistenceUnitObject persistenceUnitInfo = createPersistenceInfo(providerProperties, managedClassNames);
+        AbstractPersistenceUnitObject persistenceUnitInfo = createPersistenceInfo(providerProperties, managedClasses);
         return EntityManagers.createEntityManager(persistenceUnitInfo);
     }
 
