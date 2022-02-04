@@ -10,13 +10,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static dbms.hibernate.TransactionUtils.commit;
 import static utils.PrintUtils.printfln;
 
 /**
@@ -29,13 +27,18 @@ import static utils.PrintUtils.printfln;
  * <p>As a general rule the owning side of a relation would the side which you'd need to update for the change of the relation to be persisted.
  * <p> Bidirectional relationships must follow these rules.
  * <ul>
- * <li>The <strong>inverse side</strong> of a bidirectional relationship must refer to its <strong>owning side</strong>(Entity which contains the foreign key) by using the <strong><i>mappedBy</i></strong> element of the @OneToOne, @OneToMany, or @ManyToMany annotation. The mappedBy element designates the property or field in the entity that is the owner of the relationship.
- * <li>The many side of @ManyToOne bidirectional relationships must not define the mappedBy element. The many side is always the owning side of the relationship.
+ * <li>The <strong>inverse side</strong> of a bidirectional relationship must refer to its <strong>owning side</strong>(Entity which contains the <strong>foreign key</strong>) by using the <strong><i>mappedBy</i></strong> element of the @OneToOne, @OneToMany, or @ManyToMany annotation. The mappedBy element designates the property or field in the entity that is the owner of the relationship.
+ * <li>The many side of @ManyToOne bidirectional relationships must not define the mappedBy element. <strong>The many side is always the owning side</strong> of the relationship.
  * <li>For @OneToOne bidirectional relationships, the owning side corresponds to the side that contains @JoinColumn i.e the corresponding foreign key.
  * <li>For @ManyToMany bidirectional relationships, either side may be the owning side.
+ * <li>The bidirectional associations should <strong>always be updated on both sides</strong>, therefore the <strong>Parent</strong> side should contain the <strong>addChild</strong> and <strong>removeChild</strong> combo. These methods ensure we always synchronize both sides of the association, to avoid object or relational data corruption issues.</li>
  * </ul>
- * <p>Bidirectional relashionship, bringing in the possibility of inconsistency.
- * <p>Let's imagine a situation where a developer wants to add item1 to cart and item2 to cart2, but makes a mistake so that the references between cart2 and item2 become inconsistent:
+ */
+public interface Bidirectional {
+}
+
+/**
+ * Bidirectional relashionship, bringing in the possibility of inconsistency.
  * <pre>{@code
  * Cart cart1 = new Cart();
  * Cart cart2 = new Cart();
@@ -47,74 +50,23 @@ import static utils.PrintUtils.printfln;
  * cart1.setItems(itemsSet);
  * }</pre>
  * <p>As shown above, item2 references cart2, whereas cart2 doesn't reference item2, and that's bad.
- * <p>
- * ---------------------------------------------------------------------------------------------------------------------
- * <p><strong>Items as the Owning Side</strong></p>
- * ---------------------------------------------------------------------------------------------------------------------
- * <p>As stated in the JPA specification under section 2.9, it's a good practice to mark many-to-one side as the owning side.
- * <pre>{@code
- * public class Cart {
- *     @OneToMany(mappedBy="cart")
- *     private Set<Items> items;
- * }
- * public class Items {
- *     @ManyToOne
- *     @JoinColumn(name="cart_id", nullable=false)
- *     private Cart cart;
- * }
- * }</pre>
- * <p>By including the <strong>mappedBy</strong> attribute in the <i><strong>Cart</strong></i> class, we mark it as the inverse side.
- * <p>At the same time, we also annotate the Items.cart field with @ManyToOne, making Items the owning side.
- * <p>Going back to our “inconsistency” example, now Hibernate knows that the item2‘s reference is more important and will save item2‘s reference to the database.
- * <p>
- * ---------------------------------------------------------------------------------------------------------------------
- * <p><strong>Carts as the Owning Side</strong></p>
- * ---------------------------------------------------------------------------------------------------------------------
- * <p>It's also possible to mark the one-to-many side as the owning side, and many-to-one side as the inverse side.
- * <p>Although this is not a recommended practice, let's go ahead and give it a try.
- * <p>The code snippet below shows the implementation of one-to-many side as the owning side:
- * <pre>{@code
- * public class Item {
- *     @ManyToOne
- *     @JoinColumn(name = "cart_id", insertable = false, updatable = false)
- *     private CartOIO cart;
- * }
- * public class Cart {
- *     @OneToMany
- *     @JoinColumn(name = "cart_id") // we need to duplicate the physical information
- *     private Set<ItemO> items;
- * }
- * }</pre>
- * <p>Notice how we removed the mappedBy element and set the many-to-one @JoinColumn as insertable and updatable to false.
- * <p>If we run the same code, the result will be the opposite:
- * <pre>{@code
- * item1 ID=1, Foreign Key Cart ID=1
- * item2 ID=2, Foreign Key Cart ID=1
- * }</pre>
- * <p>As shown above, now item2 belongs to cart.
  */
-public interface Bidirectional {
-
-    int AMOUNT = 5;
+class OwningAndInverseSavingDemo {
 
     static void main(String[] args) {
-        String resourceName = "/META-INF/hibernate-postgresql.cfg.xml";
+        String resourceName = "/META-INF/hibernate-postgresql-example.cfg.xml";
         SessionFactory sessionFactory = HibernateUtils.getSessionFactory(resourceName,
             Item.class, Cart.class, ItemAsOwner.class, CartAsOwner.class
         );
 
         Session session = sessionFactory.openSession();
 
-        test(session, ItemAsOwner::new, Cart::new, doNotAddItems(), ItemAsOwner.class);
-        test(session, Item::new, CartAsOwner::new, CartAbstract::addItems, CartAsOwner.class);
-
-        // Переоткрытие сессии необходимо для обновления Persistence context,
-        // иначе результат вывода на экран будет другой
-        session.close();
-        session = sessionFactory.openSession();
+        int amount = 5;
+        saveAndRefresh(amount, session, ItemAsOwner::new, Cart::new, ItemAsOwner.class);
+        saveAndRefresh(amount, session, Item::new, CartAsOwner::new, CartAsOwner.class);
 
         TransactionUtils.commit(session, s -> {
-            HibernateUtils.findLast(s, Cart.class, AMOUNT * 2).forEach(cart ->
+            HibernateUtils.findAll(s, Cart.class).forEach(cart ->
                 printfln("Card id = %s, items ids = %s",
                     cart.getId(),
                     StringUtils.joinWith(", ", cart.getItemsIds())
@@ -123,32 +75,38 @@ public interface Bidirectional {
 
     }
 
-    static <I extends ItemAbstract, C extends CartAbstract<I>> void test(
+    /**
+     * Метод создает объекты типа I и типа С. Объектам типа I сетит по одному объекту типа С. Затем первому
+     * объекту типа С сетит все объекты типа I. В зависимости от того какой тип передан
+     * для сохранения (toPersistClass), происходит сохранение, и от того кто является owner'ом зависит,
+     * какой будет результат сохранения.
+     * @param session объект сессии.
+     * @param createItem логика создания объекта типа I.
+     * @param createCart логика создания объекта типа C.
+     * @param toPersistClass тип объектов, которые необходимо сохранить.
+     * @param <I> подтип типа ItemAbstract.
+     * @param <C> подтип типа CartAbstract.
+     */
+    static <I extends ItemAbstract, C extends CartAbstract<I>> void saveAndRefresh(
+        int amount,
         Session session,
         Function<C, I> createItem,
-        Supplier<C> createCart,
-        BiConsumer<C, Set<I>> addItems,
-        Class<?> toPersistClass
+        Supplier<C> createCart, Class<?> toPersistClass
     ) {
-        List<C> carts = repeat(AMOUNT, createCart);
-        List<I> items = repeat(AMOUNT, (i) -> createItem.apply(carts.get(i)));
+        List<C> carts = repeat(amount, (i) -> createCart.get());
+        List<I> items = repeat(amount, (i) -> createItem.apply(carts.get(i)));
 
-        addItems.accept(carts.get(0), new HashSet<>(items));
+        C firstCart = carts.get(0);
+        firstCart.addItems(new HashSet<>(items));
 
-        commit(session, (s) -> {
-            Stream.of(carts, items)
-                .flatMap(Collection::stream)
-                .filter(it -> it.getClass().equals(toPersistClass))
-                .forEach(s::persist);
-        });
-    }
+        List<?> entities = Stream.of(carts, items).flatMap(Collection::stream).collect(Collectors.toList());
 
-    static <E> List<E> repeat(int amount, Supplier<E> elementsSupplier) {
-        List<E> elements = new ArrayList<>();
-        for (int i = 0; i < amount; i++) {
-            elements.add(elementsSupplier.get());
-        }
-        return elements;
+        List<?> toPersist = entities.stream()
+            .filter(it -> it.getClass().equals(toPersistClass))
+            .collect(Collectors.toList());
+
+        TransactionUtils.persist(session, toPersist);
+        TransactionUtils.refresh(session, entities);
     }
 
     static <E> List<E> repeat(int amount, Function<Integer, E> elementsSupplier) {
@@ -157,9 +115,5 @@ public interface Bidirectional {
             elements.add(elementsSupplier.apply(i));
         }
         return elements;
-    }
-
-    private static BiConsumer<Cart, Set<ItemAsOwner>> doNotAddItems() {
-        return (c, is) -> {};
     }
 }

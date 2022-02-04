@@ -1,7 +1,7 @@
-package core.collection.benchmark.builder;
+package core.collection.benchmark.strategy.builder;
 
-import core.collection.benchmark.builder.step.RemoveByIndexStep;
-import core.collection.benchmark.builder.step.RemoveElementStep;
+import core.collection.benchmark.strategy.builder.step.RemoveByIndexStep;
+import core.collection.benchmark.strategy.builder.step.RemoveElementStep;
 import core.collection.benchmark.strategy.abstrct.MethodStrategy;
 import core.collection.benchmark.strategy.RemoveByIndexStrategy;
 import core.collection.benchmark.strategy.RemoveElementStrategy;

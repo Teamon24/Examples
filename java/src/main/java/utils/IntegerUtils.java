@@ -1,6 +1,6 @@
 package utils;
 
-public class IntegerUtils {
+public final class IntegerUtils {
     public static Integer countDigits(Integer number) {
         if (number < 100000) {
             if (number < 100) {

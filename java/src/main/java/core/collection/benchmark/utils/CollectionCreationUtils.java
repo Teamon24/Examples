@@ -17,14 +17,14 @@ import static utils.PrintUtils.printfln;
 
 public final class CollectionCreationUtils {
 
-    public static <T> List<T> list(final Class listClass, final int size, final Supplier<T> supplier) {
-
-        if (listClass.equals(LinkedList.class)) {
-            return (LinkedList<T>) fillCollection(size, new LinkedList<>(), supplier);
-        }
+    public static <T> List<T> createList(final Class listClass, final int size, final Supplier<T> supplier) {
 
         if (listClass.equals(ArrayList.class)) {
             return (ArrayList<T>) fillCollection(size, new ArrayList<>(), supplier);
+        }
+
+        if (listClass.equals(LinkedList.class)) {
+            return (LinkedList<T>) fillCollection(size, new LinkedList<>(), supplier);
         }
 
         if (listClass.equals(TreeList.class)) {
@@ -34,19 +34,20 @@ public final class CollectionCreationUtils {
         throw new RuntimeException("There is no list initialization case for class: " + listClass.getSimpleName());
     }
 
-    public static <T> Set<T> set(final Class setClass, final int size, final Supplier<T> supplier) {
+    public static <T extends Comparable<T>> Set<T> createSet(final Class setClass, final int size, final Supplier<T> supplier) {
 
         if (setClass.equals(HashSet.class)) {
             return (HashSet<T>) fillCollection(size, new HashSet<>(), supplier);
+        }
+
+        if (setClass.equals(LinkedHashSet.class)) {
+            return (LinkedHashSet<T>) fillCollection(size, new LinkedHashSet<>(), supplier);
         }
 
         if (setClass.equals(TreeSet.class)) {
             return (TreeSet<T>) fillCollection(size, new TreeSet<>(), supplier);
         }
 
-        if (setClass.equals(LinkedHashSet.class)) {
-            return (LinkedHashSet<T>) fillCollection(size, new LinkedHashSet<>(), supplier);
-        }
 
         throw new RuntimeException("In set initialization method no implementation for class: " + setClass.getSimpleName());
     }

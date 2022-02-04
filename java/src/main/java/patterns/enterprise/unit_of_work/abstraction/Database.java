@@ -3,7 +3,7 @@ package patterns.enterprise.unit_of_work.abstraction;
 import java.util.Collection;
 import java.util.Comparator;
 
-public interface Database<Id extends Comparable<Id>, T extends Entity<Id>> {
+public interface Database<Id extends Comparable<Id>, T extends JpaEntity<Id>> {
 
     T find(Id id);
     void insert(T student);
@@ -13,7 +13,7 @@ public interface Database<Id extends Comparable<Id>, T extends Entity<Id>> {
 
     default T findLast() {
         return findAll().stream()
-            .max(Comparator.comparing(Entity::getId))
+            .max(Comparator.comparing(JpaEntity::getId))
             .orElseThrow(() -> new RuntimeException("Database is empty"));
     }
 

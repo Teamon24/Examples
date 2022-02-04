@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public class DotEnvUtils {
+public final class DotEnvUtils {
 
     public static Map<String, String> getVariables(final String resourcePath) throws FileNotFoundException
     {

@@ -50,7 +50,7 @@
  * <p><strong>Methods</strong></p>
  * ---------------------------------------------------------------------------------------------------------------------
  * <p>Метод <i><strong>execute()</strong></i> не возвращает ни результат выполнения задачи, ни статус выполнения.
- * <p>Метод <i><strong>submit()</strong></i> запускает выполнение задачи (Callable или Runnable) возврадает объект Future.
+ * <p>Метод <i><strong>submit()</strong></i> запускает выполнение задачи (Callable или Runnable) возвращает объект Future.
  * <p>Метод <i><strong>invokeAny()</strong></i> запускает выполенение задач и возвращает результат первый успешно выполненной.
  * <p>Метод <i><strong>invokeAll()</strong></i> запускает выполенение задач и возвращает список объектов Future.
  * <p>ExecutorService автоматически не удаляется, когда нет задач для выполнения: он остается ждать новых задач.
@@ -145,13 +145,13 @@
  * <strong>newSingleThreadExecutor</strong></p>
  * ---------------------------------------------------------------------------------------------------------------------
  * <ul>
- * <li>newFixedThreadPool(corePoolSize)</li>
+ * <li><strong>newFixedThreadPool(corePoolSize)</strong></li>
  * Создается thread pool, где corePoolSize - фиксированно, maximumPoolSize равно corePoolSize,  keepAliveTime - 0 секунд.
- * <li>newCachedThreadPool()</li>
+ * <li><strong>newCachedThreadPool()</strong></li>
  * Создается thread pool, где corePoolSize - 0, maximumPoolSize - Integer.MAX_VALUE. keepAliveTime - 60 секунд.
- * <li>newSingleThreadExecutor()</li>
+ * <li><strong>newSingleThreadExecutor()</strong></li>
  * Создается thread pool, где corePoolSize - 1, maximumPoolSize - 1. keepAliveTime - 0 секунд.
- * <li>newScheduledThreadPool(corePoolSize)</li>
+ * <li><strong>newScheduledThreadPool(corePoolSize)</strong></li>
  * Создается thread pool, где corePoolSize - фиксировано, maximumPoolSize - Integer.MAX_VALUE. keepAliveTime - 0 секунд.
  * </ul>
  * ---------------------------------------------------------------------------------------------------------------------
@@ -184,7 +184,7 @@
  * <p>Не смотря на относительную простоту интерфейса ExecutorService, есть следующие "подводные камни":
  * <ul>Подбор фиксированного числа потоков в thread pool: важно определить как много потоков понадобится для эффективного выполнения задач.</ul>
  * <ul><ul>Слишком большое число потоков приведет к простою, когда потоки будут находится в ожидании новой задачи. Слишком малое число может привести к длительному
- * ожиданию выполнению задач, которые находятся в очереди выполнения, что сделает приложение.</ul></ul>
+ * ожиданию выполнению задач, которые находятся в очереди выполнения, что приведет к "зависанию" приложение.</ul></ul>
  * <ul>Вызов метода future#get() после отмены выполнения задачи: вызов может привести к выбросу исключниея <i>CancellationException</i>.</ul>
  * <ul>Долгая блокировка в ожидании результата выполнения задачи: необходимо использовать таймауты, чтобы избежать задержок.</ul>
  */

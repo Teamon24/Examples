@@ -1,4 +1,4 @@
-package core.collection.benchmark;
+package core.collection.benchmark.core;
 
 import core.collection.benchmark.pojo.MethodResult;
 import core.collection.benchmark.pojo.MethodType;

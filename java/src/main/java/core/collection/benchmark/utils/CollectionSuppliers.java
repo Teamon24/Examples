@@ -10,8 +10,6 @@ import java.util.LinkedList;
 import java.util.TreeSet;
 import java.util.function.Supplier;
 
-import static core.collection.benchmark.utils.IndexSuppliers.getFirst;
-
 public final class CollectionSuppliers {
 
     public static <E> Supplier<Collection<E>> newCollection(Collection<E> collection) {

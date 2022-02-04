@@ -115,7 +115,8 @@ public abstract class HistogramUtils {
             result.getIndex(),
             result.getElement() == null ? "" : result.getElement().toString(),
             "",
-            "0.0")).collect(Collectors.toList());
+            "0.0")
+        ).collect(Collectors.toList());
     }
 
     public static <T extends Comparable<T>> List<Histogram> createEmptyColumnHistograms(
@@ -127,7 +128,8 @@ public abstract class HistogramUtils {
             result.getIndex(),
             result.getElement() == null ? "" : result.getElement().toString(),
             "",
-            format(DOUBLE_ACCURACY, result.getAverageExecutionTime()))).collect(Collectors.toList());
+            format(DOUBLE_ACCURACY, result.getAverageExecutionTime()))
+        ).collect(Collectors.toList());
     }
 
     public static double getDigitsAfterDot(double d) {

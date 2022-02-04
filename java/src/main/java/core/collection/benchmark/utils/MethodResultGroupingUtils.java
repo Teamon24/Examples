@@ -3,6 +3,7 @@ package core.collection.benchmark.utils;
 import core.collection.benchmark.pojo.AveragedMethodResult;
 import core.collection.benchmark.pojo.MethodResult;
 import core.collection.benchmark.pojo.MethodType;
+import utils.TriFunction;
 
 import java.util.Collections;
 import java.util.List;

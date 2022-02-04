@@ -6,7 +6,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public class Timer {
+public final class Timer {
 
     private Long start;
     private Long finish;

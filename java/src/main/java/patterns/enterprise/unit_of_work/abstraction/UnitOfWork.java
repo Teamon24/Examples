@@ -1,7 +1,5 @@
 package patterns.enterprise.unit_of_work.abstraction;
 
-import utils.PrintUtils;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -10,7 +8,7 @@ import java.util.function.BiConsumer;
 import static utils.PrintUtils.*;
 import static utils.PrintUtils.printfln;
 
-public abstract class UnitOfWork<Id extends Comparable<Id>, T extends Entity<Id>> {
+public abstract class UnitOfWork<Id extends Comparable<Id>, T extends JpaEntity<Id>> {
 
     private final Map<OperationType, List<T>> operationsContext;
     private final Database<Id, T> database;

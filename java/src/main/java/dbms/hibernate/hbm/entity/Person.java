@@ -2,7 +2,7 @@ package dbms.hibernate.hbm.entity;
 
 import lombok.Getter;
 import lombok.Setter;
-import utils.JoinUtils;
+import utils.CollectionUtils;
 
 import java.util.Date;
 import java.util.HashSet;
@@ -24,14 +24,14 @@ public class Person extends AbstractIdentifiableObject {
             "firstName='" + firstName + '\'' +
             ", lastName='" + lastName + '\'' +
             ", birthDate=" + birthDate +
-            ", passport=" + JoinUtils.join(passports) +
+            ", passport=" + CollectionUtils.join(passports) +
             ", primaryAddress=" + address +
-            ", workingPlaces=" + JoinUtils.join(companies) +
+            ", workingPlaces=" + CollectionUtils.join(companies) +
             '}';
     }
 
     public void remove(Address address) {
-        this.getAddress().getPersons().remove(this);
+        this.address.getPersons().remove(this);
         this.address = null;
     }
 }

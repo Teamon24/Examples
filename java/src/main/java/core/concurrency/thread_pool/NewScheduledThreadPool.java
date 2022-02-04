@@ -28,7 +28,7 @@ public class NewScheduledThreadPool {
         TimeUnit millis = TimeUnit.MILLISECONDS;
 
         ScheduledFuture<?> future = executor.scheduleAtFixedRate(task, initialDelay, period, millis);
-        int timeout = initialDelay + (period + (int) taskWorkImitationTime) * (tasksAmount) + 1000;
+        int timeout = initialDelay + (period + (int) taskWorkImitationTime) * (tasksAmount) + 2000;
 
         ConcurrencyUtils.threadPrintln("Count down latch is awaiting for " + timeout);
         lock.await(timeout, millis);

@@ -1,17 +1,23 @@
 package dbms.hibernate.hbm.entity;
 
+import com.github.javafaker.Faker;
 import com.google.common.collect.Sets;
+import utils.RandomUtils;
+import dbms.hibernate.HibernateUtils;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.Set;
+import java.util.UUID;
 
-import static dbms.hibernate.TransactionUtils.commit;
 import static dbms.hibernate.HibernateUtils.getSessionFactory;
+import static dbms.hibernate.TransactionUtils.commit;
 
 public class Demo {
+
+    public static final Faker FAKER = Faker.instance();
 
     public static void main(String[] args) {
         SessionFactory sessionFactory = getSessionFactory("/META-INF/hibernate-hbm-entities.cfg.xml");
@@ -20,21 +26,23 @@ public class Demo {
         Passport passport = createPassport();
         Address address = createAddress();
         Company company = createCompany();
+        Address address2 = createAddress();
+        Person person = createPerson(passport, address, company);
 
         commit(session, (s) -> {
             s.save(company);
             s.save(address);
+            s.save(address2);
+            s.save(person);
         });
 
-        Address address2 = createAddress();
-        Person person = createPerson(passport, address, company);
+        session = HibernateUtils.reopen(session, sessionFactory);
 
-        commit(session, () -> {
-            session.save(address2);
-            session.save(person);
-        });
+        HibernateUtils.findAll(session, Person.class).forEach(System.out::println);
+        HibernateUtils.findAll(session, Passport.class).forEach(System.out::println);
+        HibernateUtils.findAll(session, Address.class).forEach(System.out::println);
+        HibernateUtils.findAll(session, Company.class).forEach(System.out::println);
 
-        commit(session, Demo::printAll);
         commit(session, (s) -> {
             Person foundPerson = s.find(Person.class, person.getId());
             foundPerson.remove(address);
@@ -46,8 +54,8 @@ public class Demo {
 
     private static Person createPerson(Passport passport, Address address, Company company) {
         Person person = new Person();
-        person.setFirstName("Test");
-        person.setLastName("Testoff");
+        person.setFirstName(FAKER.name().firstName());
+        person.setLastName(FAKER.name().lastName());
         person.setBirthDate(Timestamp.from(Instant.now()));
         person.setAddress(address);
         person.setPassports(Sets.newHashSet(passport));
@@ -62,38 +70,35 @@ public class Demo {
 
     private static Company createCompany() {
         Company company = new Company();
-        company.setName("Acme Ltd");
+        company.setName(FAKER.company().name());
         return company;
     }
 
     private static Address createAddress() {
         Address address = new Address();
-        address.setCity("Kickapoo");
-        address.setStreet("Main street");
-        address.setBuilding("1");
+        address.setCity(FAKER.address().city());
+        address.setStreet(FAKER.address().streetName());
+        address.setBuilding(FAKER.address().buildingNumber());
         return address;
     }
 
     private static Passport createPassport() {
         Passport passport = new Passport();
-        passport.setSeries("AS");
-        passport.setNo("123456");
+        passport.setSeries(randomSeries());
+        passport.setNo(randomNumber());
         passport.setIssueDate(Timestamp.from(Instant.now()));
         return passport;
     }
 
-    private static void printAll(Session session) {
-        session.createQuery("from Person ")
-            .list()
-            .forEach(System.out::println);
-        session.createQuery("from Passport ")
-            .list()
-            .forEach(System.out::println);
-        session.createQuery("from Address ")
-            .list()
-            .forEach(System.out::println);
-        session.createQuery("from Company ")
-            .list()
-            .forEach(System.out::println);
+    private static String randomNumber() {
+        Integer random = RandomUtils.random(100000, 999999);
+        String number = random.toString();
+        return number;
+    }
+
+    private static String randomSeries() {
+        String[] split = UUID.randomUUID().toString().split("-");
+        String series = split[0]+"-"+split[1];
+        return series;
     }
 }

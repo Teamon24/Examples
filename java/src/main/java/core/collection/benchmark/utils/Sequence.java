@@ -1,5 +1,7 @@
 package core.collection.benchmark.utils;
 
+import utils.RandomUtils;
+
 import java.util.Collection;
 import java.util.function.Function;
 
@@ -17,6 +19,10 @@ public class Sequence<In> {
 
     public static <In> Sequence<In> first(final In first) {
         return new Sequence<>(first);
+    }
+
+    public static <In> Sequence<In> randomFrom(Collection<In> collection) {
+        return Sequence.first(RandomUtils.randomFrom(collection)).init((it -> RandomUtils.randomFrom(collection)));
     }
 
     public Sequence<In> init(final Function<In, In> generateNext) {
@@ -37,7 +43,6 @@ public class Sequence<In> {
             }
         }
 
-
         In next = generateNext.apply(current);
         this.current = next;
 
@@ -45,11 +50,4 @@ public class Sequence<In> {
         return next;
     }
 
-    public static Sequence<Integer> intSequence() {
-        return Sequence.first(0).init((it -> it = it + 1));
-    }
-
-    public static <In> Sequence<In> randomFrom(Collection<In> collection) {
-        return Sequence.first(RandomUtils.randomFrom(collection)).init((it -> RandomUtils.randomFrom(collection)));
-    }
 }

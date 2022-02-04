@@ -27,11 +27,11 @@ import java.util.stream.Collectors;
 
 public interface Entities {}
 
+@Getter
 @MappedSuperclass
 abstract class ItemAbstract {
-    @Getter
     @Id
-    @Column(updatable = false)
+    @Column(name = "id", updatable = false)
     @Basic(fetch = FetchType.EAGER)
     @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="entity_item_id_sequence")
     @SequenceGenerator(
@@ -45,8 +45,9 @@ abstract class ItemAbstract {
 @Getter
 @MappedSuperclass
 abstract class CartAbstract<T extends ItemAbstract> {
+
     @Id
-    @Column(updatable = false)
+    @Column(name = "id", updatable = false)
     @Basic(fetch = FetchType.EAGER)
     @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="entity_cart_id_sequence")
     @SequenceGenerator(
@@ -66,14 +67,38 @@ abstract class CartAbstract<T extends ItemAbstract> {
         this.getItems().addAll(items);
     }
 
-    public CartAbstract<T> addItems(T... items) {
+    @SafeVarargs
+    public final CartAbstract<T> addItems(T... items) {
         this.getItems().addAll(Arrays.asList(items));
         return this;
     }
 }
 
+/*----------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------*/
+@Entity
+@Table(name="carts")
+class CartUni extends CartAbstract<ItemUni> {
 
+    @Getter
+    @OneToMany
+    @JoinColumn(name = "cart_id", referencedColumnName="id", nullable = false)
+    private Set<ItemUni> items = new HashSet<>();
+}
 
+@Entity
+@Table(name="items")
+@NoArgsConstructor
+class ItemUni extends ItemAbstract {
+
+    @Column(name="cart_id", insertable = false, updatable = false)
+    private long cartId;
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------*/
 @Entity
 @Table(name = "carts")
 @NoArgsConstructor
@@ -96,6 +121,9 @@ class ItemAsOwner extends ItemAbstract {
     private Cart cart;
 }
 
+/*----------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------*/
 @Entity
 @Table(name = "carts")
 @NoArgsConstructor

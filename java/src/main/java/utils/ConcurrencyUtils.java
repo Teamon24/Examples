@@ -1,8 +1,8 @@
 package utils;
 
-import core.collection.benchmark.pojo.MethodResult;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -16,6 +16,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static utils.PrintUtils.*;
 import static utils.PrintUtils.printfln;
 
 public final class ConcurrencyUtils {
@@ -30,17 +31,13 @@ public final class ConcurrencyUtils {
 
     public static void threadPrintln(String message) {
         if (StringUtils.isNotEmpty(message)) {
-            ConcurrencyUtils.safePrintf("%s: %s\n", threadName(), message);
+            ConcurrencyUtils.safePrintf("%s: %s", threadName(), message);
         }
-    }
-
-    public static void threadPrintf(String template, Object... args) {
-        ConcurrencyUtils.safePrintf("%s: %s", threadName(), String.format(template, args));
     }
 
     public static void safePrintln(String s) {
         synchronized (System.out) {
-            PrintUtils.println(s);
+            println(s);
         }
     }
 
@@ -117,7 +114,7 @@ public final class ConcurrencyUtils {
 
     public static <T> List<Future<T>> invokeAll(
         final ExecutorService executorService,
-        final List<Callable<T>> tasks
+        final List<? extends Callable<T>> tasks
     ) {
         try {
             return executorService.invokeAll(tasks);
@@ -139,7 +136,8 @@ public final class ConcurrencyUtils {
         return null;
     }
 
-    public static <T> T getResult(final Future<T> task) {
+    @Nullable
+    public static <T> T get(final Future<T> task) {
         try {
             return task.get();
         } catch (InterruptedException | ExecutionException e) {
@@ -150,13 +148,13 @@ public final class ConcurrencyUtils {
 
     public static <T> List<T> getAll(
         final ExecutorService executorService,
-        final List<Callable<T>> tasks
+        final List<? extends Callable<T>> tasks
     ) {
         List<Future<T>> futures = invokeAll(executorService, tasks);
-        return futures.stream().map(ConcurrencyUtils::getResult).collect(Collectors.toList());
+        return futures.stream().map(ConcurrencyUtils::get).collect(Collectors.toList());
     }
 
-    public static <T> List<T> getAll(List<Callable<T>> tasks) {
+    public static <T> List<T> getAll(List<? extends Callable<T>> tasks) {
         ExecutorService executorService = Executors.newFixedThreadPool(5);
         List<T> results = getAll(executorService, tasks);
         shutdown(executorService, 1000);

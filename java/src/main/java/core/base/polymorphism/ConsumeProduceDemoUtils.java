@@ -3,7 +3,7 @@ package core.base.polymorphism;
 import java.util.List;
 import java.util.function.Function;
 
-import static core.collection.benchmark.utils.RandomUtils.randomDescendant;
+import static utils.RandomUtils.randomDescendant;
 
 public final class ConsumeProduceDemoUtils {
 

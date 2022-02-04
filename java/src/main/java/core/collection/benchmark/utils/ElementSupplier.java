@@ -3,7 +3,6 @@ package core.collection.benchmark.utils;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Random;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
 public final class ElementSupplier {
@@ -29,9 +28,9 @@ public final class ElementSupplier {
         };
     }
 
-    public static <E> Supplier<E> getElementAndDiscard(final Collection<E> collection) {
+    public static <E> Supplier<E> getElementSequentiallyFrom(final Collection<E> collection) {
         ArrayList<E> list = new ArrayList<>(collection);
-        final AtomicInteger counter = new AtomicInteger(0);
+        final int[] counter = {0};
 
         return () -> {
             int size = list.size();
@@ -39,24 +38,17 @@ public final class ElementSupplier {
                 list.addAll(collection);
             }
 
-            int counterValue = counter.get();
-
-            if (counterValue >= size - 1) {
-                counterValue = 0;
-                counter.set(counterValue);
+            if (counter[0] >= size - 1) {
+                counter[0] = 0;
             }
 
-            E e = list.get(counterValue);
-            list.remove(e);
-            counter.set(counterValue + 1);
+            E e = list.get(counter[0]);
+            counter[0]++;
             return e;
         };
     }
 
-    public static <E> Supplier<E> periodicallyFrom(
-        final Collection<E> collection,
-        final int period
-    ) {
+    public static <E> Supplier<E> periodicallyFrom(final Collection<E> collection, final int period) {
         int counter = 0;
         ArrayList<E> eachElements = new ArrayList<>();
         for (E e : collection) {
@@ -66,20 +58,14 @@ public final class ElementSupplier {
             counter++;
         }
 
-        final int[] atomicCounter = {0};
+        final int[] elementCounter = {0};
         return () -> {
-            if (atomicCounter[0] >= eachElements.size()) {
-                atomicCounter[0] = 0;
+            if (elementCounter[0] >= eachElements.size()) {
+                elementCounter[0] = 0;
             }
-            E e = eachElements.get(atomicCounter[0]);
-            atomicCounter[0]++;
+            E e = eachElements.get(elementCounter[0]);
+            elementCounter[0]++;
             return e;
         };
     }
-
-    private static int getPeriod(int period, int newPeriod, int size, int i) {
-        if (period >= size / i) return size / (i * 2);
-        return newPeriod;
-    }
-
 }

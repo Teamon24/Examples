@@ -34,7 +34,7 @@ public final class SetStrategies {
             collection.getClass(),
             collectionSupplier,
             ListMethods.setter(),
-            IndexSuppliers.firstIndex(),
+            IndexSuppliers.supplyFirst(),
             elementSupplier
         );
     }
@@ -48,7 +48,7 @@ public final class SetStrategies {
             collection.getClass(),
             collectionSupplier,
             ListMethods.setter(),
-            IndexSuppliers.middleIndex(),
+            IndexSuppliers.supplyMiddle(),
             elementSupplier
         );
     }
@@ -62,7 +62,7 @@ public final class SetStrategies {
             collection.getClass(),
             collectionSupplier,
             ListMethods.setter(),
-            IndexSuppliers.lastIndex(),
+            IndexSuppliers.supplyLast(),
             elementSupplier
         );
     }

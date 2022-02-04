@@ -49,7 +49,7 @@ public class Histogram {
         return String.format("%,.2f", this.getAverageExecutionTimeDouble());
     }
 
-    public double getAverageExecutionTimeDouble() {
+    public Double getAverageExecutionTimeDouble() {
         return Double.parseDouble(averageExecutionTime.replace(",", "."));
     }
 

@@ -28,17 +28,17 @@ public final class TwoStepSequence<In> extends Sequence<In> {
     }
 
     public In next() {
+        throwNoGenerator(super.generateNext, "sequence has no logic of first step generation");
+        throwNoGenerator(this.generateSecond, "sequence has no logic of second step generation");
         if (super.counter == 0) {
             super.counter = 2;
             return super.first;
         }
 
         if (super.counter == 1) {
-            throwNoGenerator(super.generateNext, "sequence has no logic of first step generation");
             super.current = super.generateNext.apply(super.current);
             super.counter = 2;
         } else {
-            throwNoGenerator(this.generateSecond, "sequence has no logic of second step generation");
             super.current = this.generateSecond.apply(super.current);
             super.counter = 1;
         }

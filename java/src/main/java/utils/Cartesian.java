@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-public class Cartesian {
+public final class Cartesian {
     public static <T> List<List<T>> product(Collection<T>... cols) {
         if (cols == null) return Collections.emptyList();
         List<List<T>> cp = Collections.singletonList(Collections.emptyList());

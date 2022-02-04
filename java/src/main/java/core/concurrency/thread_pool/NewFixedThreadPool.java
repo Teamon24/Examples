@@ -37,6 +37,6 @@ public class NewFixedThreadPool {
 
         printPoolAndQueueSizes(executor, taskAmount);
 
-        futureTasks.forEach(task -> println(ConcurrencyUtils.getResult(task)));
+        futureTasks.forEach(task -> println(ConcurrencyUtils.get(task)));
     }
 }

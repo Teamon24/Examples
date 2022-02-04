@@ -38,10 +38,8 @@ class Employee {
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinTable(name = "employee_workstation",
-        joinColumns =
-            {@JoinColumn(name = "employee_id", referencedColumnName = "id")},
-        inverseJoinColumns =
-            {@JoinColumn(name = "workstation_id", referencedColumnName = "id")})
+        joinColumns = {@JoinColumn(name = "employee_id", referencedColumnName = "id")},
+        inverseJoinColumns = {@JoinColumn(name = "workstation_id", referencedColumnName = "id")})
     private WorkStation workStation;
 }
 

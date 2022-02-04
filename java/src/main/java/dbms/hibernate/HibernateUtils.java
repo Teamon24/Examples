@@ -31,13 +31,13 @@ public class HibernateUtils {
     private static void createSessionFactory(String resourceName, Class<?> ... entitiesClasses) {
 
         try {
-            registry =
-                new StandardServiceRegistryBuilder()
-                    .configure(resourceName)
-                    .build();
+            registry = new StandardServiceRegistryBuilder()
+                .configure(resourceName)
+                .build();
 
             MetadataSources metadataSources = new MetadataSources(registry);
-            Arrays.stream(entitiesClasses).forEach(metadataSources::addAnnotatedClass);
+            Arrays.stream(entitiesClasses)
+                .forEach(metadataSources::addAnnotatedClass);
 
             Metadata metadata = metadataSources.getMetadataBuilder().build();
 
@@ -73,26 +73,23 @@ public class HibernateUtils {
         Arrays.stream(annotatedClasses).forEach(metadataSources::addAnnotatedClass);
 
 
-        SessionFactory sessionFactory = metadataSources
+        return metadataSources
             .buildMetadata()
             .getSessionFactoryBuilder()
             .build();
-
-
-        return sessionFactory;
     }
 
-    public static <T> List<T> findLast(Session session, Class<T> type, int lastsAmount) {
-        int count = count(session, type).intValue();
-        CriteriaBuilder cb = session.getCriteriaBuilder();
-        CriteriaQuery<T> cq = cb.createQuery(type);
-        Root<T> rootEntry = cq.from(type);
-        CriteriaQuery<T> all = cq.select(rootEntry);
-
-        TypedQuery<T> allQuery = session.createQuery(all);
-        allQuery.setFirstResult(count - lastsAmount);
-        allQuery.setMaxResults(count);
+    public static <T> List<T> findAll(Session session, Class<T> type) {
+        CriteriaQuery<T> selectFrom = selectFrom(session, type);
+        TypedQuery<T> allQuery = session.createQuery(selectFrom);
         return allQuery.getResultList();
+    }
+
+    private static <T> CriteriaQuery<T> selectFrom(Session session, Class<T> type) {
+        CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+        CriteriaQuery<T> criteriaQuery = criteriaBuilder.createQuery(type);
+        Root<T> from = criteriaQuery.from(type);
+        return criteriaQuery.select(from);
     }
 
     public static <T> Long count(Session session, Class<T> type) {
@@ -103,5 +100,11 @@ public class HibernateUtils {
         Query<Long> query = session.createQuery(cr);
         List<Long> itemProjected = query.getResultList();
         return itemProjected.get(0);
+    }
+
+    public static Session reopen(Session session, SessionFactory sessionFactory) {
+        session.close();
+        session = sessionFactory.openSession();
+        return session;
     }
 }

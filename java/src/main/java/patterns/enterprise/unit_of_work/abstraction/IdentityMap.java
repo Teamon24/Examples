@@ -5,7 +5,7 @@ import java.util.HashMap;
 public abstract class
 IdentityMap<
     Id extends Comparable<Id>,
-    T extends Entity<Id>
+    T extends JpaEntity<Id>
 >
     extends HashMap<Id, T>
 {

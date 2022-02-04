@@ -3,9 +3,8 @@ package utils;
 import core.collection.benchmark.utils.MaxUtils;
 
 import java.util.Arrays;
-import java.util.stream.Collectors;
 
-public class IndentUtils {
+public final class IndentUtils {
     public static <T> String getIndent(final T currentValue, final int lengthOfMaxValueToString) {
         return " ".repeat(lengthOfMaxValueToString - currentValue.toString().length());
     }

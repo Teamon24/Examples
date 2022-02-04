@@ -1,7 +1,7 @@
 package core.base.polymorphism;
 
 
-import core.collection.benchmark.utils.RandomUtils;
+import utils.RandomUtils;
 
 import java.util.List;
 

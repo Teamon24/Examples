@@ -1,11 +1,11 @@
-package core.collection.benchmark.builder;
+package core.collection.benchmark.strategy.builder;
 
-import core.collection.benchmark.builder.step.AddByIndexStep;
-import core.collection.benchmark.builder.step.AddElementStep;
+import core.collection.benchmark.strategy.builder.step.AddByIndexStep;
+import core.collection.benchmark.strategy.builder.step.AddElementStep;
 import core.collection.benchmark.strategy.AddByIndexStrategy;
 import core.collection.benchmark.strategy.AddElementStrategy;
 import core.collection.benchmark.strategy.abstrct.MethodStrategy;
-import core.collection.benchmark.utils.TriConsumer;
+import utils.TriConsumer;
 
 import java.util.Collection;
 import java.util.function.BiConsumer;

@@ -1,12 +1,15 @@
 package core.collection.benchmark;
 
+import core.collection.benchmark.core.CollectionTestBuilder;
 import core.collection.benchmark.pojo.AveragedMethodResult;
 import core.collection.benchmark.pojo.MethodResult;
 import core.collection.benchmark.utils.HistogramWithIndexUtils;
-import core.collection.benchmark.utils.MethodResultGroupingUtils;
+import core.collection.benchmark.utils.IndexSuppliers;
+import core.collection.benchmark.utils.IntSequence;
+import core.collection.benchmark.utils.MethodsTestsTasks;
 import core.collection.benchmark.utils.Sequence;
-import utils.ConcurrencyUtils;
 import org.apache.commons.collections4.list.TreeList;
+import utils.ConcurrencyUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -17,96 +20,119 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.concurrent.Callable;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import static core.collection.benchmark.utils.CollectionCreationUtils.list;
-import static core.collection.benchmark.utils.CollectionCreationUtils.set;
+import static core.collection.benchmark.utils.CollectionCreationUtils.createList;
+import static core.collection.benchmark.utils.CollectionCreationUtils.createSet;
 import static core.collection.benchmark.utils.CollectionSuppliers.newCollection;
 import static core.collection.benchmark.utils.ElementSupplier.periodicallyFrom;
+import static core.collection.benchmark.utils.MethodResultGroupingUtils.averageByElement;
+import static core.collection.benchmark.utils.MethodResultGroupingUtils.averageByIndex;
 
 public class Tests {
-    private static final int size = 10_000;
-    private static final int testsAmount = 50000;
+    private static final int size = 15_000;
+    private static final int testsAmount = 75_000;
 
+    private static final boolean enableLog = true;
     private static final int logStep = testsAmount / 2;
 
     public static void main(String[] args) {
-        Sequence<Integer> hashSetSequence = Sequence.intSequence();
-        Sequence<Integer> treeSetSequence = Sequence.intSequence();
-        Sequence<Integer> linkedHashSetSequence = Sequence.intSequence();
-        Sequence<Integer> linkedListSequence = Sequence.intSequence();
-        Sequence<Integer> arrayListSequence = Sequence.intSequence();
-        Sequence<Integer> treeListSequence = Sequence.intSequence();
 
-        Set<Integer> hashSet = set(HashSet.class, size, hashSetSequence::next);
-        Set<Integer> treeSet = set(TreeSet.class, size, treeSetSequence::next);
-        Set<Integer> linkedHashSet = set(LinkedHashSet.class, size, linkedHashSetSequence::next);
-        List<Integer> linkedList = list(LinkedList.class, size, linkedListSequence::next);
-        List<Integer> arrayList = list(ArrayList.class, size, arrayListSequence::next);
-        List<Integer> treeList = list(TreeList.class, size, treeListSequence::next);
+        List<MethodsTestsTasks<Integer>> methodsTestsTasks =
+                getMethodsTestsTasks(
+                    LinkedList.class, ArrayList.class, TreeList.class,
+                    HashSet.class, LinkedHashSet.class, TreeSet.class);
 
-        final int period = size/10;
-        boolean enableLog = true;
-        List<List<Callable<List<MethodResult<Integer>>>>> listMethodResultsTasks = List.of(
-            test(testsAmount, linkedList, linkedListSequence, period).getListMethodTests(enableLog, logStep),
-            test(testsAmount, arrayList,  arrayListSequence,  period).getListMethodTests(enableLog, logStep),
-            test(testsAmount, treeList,   treeListSequence,   period).getListMethodTests(enableLog, logStep)
-        );
+        List<MethodResult<Integer>> methodResults = ConcurrencyUtils
+            .getAll(methodsTestsTasks)
+            .stream()
+            .flatMap(Collection::stream)
+            .collect(Collectors.toList());
 
-        List<List<Callable<List<MethodResult<Integer>>>>> setMethodResultsTasks = List.of(
-            test(testsAmount, hashSet,       Sequence.randomFrom(hashSet),       period).getSetMethodTests(enableLog, logStep),
-            test(testsAmount, treeSet,       Sequence.randomFrom(treeSet),       period).getSetMethodTests(enableLog, logStep),
-            test(testsAmount, linkedHashSet, Sequence.randomFrom(linkedHashSet), period).getSetMethodTests(enableLog, logStep)
-        );
-
-        List<List<MethodResult<Integer>>> methodResults = ConcurrencyUtils.getAll(
-            Stream.of(listMethodResultsTasks, setMethodResultsTasks)
-                .flatMap(Collection::stream)
-                .flatMap(Collection::stream)
-                .collect(Collectors.toList())
-        );
 
         Map<Boolean, List<MethodResult<Integer>>> partitionedResults = methodResults
             .stream()
-            .flatMap(Collection::stream)
             .collect(Collectors.partitioningBy(it -> it.getIndex() != null));
 
-        List<AveragedMethodResult<Integer>> resultsWithIndex =
-            MethodResultGroupingUtils.averageByIndex(partitionedResults.get(true));
-
-        List<AveragedMethodResult<Integer>> resultsWithNoIndex =
-            MethodResultGroupingUtils.averageByElement(partitionedResults.get(false));
+        List<AveragedMethodResult<Integer>> resultsWithIndex = averageByIndex(partitionedResults.get(true));
+        List<AveragedMethodResult<Integer>> resultsWithNoIndex = averageByElement(partitionedResults.get(false));
 
         HistogramWithIndexUtils.printHistogram(resultsWithIndex);
-        HistogramWithIndexUtils.printHistogramNoIndex(resultsWithNoIndex.stream().filter(by(period)).collect(Collectors.toList()));
+        HistogramWithIndexUtils.printHistogramNoIndex(resultsWithNoIndex);
     }
 
-    private static Predicate<AveragedMethodResult<Integer>> by(int period) {
-        final int[] counter = {0};
-        return it -> {
-            boolean filtered = counter[0] % period == 0;
-            counter[0] += 1;
-            return filtered;
-        };
+    private static List<MethodsTestsTasks<Integer>> getMethodsTestsTasks(Class<? extends Collection>... collectionClasses) {
+
+        final int period = (int) (size * 0.2);
+        int limit = size * 2;
+        List<MethodsTestsTasks<Integer>> tests = new ArrayList<>();
+        List<MethodsTestsTasks<Integer>> tempContainer = new ArrayList<>();
+        for (Class<?> collectionClass : collectionClasses) {
+            IntSequence sequence = IntSequence.create();
+
+            if (List.class.isAssignableFrom(collectionClass)) {
+                tempContainer = listTest(testsAmount,
+                    createList(collectionClass, size, sequence::next),
+                    sequence,
+                    period,
+                    enableLog,
+                    logStep);
+            }
+
+            if (Set.class.isAssignableFrom(collectionClass)) {
+                tempContainer = setTest(testsAmount,
+                    createSet(collectionClass, size, sequence::next),
+                    sequence.fromLast(period, limit),
+                    period,
+                    enableLog,
+                    logStep);
+            }
+
+            tests.addAll(tempContainer);
+
+        }
+        return tests;
     }
 
-    private static <E> CallableCollectionTest<E> test(
+    private static <E> List<MethodsTestsTasks<E>> setTest(
         final int testsAmount,
         final Collection<E> collection,
         final Sequence<E> sequence,
-        final int period
+        final int period,
+        boolean enableLog,
+        final int logStep
     ) {
-        CollectionTest<E> collectionTest = new CollectionTest.CollectionTestBuilder<E>()
+        return new CollectionTestBuilder<E>()
+            .sets()
             .testsAmount(testsAmount)
             .collection(collection)
             .collectionSupplier(newCollection(collection))
             .newElementSupplier(sequence::next)
             .existedElementSupplier(periodicallyFrom(collection, period))
-            .build();
+            .build()
+            .callables()
+            .getMethodsTests(enableLog, logStep);
+    }
 
-        return new CallableCollectionTest<>(collectionTest);
+    private static <E> List<MethodsTestsTasks<E>> listTest(
+        final int testsAmount,
+        final Collection<E> collection,
+        final Sequence<E> sequence,
+        final int period,
+        boolean enableLog,
+        final int logStep
+    ) {
+
+        return new CollectionTestBuilder<E>()
+            .lists()
+            .testsAmount(testsAmount)
+            .collection(collection)
+            .collectionSupplier(newCollection(collection))
+            .newElementSupplier(sequence::next)
+            .existedElementSupplier(periodicallyFrom(collection, period))
+            .indexSupplier(IndexSuppliers.supplyThreeIndexes())
+            .build()
+            .callables()
+            .getMethodsTests(enableLog, logStep);
     }
 }

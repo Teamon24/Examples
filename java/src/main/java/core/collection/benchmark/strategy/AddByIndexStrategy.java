@@ -2,7 +2,7 @@ package core.collection.benchmark.strategy;
 
 import core.collection.benchmark.pojo.MethodType;
 import core.collection.benchmark.strategy.abstrct.IndexAndElementStrategy;
-import core.collection.benchmark.utils.TriConsumer;
+import utils.TriConsumer;
 
 import java.util.Collection;
 import java.util.function.Function;

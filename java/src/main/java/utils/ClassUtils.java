@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ClassUtils {
+public final class ClassUtils {
     public static String simpleName(Object o) {
         return o.getClass().getSimpleName();
     }

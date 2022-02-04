@@ -18,7 +18,7 @@ public final class GetStrategies {
             collection.getClass(),
             sameCollection(collection),
             ListMethods.getByIndex(),
-            IndexSuppliers.firstIndex()
+            IndexSuppliers.supplyFirst()
         );
     }
 
@@ -27,7 +27,7 @@ public final class GetStrategies {
             collection.getClass(),
             sameCollection(collection),
             ListMethods.getByIndex(),
-            IndexSuppliers.middleIndex()
+            IndexSuppliers.supplyMiddle()
         );
     }
 
@@ -36,7 +36,7 @@ public final class GetStrategies {
             collection.getClass(),
             sameCollection(collection),
             ListMethods.getByIndex(),
-            IndexSuppliers.lastIndex()
+            IndexSuppliers.supplyLast()
         );
     }
 
@@ -48,7 +48,7 @@ public final class GetStrategies {
             collection.getClass(),
             collectionSupplier,
             ListMethods.getByIndex(),
-            IndexSuppliers.firstIndex()
+            IndexSuppliers.supplyFirst()
         );
     }
 
@@ -60,7 +60,7 @@ public final class GetStrategies {
             collection.getClass(),
             collectionSupplier,
             ListMethods.getByIndex(),
-            IndexSuppliers.middleIndex()
+            IndexSuppliers.supplyMiddle()
         );
     }
 
@@ -72,7 +72,7 @@ public final class GetStrategies {
             collection.getClass(),
             collectionSupplier,
             ListMethods.getByIndex(),
-            IndexSuppliers.lastIndex()
+            IndexSuppliers.supplyLast()
         );
     }
 

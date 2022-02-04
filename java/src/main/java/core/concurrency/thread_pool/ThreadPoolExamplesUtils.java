@@ -35,9 +35,9 @@ public final class ThreadPoolExamplesUtils {
 
     public static void printTask(int taskNumber, String title, long taskWorkImitationTime) {
         String titleResult = title.isEmpty() ? "" : "[" + title + "]";
-        ConcurrencyUtils.safePrintf("%s%s: executing task#%s\n", threadName(), titleResult, taskNumber);
+        ConcurrencyUtils.safePrintf("%s%s: executing task#%s", threadName(), titleResult, taskNumber);
         ConcurrencyUtils.sleep(taskWorkImitationTime);
-        ConcurrencyUtils.safePrintf("%s%s: DONE with task#%s\n", threadName(), titleResult, taskNumber);
+        ConcurrencyUtils.safePrintf("%s%s: DONE with task#%s", threadName(), titleResult, taskNumber);
     }
 
     public static List<Callable<String>> getTasks(final Sequence<Integer> sequence) {

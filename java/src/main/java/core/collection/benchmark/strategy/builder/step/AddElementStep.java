@@ -1,6 +1,6 @@
-package core.collection.benchmark.builder.step;
+package core.collection.benchmark.strategy.builder.step;
 
-import core.collection.benchmark.builder.AddStrategyBuilder;
+import core.collection.benchmark.strategy.builder.AddStrategyBuilder;
 
 import java.util.Collection;
 import java.util.function.BiConsumer;

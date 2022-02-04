@@ -3,7 +3,7 @@ package core.base.polymorphism;
 import java.util.List;
 import java.util.function.Function;
 
-import static core.collection.benchmark.utils.StreamUtils.flat;
+import static utils.StreamUtils.flat;
 
 public class ConsumeProduceDemo {
     public static void main(String[] args) {

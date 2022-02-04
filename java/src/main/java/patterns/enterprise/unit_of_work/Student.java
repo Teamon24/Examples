@@ -3,12 +3,12 @@ package patterns.enterprise.unit_of_work;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import patterns.enterprise.unit_of_work.abstraction.Entity;
+import patterns.enterprise.unit_of_work.abstraction.JpaEntity;
 
 import java.util.StringJoiner;
 
 @AllArgsConstructor
-public final class Student implements Entity<Integer> {
+public final class Student implements JpaEntity<Integer> {
 
     @Getter
     private Integer id;
