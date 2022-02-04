@@ -4,6 +4,7 @@ import core.collection.benchmark.pojo.AveragedMethodResult;
 import core.collection.benchmark.pojo.Histogram;
 import core.collection.benchmark.pojo.MethodType;
 import utils.IndentUtils;
+import utils.StreamUtils;
 
 import java.util.Comparator;
 import java.util.HashMap;
@@ -12,7 +13,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static core.collection.benchmark.utils.StreamUtils.getUniques;
+import static utils.StreamUtils.getUniques;
 import static utils.PrintUtils.println;
 
 public final class HistogramWithIndexUtils extends HistogramUtils {
@@ -61,10 +62,11 @@ public final class HistogramWithIndexUtils extends HistogramUtils {
                 List<Histogram> histogramsByMethodValue = histogramsByMethod.getValue();
 
                 groupBy(fieldExtractor, histogramsByMethodValue)
-                    .forEach(histogramsByIndex -> {
+                    .forEach(histogramsByField -> {
                         final StringBuilder builderForIndex = new StringBuilder();
-                        for (Histogram histogram : histogramsByIndex.getValue()) {
-                            G groupingField = histogramsByIndex.getKey();
+                        histogramsByField.getValue().sort(Comparator.comparing(Histogram::getAverageExecutionTimeDouble));
+                        for (Histogram histogram : histogramsByField.getValue()) {
+                            G groupingField = histogramsByField.getKey();
                             appendHistogram(
                                 builderForIndex, groupingField, histogram,
                                 lengthOfMax,
