@@ -16,7 +16,15 @@ public final class RandomUtils {
     public static final Random random = new Random();
 
     public static int random(int fromInclusive, int toExclusive) {
-        return fromInclusive + (int) (Math.random() * ((toExclusive - fromInclusive) + 1));
+        return fromInclusive + (int) (Math.random() * ((toExclusive - fromInclusive)));
+    }
+
+    public static Object[] random(int fromInclusive, int toExclusive, int amount) {
+        Object[] objects = new Object[amount];
+        for (int i = 0; i < amount; i++) {
+            objects[i] = random(fromInclusive, toExclusive);
+        }
+        return objects;
     }
 
     public static <E> int randomIndexFrom(Collection<E> collection) {

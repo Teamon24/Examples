@@ -14,7 +14,7 @@ import static utils.ConcurrencyUtils.executeAll;
 import static utils.ConcurrencyUtils.get;
 import static utils.ConcurrencyUtils.invokeAll;
 import static utils.ConcurrencyUtils.invokeAny;
-import static utils.ConcurrencyUtils.safePrintln;
+import static utils.ConcurrencyUtils.syncPrintln;
 import static utils.ConcurrencyUtils.submitAll;
 import static utils.PrintUtils.println;
 
@@ -34,7 +34,7 @@ public class MethodsOfExecutorService {
         List<Future<String>> invokedFutures   = invokeAll(executor, getTasks("INVOKE_ALL", taskNumbersRange.firstStep()));
 
         println(resultOfAnyFuture);
-        submittedFutures.forEach(it -> safePrintln(get(it)));
+        submittedFutures.forEach(it -> syncPrintln(get(it)));
         invokedFutures.forEach(it -> println(get(it)));
         ConcurrencyUtils.shutdown(executor, 300);
     }

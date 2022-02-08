@@ -1,7 +1,6 @@
 package dbms.hibernate.relashonship.one_to_many;
 
 import dbms.hibernate.HibernateUtils;
-import dbms.hibernate.TransactionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -15,6 +14,9 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static dbms.hibernate.TransactionUtils.commit;
+import static dbms.hibernate.TransactionUtils.persist;
+import static dbms.hibernate.TransactionUtils.refresh;
 import static utils.PrintUtils.printfln;
 
 /**
@@ -65,7 +67,7 @@ class OwningAndInverseSavingDemo {
         saveAndRefresh(amount, session, ItemAsOwner::new, Cart::new, ItemAsOwner.class);
         saveAndRefresh(amount, session, Item::new, CartAsOwner::new, CartAsOwner.class);
 
-        TransactionUtils.commit(session, s -> {
+        commit(session, s -> {
             HibernateUtils.findAll(s, Cart.class).forEach(cart ->
                 printfln("Card id = %s, items ids = %s",
                     cart.getId(),
@@ -105,8 +107,8 @@ class OwningAndInverseSavingDemo {
             .filter(it -> it.getClass().equals(toPersistClass))
             .collect(Collectors.toList());
 
-        TransactionUtils.persist(session, toPersist);
-        TransactionUtils.refresh(session, entities);
+        persist(session, toPersist);
+        refresh(session, entities);
     }
 
     static <E> List<E> repeat(int amount, Function<Integer, E> elementsSupplier) {

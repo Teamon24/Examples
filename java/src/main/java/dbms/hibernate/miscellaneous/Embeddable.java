@@ -1,4 +1,4 @@
-package dbms.hibernate.mapping;
+package dbms.hibernate.miscellaneous;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;

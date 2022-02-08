@@ -1,4 +1,4 @@
-package dbms.hibernate.mapping;
+package dbms.hibernate.miscellaneous;
 
 import dbms.jpa.ex1.UserEntity;
 

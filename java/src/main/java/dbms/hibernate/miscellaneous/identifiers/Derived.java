@@ -1,4 +1,4 @@
-package dbms.hibernate.mapping.identifiers;
+package dbms.hibernate.miscellaneous.identifiers;
 
 /**
  * <p>Derived identifiers are obtained from an entity's association using the @MapsId annotation.

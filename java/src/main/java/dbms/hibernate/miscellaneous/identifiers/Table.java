@@ -1,4 +1,4 @@
-package dbms.hibernate.mapping.identifiers;
+package dbms.hibernate.miscellaneous.identifiers;
 
 /**
  * <p>The TableGenerator uses an underlying database table that holds segments of identifier generation values.

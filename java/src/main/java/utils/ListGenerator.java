@@ -2,12 +2,11 @@ package utils;
 
 import org.apache.commons.lang3.StringUtils;
 
-import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -36,5 +35,13 @@ public final class ListGenerator {
 
     public static List<BigInteger> getBigIntegers(Random random, int integersAmount) {
         return getRandomIntegerList(random, integersAmount).stream().map(BigInteger::valueOf).collect(Collectors.toList());
+    }
+
+    public static <T> List<T> create(Function<List, T> constructor, List<?>... possibleArgs) {
+        if (possibleArgs.length == 0)
+            throw new IllegalArgumentException("Possible arguments arrays should be at least one");
+
+        List<List> product = Cartesian.product(possibleArgs);
+        return product.stream().map(constructor).collect(Collectors.toList());
     }
 }

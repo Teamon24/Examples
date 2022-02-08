@@ -1,4 +1,4 @@
-package dbms.hibernate.mapping.identifiers.composite;
+package dbms.hibernate.miscellaneous.identifiers.composite;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -6,7 +6,7 @@ import javax.persistence.Table;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "products")
-public class Product implements Serializable {
+@Table(name = "orders")
+public class Order implements Serializable {
     @Id private Integer id;
 }

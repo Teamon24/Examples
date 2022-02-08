@@ -1,4 +1,4 @@
-package dbms.hibernate.mapping.enums.user_type;
+package dbms.hibernate.miscellaneous.enums.user_type;
 
 public enum Role implements LabeledEnum {
     ADMIN("admin"), USER("user"), ANONYMOUS("anon");

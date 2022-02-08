@@ -1,5 +1,5 @@
 
-package dbms.hibernate.mapping.identifiers.composite;
+package dbms.hibernate.miscellaneous.identifiers.composite;
 
 import lombok.AccessLevel;
 import lombok.Getter;

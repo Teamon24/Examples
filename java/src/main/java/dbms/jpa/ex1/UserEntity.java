@@ -1,7 +1,7 @@
 package dbms.jpa.ex1;
 
 import com.google.common.base.Objects;
-import dbms.hibernate.mapping.NameAttributeConverter;
+import dbms.hibernate.miscellaneous.NameAttributeConverter;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -8,6 +8,9 @@
  * <ul><a href="https://www.baeldung.com/learn-jpa-hibernate">
  *     <strong>baeldung: learn jpa hibernate</strong></a></ul>
  *
+ * <ul><a href="https://thorben-janssen.com/common-hibernate-mistakes-cripple-performance/">
+ *     <strong>common hibernate mistakes cripple performance</strong></a></ul>
+ *
  *
  *     <pre>{@code
  *

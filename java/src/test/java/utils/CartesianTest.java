@@ -29,7 +29,7 @@ class CartesianTest {
         List<Object> list2 = Arrays.asList(4, 5, 6);
         List<Object> list3 = Arrays.asList(7, 8, 9);
 
-        List<List<Object>> actualProduct = Cartesian.product(list1, list2, list3);
+        List<List> actualProduct = Cartesian.product(list1, list2, list3);
 
         Assertions.assertEquals(expectedProduct.size(), actualProduct.size());
         for (int i = 0; i < expectedProduct.size(); i++) {

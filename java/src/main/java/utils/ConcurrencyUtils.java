@@ -25,23 +25,23 @@ public final class ConcurrencyUtils {
 
     public static void threadPrintln(String template, String message) {
         if (StringUtils.isNotEmpty(message)) {
-            ConcurrencyUtils.safePrintf(String.format(template, threadName(), message));
+            ConcurrencyUtils.syncPrintfln(String.format(template, threadName(), message));
         }
     }
 
     public static void threadPrintln(String message) {
         if (StringUtils.isNotEmpty(message)) {
-            ConcurrencyUtils.safePrintf("%s: %s", threadName(), message);
+            ConcurrencyUtils.syncPrintfln("%s: %s", threadName(), message);
         }
     }
 
-    public static void safePrintln(String s) {
+    public static void syncPrintln(String s) {
         synchronized (System.out) {
             println(s);
         }
     }
 
-    public static void safePrintf(String template, Object... args) {
+    public static <T> void syncPrintfln(String template, T... args) {
         synchronized (System.out) {
             printfln(template, args);
         }

@@ -1,4 +1,4 @@
-package dbms.hibernate.mapping.identifiers;
+package dbms.hibernate.miscellaneous.identifiers;
 
 /**
  * <p>Let's say we don't want to use any of the out-of-the-box strategies.

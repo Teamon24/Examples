@@ -1,4 +1,4 @@
-package dbms.hibernate.mapping.enums.user_type;
+package dbms.hibernate.miscellaneous.enums.user_type;
 
 import org.hibernate.HibernateException;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;

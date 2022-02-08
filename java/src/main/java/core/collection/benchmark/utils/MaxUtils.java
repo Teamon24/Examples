@@ -3,10 +3,12 @@ package core.collection.benchmark.utils;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public final class MaxUtils {
 
@@ -24,9 +26,15 @@ public final class MaxUtils {
                                         Function<? super Element, ? extends Field> mapping
     ) {
         if (collection.isEmpty()) return EMPTY;
-        return collection
+        List<? extends Field> nonNulls = collection
             .stream()
             .map(mapping)
+            .filter(Objects::nonNull)
+            .collect(Collectors.toList());
+
+        if (nonNulls.isEmpty()) return "";
+
+        return nonNulls.stream()
             .map(Object::toString)
             .max(Comparator.comparing(String::length))
             .get();

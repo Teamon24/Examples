@@ -1,32 +1,25 @@
 package dbms.hibernate.cascade;
 
 import dbms.hibernate.HibernateUtils;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
+import java.util.List;
+import java.util.function.Function;
+
 import static dbms.hibernate.TransactionUtils.commit;
 import static dbms.hibernate.TransactionUtils.save;
-import static utils.PrintUtils.printfln;
 
 public interface OneToOne {
 
 
-    /**
-     * <pre>{@code
-     * create sequence hibernate_sequence start 1 increment 1
-     * create table Post (
-     *      id int8 not null,
-     *      name varchar(255),
-     *      primary key (id))
-     * create table PostDetails (
-     *      created_on timestamp,
-     *      visible boolean not null,
-     *      post_id int8 not null,
-     *      primary key (post_id)
-     * )
-     * }
-     * </pre>
-     */
+    String LEFT_JOIN =
+        "select new dbms.hibernate.cascade.LeftJoinCarAndCarDetails(c.name, c.id, cd.car.id, cd.visible) " +
+        "from Car c " +
+        "left join c.details cd";
+
     static void main(String[] args) {
         bidirectional();
 //        unidirectional();
@@ -37,24 +30,34 @@ public interface OneToOne {
             "/META-INF/hibernate-postgresql-example.cfg.xml",
             Car.class, CarDetails.class);
 
-        Car car = new Car();
+        Car car = new Car("Car#2 name");
+
         Session session = sessionFactory.openSession();
         cascadeSave(session, car);
-        cascadeMerge(session, car);
-        cascadeDelete(session, car);
+        printJoin(session, "cascade save");
 
-        Car newCar = new Car();
+        cascadeMerge(session, car);
+        printJoin(session, "cascade merge");
+
+        cascadeDelete(session, car);
+        printJoin(session, "cascade delete");
+
+        Car newCar = new Car("Car#1 name");
         newCar.addDetails(new CarDetails());
         save(session, newCar);
+        printJoin(session, "save new car");
 
         cascadeOrphanRemove(session, newCar.getId());
+        printJoin(session, "cascade orphans remove");
 
-        HibernateUtils.findAll(session, Car.class).forEach(c ->
-            printfln("Car: id = '%s', car details: id = '%s', car_id = '%s'",
-                c.getId(),
-                c.getDetailsId(),
-                c.getDetails() == null ? null : c.getDetails().getCarId())
-        );
+    }
+
+    private static void printJoin(Session session, String title) {
+        HibernateUtils.printJoin(session,
+            title,
+            LEFT_JOIN,
+            LeftJoinCarAndCarDetails::getCarId,
+            LeftJoinCarAndCarDetails.getters());
     }
 
     static Session cascadeSave(Session session, Car car) {
@@ -67,7 +70,7 @@ public interface OneToOne {
     }
 
     static void cascadeMerge(Session session, Car car) {
-        car.setName("Hibernate Master Class Training Material");
+        car.setName("merged car name");
         car.getDetails().setVisible(true);
         commit(session, Session::merge, car);
     }
@@ -76,12 +79,29 @@ public interface OneToOne {
         commit(session, Session::delete, entity);
     }
 
-    static void cascadeOrphanRemove(Session session, Long id) {
+    static void cascadeOrphanRemove(Session session, Integer id) {
         commit(session, s -> {
             Car car = session.get(Car.class, id);
             car.removeDetails(car.getDetails());
         });
     }
+}
 
+@Getter
+@AllArgsConstructor
+class LeftJoinCarAndCarDetails {
+    private String carName;
+    private Integer carId;
+    private Integer carDetailsCarId;
+    private Boolean carDetailsVisible;
+
+    public static List<Function<LeftJoinCarAndCarDetails, ?>> getters() {
+        return List.of(
+            LeftJoinCarAndCarDetails::getCarName,
+            LeftJoinCarAndCarDetails::getCarId,
+            LeftJoinCarAndCarDetails::getCarDetailsCarId,
+            LeftJoinCarAndCarDetails::getCarDetailsVisible
+        );
+    }
 }
 

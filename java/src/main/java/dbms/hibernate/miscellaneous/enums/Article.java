@@ -1,4 +1,4 @@
-package dbms.hibernate.mapping.enums;
+package dbms.hibernate.miscellaneous.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
