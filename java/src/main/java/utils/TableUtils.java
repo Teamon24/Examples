@@ -29,7 +29,7 @@ public final class TableUtils {
         StringBuilder stringBuilder = new StringBuilder();
         createColumnsTitle(stringBuilder, table, longestValuesByColumns);
         table.records.forEach(record -> createRecordString(stringBuilder, record, table, longestValuesByColumns));
-        PrintUtils.println(stringBuilder);
+        System.out.println(stringBuilder);
     }
 
     private static void createRecordString(final StringBuilder stringBuilder,

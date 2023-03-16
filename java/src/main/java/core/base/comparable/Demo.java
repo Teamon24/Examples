@@ -50,10 +50,10 @@ public class Demo {
         return collect;
     }
 
-    public static final List<Object[]> values(Integer amount) {
+    public static final List<Object[]> values(Integer size) {
         List<Object[]> result = new ArrayList<>();
         Object[] randomValues = RandomUtils.random(1, 4, 4);
-        for (int i = 0; i < amount; i++) {
+        for (int i = 0; i < size; i++) {
             while (contains(result, randomValues)) {
                 randomValues = RandomUtils.random(1, 4, 4);
             }

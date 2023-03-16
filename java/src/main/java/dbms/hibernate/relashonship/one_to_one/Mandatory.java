@@ -1,6 +1,7 @@
 package dbms.hibernate.relashonship.one_to_one;
 
 import dbms.hibernate.HibernateUtils;
+import dbms.hibernate.SessionFactoryBuilder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -21,8 +22,8 @@ import javax.persistence.Table;
 import java.util.List;
 
 import static dbms.hibernate.TransactionUtils.commit;
+import static dbms.hibernate.TransactionUtils.operate;
 import static dbms.hibernate.TransactionUtils.refresh;
-import static dbms.hibernate.TransactionUtils.transact;
 import static utils.PrintUtils.printfln;
 
 
@@ -53,13 +54,10 @@ import static utils.PrintUtils.printfln;
 public interface Mandatory {
 
     static void main(String[] args) {
-        String resourceName = "/META-INF/hibernate-postgresql-example.cfg.xml";
-        SessionFactory sessionFactory = HibernateUtils.getSessionFactory(resourceName,
-            Post.class,
-            Comment.class,
-            User.class,
-            Address.class
-        );
+        SessionFactory sessionFactory = new SessionFactoryBuilder()
+            .resourceName("/META-INF/hibernate-postgresql-example.cfg.xml")
+            .entitiesClasses(Post.class, Comment.class, User.class, Address.class)
+            .build();
 
         Session session = sessionFactory.openSession();
 
@@ -68,22 +66,23 @@ public interface Mandatory {
     }
 
     static void case1(Session session) {
+
         List<?> entities = commit(session, s -> {
             User user = new User(new Address());
             User user_NoAddress = new User();
             Address address_NoUser = new Address();
-            return transact(s, Session::save, user, user_NoAddress, address_NoUser);
+            return operate(s, Session::save, user, user_NoAddress, address_NoUser);
         });
 
         refresh(session, entities);
 
-        HibernateUtils.findAll(session, Address.class)
-            .forEach(a ->
-                printfln("Address id = %s, user id = %s", a.getId(), a.getUserId()));
+        HibernateUtils
+            .findAll(session, Address.class)
+            .forEach(address -> printfln("Address id = %s, user id = %s", address.getId(), address.getUserId()));
 
-        HibernateUtils.findAll(session, User.class)
-            .forEach(u ->
-                printfln("User id = %s, address id = %s", u.getId(), u.getAddressId()));
+        HibernateUtils
+            .findAll(session, User.class)
+            .forEach(user -> printfln("User id = %s, address id = %s", user.getId(), user.getAddressId()));
     }
 
     static void case2(Session session) {
@@ -91,16 +90,17 @@ public interface Mandatory {
             Post post = new Post();
             Comment comment = new Comment(post);
             Post post_NoComment = new Post();
-            return transact(session, Session::save, post, comment, post_NoComment);
+            return operate(session, Session::save, post, comment, post_NoComment);
         });
 
-        refresh(session, entities);
+        operate(session, Session::refresh, entities);
 
-
-        HibernateUtils.findAll(session, Post.class)
+        HibernateUtils
+            .findAll(session, Post.class)
             .forEach(p -> printfln("Post id = %s, comment id = %s", p.getId(), p.getCommentId()));
 
-        HibernateUtils.findAll(session, Comment.class)
+        HibernateUtils
+            .findAll(session, Comment.class)
             .forEach(c -> printfln("Comment post_id = %s", c.getPostId()));
     }
 }

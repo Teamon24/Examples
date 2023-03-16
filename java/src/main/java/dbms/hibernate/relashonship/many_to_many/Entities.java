@@ -27,8 +27,43 @@ import java.util.List;
 import java.util.Set;
 import java.util.StringJoiner;
 
-public interface Entities {
-}
+
+/**
+ * <pre>
+ *                      JOIN TABLE
+ *                      |-----------------------|
+ *                     	| course_like         	|
+ *                      |---------------------	|
+ *                 |----|--student_id:FK      	|
+ *                 |    |  course_id:FK---------|-----------|
+ *                 |    |-----------------------|           |
+ *                 |                                        |
+ *                 |                                        |
+ *                 |    COMPOSITE KEY                       |
+ *                 |    |-----------------------|           |
+ *                 |   	| course_rating       	|           |
+ * |---------|     |    |-----------------------|           |    |-----------|
+ * | student |     |----|--student_id:FK       	|           |    | course    |
+ * |---------|     |    |  course_id:FK---------|-----------|    |-----------|
+ * | id:PK   |<----| 	|  rating              	|           |--->| id:PK     |
+ * |---------|     |    |-----------------------|           |    |-----------|
+ *                 |                                        |
+ *                 |                                        |
+ *                 |                                        |
+ *                 |    NEW ENTITY                          |
+ *                 |    |-----------------------|           |
+ *                 |    | course_registration 	|           |
+ *                 |    |-----------------------|           |
+ *                 |    |  id:PK               	|           |
+ *                 |    |----                   |           |
+ *                 |----|--student_id:FK       	|           |
+ *                     	|  course_id:FK---------|-----------|
+ *                     	|  registered_at       	|
+ *                     	|  grade               	|
+ *                     	|-----------------------|
+ * </pre>
+ */
+public interface Entities {}
 
 @Getter
 @Entity

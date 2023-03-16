@@ -1,5 +1,6 @@
 package dbms.jdbc;
 
+import core.lambda.exception_handling.ThrowingInvoker;
 import core.lambda.exception_handling.ThrowingSupplier;
 import dbms.jdbc.dbms.ConnectionSupplierType;
 import dbms.jdbc.dbms.PostgresStrategyBuilder;
@@ -15,8 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static core.lambda.exception_handling.Throwing.rethrow;
-import static utils.PrintUtils.*;
+import static core.lambda.exception_handling.ThrowingInvoker.rethrow;
 
 public class JDBCDemo {
     public static final Map<String, String> VARIABLES = new HashMap<>();
@@ -36,16 +36,16 @@ public class JDBCDemo {
     public static void main(String args[]) throws ClassNotFoundException, FileNotFoundException {
         Class.forName("org.postgresql.Driver");
         Connection connection = ThrowingSupplier.rethrow(SQLException.class, SQL_STRATEGY::getConnection);
-        rethrow(SQLException.class,
+        ThrowingInvoker.rethrow(SQLException.class,
             () -> connection.setAutoCommit(false),
             () -> close(connection)
         );
 
-        rethrow(SQLException.class, () -> USER_DAO.truncate(connection));
+        ThrowingInvoker.rethrow(SQLException.class, () -> USER_DAO.truncate(connection));
 
         List<UserJdbcEntity> usersEntities = Users.USER_ENTITIES;
 
-        rethrow(SQLException.class,
+        ThrowingInvoker.rethrow(SQLException.class,
             () -> insert(connection, usersEntities),
             () -> close(connection)
         );
@@ -71,11 +71,11 @@ public class JDBCDemo {
             }
             throw new SQLException();
         } catch (SQLException e) {
-            rethrow(SQLException.class,
+            ThrowingInvoker.rethrow(SQLException.class,
                 () -> {
                     connection.rollback(insertingUsers);
                     connection.commit();
-                    PrintUtils.println("Rollback to the insertion of users was done.");
+                    System.out.println("Rollback to the insertion of users was done.");
                 },
                 () -> close(connection)
             );
@@ -89,29 +89,29 @@ public class JDBCDemo {
     }
 
     private static void close(Connection connection) {
-        rethrow(SQLException.class, connection::close);
+        ThrowingInvoker.rethrow(SQLException.class, connection::close);
     }
 
     private static void printPasswordUpdate(String newPassword, String oldPassword) {
         if (newPassword.equals(oldPassword)) {
             String template = "Password was updated: old = '%s', new = '%s'";
-            printfln(template, newPassword, oldPassword);
+            PrintUtils.printfln(template, newPassword, oldPassword);
         }
     }
 
     private static void handleDelete(Connection connection, String id) throws SQLException {
         USER_DAO.selectById(connection, id)
             .ifPresentOrElse(
-                (userJdbcEntity) -> printfln("User (id='%s') was not deleted%n", userJdbcEntity.getId()),
-                () -> printfln("User (id='%s') was deleted%n", id));
+                (userJdbcEntity) -> PrintUtils.printfln("User (id='%s') was not deleted%n", userJdbcEntity.getId()),
+                () -> PrintUtils.printfln("User (id='%s') was deleted%n", id));
     }
 
     private static void handleSelect(Connection connection, String id) throws SQLException {
         USER_DAO.selectById(connection, id)
             .ifPresentOrElse(
-                (userJdbcEntity) -> printfln(
+                (userJdbcEntity) -> PrintUtils.printfln(
                     "User (id='%s') was found%n", userJdbcEntity.getId()),
-                () -> printfln("User (id='%s') was not found%n", id));
+                () -> PrintUtils.printfln("User (id='%s') was not found%n", id));
     }
 
     private static SQLStrategy getStrategy() {

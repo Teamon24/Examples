@@ -2,6 +2,7 @@ package dbms.hibernate.hbm.entity;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 import utils.CollectionUtils;
 
 import java.util.Date;
@@ -10,6 +11,7 @@ import java.util.Set;
 
 @Getter
 @Setter
+@Accessors(chain = true)
 public class Person extends AbstractIdentifiableObject {
     private String firstName;
     private String lastName;

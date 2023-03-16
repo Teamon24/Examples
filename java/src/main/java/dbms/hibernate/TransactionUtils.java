@@ -8,46 +8,48 @@ import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class TransactionUtils {
 
     public static void persist(Session session, List<?> entities) {
-        commit(session, Session::persist, entities);
+        commit(Session::persist, session, entities);
     }
 
     public static void persist(Session session, Object... entities) {
-        commit(session, Session::persist, entities);
+        commit(Session::persist, session, entities);
     }
 
     public static void save(Session session, List<?> entities) {
-        commit(session, Session::save, entities);
+        commit(Session::save, session, entities);
     }
 
-    public static void save(Session session, Object... entities) {
-        commit(session, Session::save, entities);
+    public static <Entity> List<Entity> save(Session session, Entity... entities) {
+        return commit(Session::save, session, entities);
     }
 
     public static void refresh(Session session, List<?> entities) {
-        commit(session, Session::refresh, entities);
+        commit(Session::refresh, session, entities);
     }
 
     public static void refresh(Session session, Object... entities) {
-        commit(session, Session::refresh, entities);
+        commit(Session::refresh, session, entities);
     }
 
-    public static <Entity> void commit(
-        Session session,
+    public static <Entity> List<Entity> commit(
         BiConsumer<Session, Entity> operation,
+        Session session,
         Entity... entities
     ) {
         commit(session, (s) -> {
             Arrays.stream(entities).forEach(it -> operation.accept(session, it));
         });
+        return Arrays.stream(entities).collect(Collectors.toList());
     }
 
     public static <Entity> void commit(
-        Session session,
         BiConsumer<Session, Entity> operation,
+        Session session,
         Collection<Entity> entities
     ) {
         commit(session, (s) -> {
@@ -68,7 +70,7 @@ public class TransactionUtils {
         return entities;
     }
 
-    public static <Entity> List<Entity> transact(
+    public static <Entity> List<Entity> operate(
         Session session,
         BiConsumer<Session, Entity> operation,
         Entity... entities
@@ -77,7 +79,7 @@ public class TransactionUtils {
         return Arrays.asList(entities);
     }
 
-    public static <Entity> void transact(
+    public static <Entity> void operate(
         Session session,
         BiConsumer<Session, Entity> operation,
         Collection<Entity> entities

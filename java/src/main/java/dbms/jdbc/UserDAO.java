@@ -2,7 +2,9 @@ package dbms.jdbc;
 
 import dbms.jdbc.dbms.SQLStrategy;
 import dbms.jdbc.entity.DAO;
+import dbms.jdbc.entity.JDBCUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import utils.PrintUtils;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -11,10 +13,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
-import static dbms.jdbc.entity.JDBCUtils.getString;
-import static dbms.jdbc.entity.JDBCUtils.setString;
 import static java.util.Objects.isNull;
-import static utils.PrintUtils.printfln;
 
 public class UserDAO extends DAO<String, UserJdbcEntity> {
 
@@ -38,7 +37,7 @@ public class UserDAO extends DAO<String, UserJdbcEntity> {
         stmt.setString(2, uuid);
 
         stmt.executeUpdate();
-        printfln("User (id='%s') was updated: new password = '%s'", uuid, password);
+        PrintUtils.printfln("User (id='%s') was updated: new password = '%s'", uuid, password);
     }
 
     @Override
@@ -66,17 +65,17 @@ public class UserDAO extends DAO<String, UserJdbcEntity> {
         String password = UserJdbcEntity.passwordColumn;
 
         resultGettersAndEntitySetters = new LinkedHashMap<>() {{
-            put(id,       Pair.of(getString(id),       (user, id) -> user.setId((String) id)));
-            put(fullName, Pair.of(getString(fullName), (user, fullName) -> user.setFullName((String) fullName)));
-            put(password, Pair.of(getString(password), (user, password) -> user.setPassword((String) password)));
-            put(email,    Pair.of(getString(email),    (user, mail) -> user.setEmail((String) mail)));
+            put(id,       Pair.of(JDBCUtils.getString(id),       (user, id) -> user.setId((String) id)));
+            put(fullName, Pair.of(JDBCUtils.getString(fullName), (user, fullName) -> user.setFullName((String) fullName)));
+            put(password, Pair.of(JDBCUtils.getString(password), (user, password) -> user.setPassword((String) password)));
+            put(email,    Pair.of(JDBCUtils.getString(email),    (user, mail) -> user.setEmail((String) mail)));
         }};
 
         statementSettersAndEntityGetters = new LinkedHashMap<>() {{
-            put(id,       Pair.of(UserJdbcEntity::getId,       setString(1)));
-            put(fullName, Pair.of(UserJdbcEntity::getFullName, setString(2)));
-            put(password, Pair.of(UserJdbcEntity::getPassword, setString(3)));
-            put(email,    Pair.of(UserJdbcEntity::getEmail,    setString(4)));
+            put(id,       Pair.of(UserJdbcEntity::getId,       JDBCUtils.setString(1)));
+            put(fullName, Pair.of(UserJdbcEntity::getFullName, JDBCUtils.setString(2)));
+            put(password, Pair.of(UserJdbcEntity::getPassword, JDBCUtils.setString(3)));
+            put(email,    Pair.of(UserJdbcEntity::getEmail,    JDBCUtils.setString(4)));
         }};
     }
 }

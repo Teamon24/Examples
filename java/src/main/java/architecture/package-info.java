@@ -22,7 +22,7 @@
  * </a>
  *
  * <p><a href="https://dzone.com/articles/solid-grasp-and-other-basic-principles-of-object-o">
- *    Solid grasp and other basic principles of OOD
+ *    Solid grasp and org.home.other basic principles of OOD
  * </a>
  *
  * <p><a href="https://khalilstemmler.com/articles/software-design-architecture/domain-driven-design-vs-clean-architecture/">

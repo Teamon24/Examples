@@ -1,11 +1,11 @@
 package patterns.basic.other_source.structural.decorator.ex2;
 
-import static utils.PrintUtils.println;
+import static java.lang.System.out;
 
 public class Circle implements Shape {
 
    @Override
    public void draw() {
-      println("Shape: Circle");
+      out.println("Shape: Circle");
    }
 }

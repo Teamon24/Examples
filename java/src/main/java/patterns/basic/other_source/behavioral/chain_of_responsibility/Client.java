@@ -4,7 +4,7 @@ import utils.PrintUtils;
 
 import java.util.Arrays;
 
-import static utils.PrintUtils.*;
+import static java.lang.System.out;
 
 public class Client {
     public static final ATMDispenseChain ATM_DISPENSER =
@@ -32,16 +32,16 @@ public class Client {
     }
 
     private static void printDispensed(final Integer nominal, final Integer amount) {
-        String message = String.format("nominal: %s$, amounts: %s", nominal, amount);
-        println(message);
+        String message = String.format("nominal: %s$, amount: %s", nominal, amount);
+        System.out.println(message);
     }
 
     private static void printErrorMessage() {
-        println("Can't be dispensed");
+        System.out.println("Can't be dispensed");
     }
 
     private static void printAmount(Integer amount) {
-        println("-------------------------");
-        println(String.format("Amount: %s$", amount));
+        System.out.println("-------------------------");
+        System.out.println(String.format("Amount: %s$", amount));
     }
 }

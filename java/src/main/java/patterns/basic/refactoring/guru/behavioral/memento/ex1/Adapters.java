@@ -71,7 +71,7 @@ public class Adapters {
                 if (e.getButton() != MouseEvent.BUTTON3) {
                     return;
                 }
-                Shape target = editor.getShapes().getChildAt(e.getX(), e.getY());
+                patterns.basic.refactoring.guru.behavioral.memento.ex1.shape.Shape target = editor.getShapes().getChildAt(e.getX(), e.getY());
                 if (target != null) {
                     ColorCommand colorCommand = randomColorCommand(editor);
                     editor.execute(colorCommand);

@@ -8,6 +8,8 @@ import java.util.function.Supplier;
 
 public final class Timer {
 
+    public static final String FORMAT = "%02ds:%02d:%02d:%02d";
+
     private Long start;
     private Long finish;
 
@@ -20,8 +22,7 @@ public final class Timer {
     public long count(Consumer<?> method) {
         start();
         method.accept(null);
-        long finish = finish();
-        return finish;
+        return finish();
     }
 
     public <T> T count(Supplier<T> method) {
@@ -52,14 +53,9 @@ public final class Timer {
 
     public static String format(long time, TimeUnit timeUnit) {
         long seconds = timeUnit.toSeconds(time);
-        long millis = timeUnit.toMillis(time)
-            - seconds * 1000;
-        long micros = timeUnit.toMicros(time)
-            - millis * 1000;
-        long nanos = time
-            - millis * 1000 * 1000
-            - micros * 1000;
-
-        return String.format("%02d:%02d:%02d:%02d", seconds, millis, micros, nanos);
+        long millis = timeUnit.toMillis(time) % 1000;
+        long micros = timeUnit.toMicros(time) % 1000;
+        long nanos = timeUnit.toNanos(time) % 1000;
+        return String.format(FORMAT, seconds, millis, micros, nanos);
     }
 }

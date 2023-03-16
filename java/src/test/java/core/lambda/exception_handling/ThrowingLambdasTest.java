@@ -1,32 +1,33 @@
 package core.lambda.exception_handling;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import utils.Cartesian;
+import utils.NullableCartesianProduct;
 import utils.CollectionUtils;
-import utils.Voider;
+import utils.Invoker;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import static core.lambda.exception_handling.Throwing.*;
-import static core.lambda.exception_handling.ThrowingConsumer.*;
+import static core.lambda.exception_handling.ThrowingConsumer.wrap;
+import static core.lambda.exception_handling.ThrowingInvoker.rethrow;
 import static core.lambda.exception_handling.ThrowingObject.createEx;
 import static utils.ClassUtils.simpleName;
 import static utils.PrintUtils.printfln;
 
-/**
- *
- */
 class ThrowingLambdasTest {
 
-    private static final Voider EMPTY_CATCH_BLOCK = () -> {};
+    public static final String FINALLY = "FINALLY";
+
+    private static final Invoker EMPTY_FINALLY_BLOCK = () -> {};
 
     @ParameterizedTest
     @MethodSource("providerForThrowingTest")
@@ -34,18 +35,20 @@ class ThrowingLambdasTest {
         boolean noExceptionThrowing,
         boolean rethrowsExpected,
         Class<E> expectedExceptionClass,
-        Class<UE> unexpectedExceptionClass)
+        Class<UE> unexpectedExceptionClass,
+        Pair<Invoker, List<String>> finallyBlockPair)
     {
         E expectedException = createEx(expectedExceptionClass);
         UE unexpectedException = createEx(unexpectedExceptionClass);
         final ThrowingObject<E, UE> object = new ThrowingObject<>(noExceptionThrowing, rethrowsExpected, expectedException, unexpectedException);
 
+        Invoker invoker = finallyBlockPair.getLeft();
         Function method = (ignored) -> {
-            rethrow(object::method, expectedExceptionClass, rethrowsExpected, EMPTY_CATCH_BLOCK);
+            rethrow(object::method, expectedExceptionClass, rethrowsExpected, invoker);
             return null;
         };
 
-        testTryCatchLogic(rethrowsExpected, expectedExceptionClass, unexpectedException, method);
+        testTryCatchLogic(rethrowsExpected, expectedExceptionClass, unexpectedException, method, finallyBlockPair);
     }
 
     @ParameterizedTest
@@ -54,24 +57,26 @@ class ThrowingLambdasTest {
         boolean noExceptionThrowing,
         boolean rethrowsExpected,
         Class<E> expectedExceptionClass,
-        Class<UE> unexpectedExceptionClass)
+        Class<UE> unexpectedExceptionClass,
+        Pair<Invoker, List<String>> finallyBlockPair)
     {
 
         E expectedException = createEx(expectedExceptionClass);
         UE unexpectedException = createEx(unexpectedExceptionClass);
         final ThrowingObject<E, UE> object = new ThrowingObject<>(noExceptionThrowing, rethrowsExpected, expectedException, unexpectedException);
 
+        Invoker invoker = finallyBlockPair.getLeft();
         Function method = (ignored) -> {
             Consumer consumer = wrap((i) -> object.method(),
                 expectedExceptionClass,
                 rethrowsExpected,
-                EMPTY_CATCH_BLOCK);
+                invoker);
 
             consumer.accept(null);
             return null;
         };
 
-        testTryCatchLogic(rethrowsExpected, expectedExceptionClass, unexpectedException, method);
+        testTryCatchLogic(rethrowsExpected, expectedExceptionClass, unexpectedException, method, finallyBlockPair);
     }
 
     @ParameterizedTest
@@ -80,7 +85,8 @@ class ThrowingLambdasTest {
         boolean noExceptionThrowing,
         boolean rethrowsExpected,
         Class<E> expectedExceptionClass,
-        Class<UE> unexpectedExceptionClass)
+        Class<UE> unexpectedExceptionClass,
+        Pair<Invoker, List<String>> finallyBlockPair)
     {
         E expectedException = createEx(expectedExceptionClass);
         UE unexpectedException = createEx(unexpectedExceptionClass);
@@ -89,19 +95,22 @@ class ThrowingLambdasTest {
                 noExceptionThrowing, rethrowsExpected, expectedException, unexpectedException
             );
 
+        Invoker invoker = finallyBlockPair.getLeft();
         Function method = (ignored) -> {
-            rethrow(object::method, expectedExceptionClass, rethrowsExpected, EMPTY_CATCH_BLOCK);
+            rethrow(object::method, expectedExceptionClass, rethrowsExpected, invoker);
             return null;
         };
 
-        testTryCatchLogic(rethrowsExpected, expectedExceptionClass, unexpectedException, method);
+        testTryCatchLogic(rethrowsExpected, expectedExceptionClass, unexpectedException, method, finallyBlockPair);
     }
 
     void testTryCatchLogic(
         boolean rethrowsExpected,
         Class expectedExceptionClass,
         Exception unexpectedException,
-        Function<?, ?> method)
+        Function<?, ?> method,
+        Pair<Invoker, List<String>> invoker
+    )
     {
         Exception actual;
         try {
@@ -121,6 +130,12 @@ class ThrowingLambdasTest {
                     printfln(template, expectedExceptionClass.getSimpleName());
                 }
             }
+
+            if (invoker.getLeft() == EMPTY_FINALLY_BLOCK) {
+                Assertions.assertTrue(invoker.getRight().isEmpty());
+            } else {
+                Assertions.assertTrue(invoker.getRight().contains(FINALLY));
+            }
         }
     }
 
@@ -129,8 +144,14 @@ class ThrowingLambdasTest {
         List noExceptionThrowing = List.of(true, false);
         List expectedExceptions = List.of(SQLException.class, IOException.class, IllegalArgumentException.class);
         List unexpectedExceptions = CollectionUtils.arrayList(NumberFormatException.class, ArithmeticException.class, null);
+        List<String> finallyBlockResult = new ArrayList<>();
+        List<String> emptyFinallyBlockResult = new ArrayList<>();
+        List finallyBlocks = CollectionUtils.arrayList(
+            Pair.of(EMPTY_FINALLY_BLOCK, emptyFinallyBlockResult),
+            Pair.of((Invoker) () -> finallyBlockResult.add(FINALLY), finallyBlockResult)
+        );
 
-        List<List> lists = Cartesian.product(rethrowsExpected, noExceptionThrowing, expectedExceptions, unexpectedExceptions);
+        List<List> lists = NullableCartesianProduct.product(rethrowsExpected, noExceptionThrowing, expectedExceptions, unexpectedExceptions, finallyBlocks);
         return lists.stream().map(list -> Arguments.arguments(list.toArray()));
     }
 }

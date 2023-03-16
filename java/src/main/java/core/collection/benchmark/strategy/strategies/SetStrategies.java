@@ -1,28 +1,27 @@
 package core.collection.benchmark.strategy.strategies;
 
-import core.collection.benchmark.strategy.abstrct.MethodStrategy;
-import core.collection.benchmark.strategy.SetStrategy;
+import core.collection.benchmark.utils.CollectionSuppliers;
 import core.collection.benchmark.utils.IndexSuppliers;
 import core.collection.benchmark.utils.ListMethods;
+import core.collection.benchmark.strategy.abstrct.MethodStrategy;
+import core.collection.benchmark.strategy.SetStrategy;
 
 import java.util.Collection;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import static core.collection.benchmark.utils.CollectionSuppliers.sameCollection;
-
 public final class SetStrategies {
 
     public static <E> MethodStrategy<E> setFirstStrategy(final Collection<E> collection, final Supplier<E> elementSupplier) {
-        return setFirstStrategy(collection, sameCollection(collection), elementSupplier);
+        return setFirstStrategy(collection, CollectionSuppliers.sameCollection(collection), elementSupplier);
     }
 
     public static <E> MethodStrategy<E> setMiddleStrategy(final Collection<E> collection, final Supplier<E> elementSupplier) {
-        return setMiddleStrategy(collection, sameCollection(collection), elementSupplier);
+        return setMiddleStrategy(collection, CollectionSuppliers.sameCollection(collection), elementSupplier);
     }
 
     public static <E> MethodStrategy<E> setLastStrategy(final Collection<E> collection, final Supplier<E> elementSupplier) {
-        return setLastStrategy(collection, sameCollection(collection), elementSupplier);
+        return setLastStrategy(collection, CollectionSuppliers.sameCollection(collection), elementSupplier);
     }
 
     public static <E> MethodStrategy<E> setFirstStrategy(
@@ -74,7 +73,7 @@ public final class SetStrategies {
     {
         return new SetStrategy<>(
             collection.getClass(),
-            sameCollection(collection),
+            CollectionSuppliers.sameCollection(collection),
             ListMethods.setter(),
             indexGetter,
             elementSupplier

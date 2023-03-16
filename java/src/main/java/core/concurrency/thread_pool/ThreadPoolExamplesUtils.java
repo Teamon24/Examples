@@ -1,7 +1,7 @@
 package core.concurrency.thread_pool;
 
 import core.collection.benchmark.utils.Sequence;
-import utils.ConcurrencyUtils;
+import utils.PrintUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,10 +12,10 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.function.Function;
 
 import static utils.ConcurrencyUtils.MILLIS_IN_SECOND;
-import static utils.ConcurrencyUtils.call;
 import static utils.ConcurrencyUtils.sleep;
 import static utils.ConcurrencyUtils.threadName;
-import static utils.PrintUtils.println;
+import static utils.ConcurrencyUtils.threadPrintln;
+import static java.lang.System.out;
 
 public final class ThreadPoolExamplesUtils {
 
@@ -35,9 +35,9 @@ public final class ThreadPoolExamplesUtils {
 
     public static void printTask(int taskNumber, String title, long taskWorkImitationTime) {
         String titleResult = title.isEmpty() ? "" : "[" + title + "]";
-        ConcurrencyUtils.syncPrintfln("%s%s: executing task#%s", threadName(), titleResult, taskNumber);
-        ConcurrencyUtils.sleep(taskWorkImitationTime);
-        ConcurrencyUtils.syncPrintfln("%s%s: DONE with task#%s", threadName(), titleResult, taskNumber);
+        PrintUtils.printfln("%s%s: executing task#%s", threadName(), titleResult, taskNumber);
+        sleep(taskWorkImitationTime);
+        PrintUtils.printfln("%s%s: task#%s DONE", threadName(), titleResult, taskNumber);
     }
 
     public static List<Callable<String>> getTasks(final Sequence<Integer> sequence) {
@@ -57,13 +57,12 @@ public final class ThreadPoolExamplesUtils {
     {
         final List<Runnable> runnables = new ArrayList<>();
         fill(runnables, runnable(methodName), sequence);
-
         return runnables;
     }
 
-    public static List<Future<String>> submitEach(final ExecutorService executor,
-                                                  final int taskAmount,
-                                                  final Function<Integer, Callable<String>> getCallable)
+    public static List<Future<String>> submitAll(final ExecutorService executor,
+                                                 final int taskAmount,
+                                                 final Function<Integer, Callable<String>> getCallable)
     {
         final List<Future<String>> futureTasks = new ArrayList<>();
         for (int number = 0; number < taskAmount; number++) {
@@ -76,18 +75,17 @@ public final class ThreadPoolExamplesUtils {
         long start = System.currentTimeMillis();
         int checkTime = getCheckTime(taskAmount);
         while (System.currentTimeMillis() - start < checkTime) {
-            String threadNameTemplate = "\n---------- %s -----------\n%s\n---------------------------\n\n";
-            String message = String.format("pool size: %s\nqueue size: %s", executor.getPoolSize(), executor.getQueue().size());
-            ConcurrencyUtils.threadPrintln(threadNameTemplate, message);
-            ConcurrencyUtils.sleep(SLEEP_TIME);
+            String message = String.format("pool size: %s; queue size: %s", executor.getPoolSize(), executor.getQueue().size());
+            threadPrintln(message);
+            sleep(SLEEP_TIME);
         }
     }
 
     public static Runnable infiniteLoop() {
         return () -> {
             while (true) {
-                println("In the infinite loop");
-                sleep(1000);
+                System.out.println("In the infinite loop");
+                sleep(1);
             }
         };
     }
@@ -95,12 +93,21 @@ public final class ThreadPoolExamplesUtils {
     private static Function<Integer, Callable<String>> task(String methodName) {
         return (number) -> () -> {
             printTask(number, methodName, SLEEP_TIME);
-            return "";
+            return "Task result";
         };
     }
 
     private static Function<Integer, Runnable> runnable(String methodName) {
         return (number) -> () -> call(task(methodName).apply(number));
+    }
+
+    public static <T> T call(final Callable<T> callable) {
+        try {
+            return callable.call();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     private static <T> void fill(List<T> runnables,

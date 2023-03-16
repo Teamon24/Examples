@@ -1,7 +1,7 @@
 package dbms.jpa.ex1;
 
 import com.google.common.base.Objects;
-import dbms.hibernate.miscellaneous.NameAttributeConverter;
+import dbms.hibernate._miscellaneous.NameAttributeConverter;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -67,20 +67,13 @@ public class UserEntity implements Serializable {
             if (this == o) return true;
             if (!(o instanceof Name)) return false;
             Name name = (Name) o;
-            return Objects.equal(
-                        getFirstName(),
-                        name.getFirstName())
-                && Objects.equal(
-                        getLastName(),
-                        name.getLastName());
+            return Objects.equal(getFirstName(), name.getFirstName())
+                && Objects.equal(getLastName(), name.getLastName());
         }
 
         @Override
         public int hashCode() {
-            return Objects.hashCode(
-                getFirstName(),
-                getLastName()
-            );
+            return Objects.hashCode(getFirstName(), getLastName());
         }
     }
 }

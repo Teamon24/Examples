@@ -1,6 +1,6 @@
 package patterns.basic.refactoring.guru.structural.bridge.ex2;
 
-import static utils.PrintUtils.println;
+import static java.lang.System.out;
 
 public class AdvancedRemote extends BasicRemote {
 
@@ -13,12 +13,12 @@ public class AdvancedRemote extends BasicRemote {
 
     public void mute() {
         this.prevVolume = this.device.getVolume();
-        println("Remote: mute");
+        out.println("Remote: mute");
         device.setVolume(0);
     }
 
     public void unmute() {
-        println("Remote: unmute");
+        out.println("Remote: unmute");
         device.setVolume(this.prevVolume);
     }
 }

@@ -6,7 +6,7 @@ import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 
-import static utils.PrintUtils.println;
+import static java.lang.System.out;
 
 /**
  * Первый в мире консольный интерет магазин.
@@ -37,9 +37,9 @@ public class Demo {
             if (proceed.equalsIgnoreCase("P")) {
                 // И наконец, стратегия запускает приём платежа.
                 if (strategy.pay(order.getTotalCost())) {
-                    println("Payment has been successful.");
+                    out.println("Payment has been successful.");
                 } else {
-                    println("FAIL! Please, check your data.");
+                    out.println("FAIL! Please, check your data.");
                 }
                 order.setClosed();
             }
@@ -67,7 +67,7 @@ public class Demo {
 
     private static void ifStrategyHasntBeenInitialized() throws IOException {
         if (strategy == null) {
-            println("Please, select a payment method:" + "\n" +
+            out.println("Please, select a payment method:" + "\n" +
                     "1 - PalPay" + "\n" +
                     "2 - Credit Card");
             String paymentMethod = reader.readLine();

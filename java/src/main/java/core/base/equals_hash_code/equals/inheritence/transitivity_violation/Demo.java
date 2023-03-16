@@ -5,10 +5,8 @@ import core.base.equals_hash_code.equals.inheritence.A;
 import core.base.equals_hash_code.equals.inheritence.B;
 import core.base.equals_hash_code.equals.inheritence.C;
 import utils.ClassUtils;
-import utils.PrintUtils;
 
 import static java.lang.String.format;
-import static utils.PrintUtils.*;
 
 public class Demo {
     public static void main(String[] args) {
@@ -38,7 +36,7 @@ public class Demo {
     public static void symmetry(Object o1, Object o2) {
         String message = format("Symmetry of: '%s' and '%s'", name(o1), name(o2));
         String line = "-".repeat(message.length());
-        println(line + "\n" + message + "\n" + line);
+        System.out.println(line + "\n" + message + "\n" + line);
         printIfViolated(
             equals(o1, o2) &&
                 equals(o2, o1),
@@ -49,7 +47,7 @@ public class Demo {
     public static void transitivity(Object o1, Object o2, Object o3, String transitivityViolationMessage) {
         String message = format("Transitivity of: '%s', '%s' and '%s'", name(o1), name(o2), name(o3));
         String line = "-".repeat(message.length());
-        println(line + "\n" + message + "\n" + line);
+        System.out.println(line + "\n" + message + "\n" + line);
         printIfViolated(
             equals(o1, o2) &
                 equals(o2, o3) &
@@ -60,14 +58,14 @@ public class Demo {
     private static void printIfViolated(boolean isCorrect, String message) {
         if (!isCorrect) {
             String line2 = "!".repeat(message.length());
-            println(line2 + "\n" + message + "\n" + line2 + "\n");
+            System.out.println(line2 + "\n" + message + "\n" + line2 + "\n");
         }
     }
 
     private static boolean equals(Object o1, Object o2) {
         boolean equals = o1.equals(o2);
         String message = format("%s %s %s", name(o1), equals ? "==" : "!=", name(o2));
-        println(message);
+        System.out.println(message);
         return equals;
     }
 

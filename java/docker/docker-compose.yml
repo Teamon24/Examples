@@ -6,48 +6,15 @@ services:
     restart: always
     container_name: examples-jpa-postgres-container
     environment:
+      - PGDATA=/var/lib/postgresql/data/examples
       - POSTGRES_DB=selectel
       - POSTGRES_USER=selectel
       - POSTGRES_PASSWORD=selectel
     volumes:
-      - examples_jpa_postgres_volume:/var/lib/postgresql/data
+      - /var/lib/docker/volumes/examples/jpa/postgres/:/var/lib/postgresql/data/examples
       - ./sql_scripts/0.schemas.sql:/docker-entrypoint-initdb.d/0.schemas.sql
       - ./sql_scripts/1.example.sql:/docker-entrypoint-initdb.d/1.example.sql
       - ./sql_scripts/2.example.sql:/docker-entrypoint-initdb.d/2.example.sql
       - ./sql_scripts/4.example.sql:/docker-entrypoint-initdb.d/4.example.sql
     ports:
       - 5432:5432
-  examples-jpa-mysql:
-    image: mysql:5.7
-    restart: always
-    container_name: examples-jpa-mysql-container
-    environment:
-      - MYSQL_DATABASE=selectel
-      # So you don't have to use root, but you can if you like
-      - MYSQL_USER=selectel
-      # You can use whatever password you like
-      - MYSQL_PASSWORD=selectel
-      # Password for root access
-      - MYSQL_ROOT_PASSWORD=selectel
-    ports:
-      # <Port exposed> : < MySQL Port running inside container>
-      - '3306:3306'
-    expose:
-      # Opens port 3306 on the container
-      - '3306'
-    volumes:
-      - examples_jpa_mysql_volume:/var/lib/mysql
-
-volumes:
-  examples_jpa_postgres_volume:
-    driver: local
-    driver_opts:
-      device: /var/lib/docker/volumes/examples/jpa/postgres
-      type: none
-      o: bind
-  examples_jpa_mysql_volume:
-      driver: local
-      driver_opts:
-        device: /var/lib/docker/volumes/examples/jpa/mysql
-        type: none
-        o: bind

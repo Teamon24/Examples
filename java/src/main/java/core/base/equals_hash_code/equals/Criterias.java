@@ -1,6 +1,6 @@
 package core.base.equals_hash_code.equals;
 
-import static utils.PrintUtils.println;
+import static java.lang.System.out;
 
 /**
  * <p><strong>Критерии</strong>:
@@ -31,11 +31,11 @@ public class Criterias {
 
         boolean nonNullCriteria = !a1.equals(null);
 
-        println("1. Reflectiveness: " + reflectiveness);
-        println("2. Symmetry: " + symmetry);
-        println("3. Transitivity: " + transitivity);
-        println("4. Consistency: " + consistency);
-        println("5. Non-null criteria: " + nonNullCriteria);
+        out.println("1. Reflectiveness: " + reflectiveness);
+        out.println("2. Symmetry: " + symmetry);
+        out.println("3. Transitivity: " + transitivity);
+        out.println("4. Consistency: " + consistency);
+        out.println("5. Non-null criteria: " + nonNullCriteria);
     }
 }
 

@@ -1,7 +1,6 @@
 package core.base.polymorphism;
 
 import lombok.Getter;
-import utils.PrintUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,7 +32,7 @@ class Sources<T> extends ArrayList<T> {
                 return 1;
             }
         });
-        PrintUtils.println();
+        System.out.println();
         this.getSources().forEach(System.out::println);
         return this;
     }

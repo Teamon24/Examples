@@ -2,7 +2,7 @@ package patterns.basic.refactoring.guru.structural.proxy.ex1;
 
 import java.util.HashMap;
 
-import static utils.PrintUtils.println;
+import static java.lang.System.out;
 
 public class YouTubeCacheProxy implements YoutubeApi {
 
@@ -19,7 +19,7 @@ public class YouTubeCacheProxy implements YoutubeApi {
         if (this.cachePopular.isEmpty()) {
             this.cachePopular = this.youtubeService.popularVideos();
         } else {
-            println("Retrieved list from cache.");
+            out.println("Retrieved list from cache.");
         }
         return this.cachePopular;
     }
@@ -31,7 +31,7 @@ public class YouTubeCacheProxy implements YoutubeApi {
             video = this.youtubeService.getVideo(videoId);
             this.cacheAll.put(videoId, video);
         } else {
-            println("Retrieved video '" + videoId + "' from cache.");
+            out.println("Retrieved video '" + videoId + "' from cache.");
         }
         return video;
     }

@@ -5,8 +5,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.stream.Stream;
 
-import static core.lambda.exception_handling.ThrowingFunction.wrap;
-import static utils.PrintUtils.println;
+import static java.lang.System.out;
 
 public class Demo {
     public static void main(String[] args) {
@@ -17,34 +16,34 @@ public class Demo {
         Class<OutOfMemoryError>               oomClass   = OutOfMemoryError.class;
         Class<ArrayIndexOutOfBoundsException> aioobClass = ArrayIndexOutOfBoundsException.class;
 
-        ThrowingFunction<Object, ?, IOException>                    io    = (ignored) -> checked(ioClass);
-        ThrowingFunction<Object, ?, FileNotFoundException>          fnf   = (ignored) -> checked(fnfClass);
-        ThrowingFunction<Object, ?, IOException>                    ae    = (ignored) -> unchecked(aeClass);
-        ThrowingFunction<Object, ?, ArrayIndexOutOfBoundsException> aioob = (ignored) -> unchecked(aeClass);
-        ThrowingFunction<Object, ?, OutOfMemoryError>               oom   = (ignored) -> error(oomClass);
+        ThrowingFunction<Object, ?, IOException>                    ioFunc    = (ignored) -> getChecked(ioClass);
+        ThrowingFunction<Object, ?, FileNotFoundException>          fnfFunc   = (ignored) -> getChecked(fnfClass);
+        ThrowingFunction<Object, ?, IOException>                    aeFunc    = (ignored) -> getUnchecked(aeClass);
+        ThrowingFunction<Object, ?, ArrayIndexOutOfBoundsException> aioobFunc = (ignored) -> getUnchecked(aeClass);
+        ThrowingFunction<Object, ?, OutOfMemoryError>               oomFunc   = (ignored) -> getError(oomClass);
 
         Stream.of(1).forEach(it -> {
-                try { wrap(io,    ioClass).apply(it);    } catch (Throwable t) { message(t); }
-                try { wrap(fnf,   fnfClass).apply(it);   } catch (Throwable t) { message(t); }
-                try { wrap(ae,    ioClass).apply(it);    } catch (Throwable t) { message(t); }
-                try { wrap(aioob, aioobClass).apply(it); } catch (Throwable t) { message(t); }
-                try { wrap(oom,   oomClass).apply(it);   } catch (Throwable t) { message(t); }
+                try { ThrowingFunction.wrap(ioFunc,    ioClass).apply(it);    } catch (Throwable t) { message(t); }
+                try { ThrowingFunction.wrap(fnfFunc,   fnfClass).apply(it);   } catch (Throwable t) { message(t); }
+                try { ThrowingFunction.wrap(aeFunc,    ioClass).apply(it);    } catch (Throwable t) { message(t); }
+                try { ThrowingFunction.wrap(aioobFunc, aioobClass).apply(it); } catch (Throwable t) { message(t); }
+                try { ThrowingFunction.wrap(oomFunc,   oomClass).apply(it);   } catch (Throwable t) { message(t); }
         });
     }
 
     private static void message(Throwable t) {
-        println(t.getMessage());
+        out.println(t.getMessage());
     }
 
-    public static <Ex extends RuntimeException> Object unchecked(Class<Ex> aClass) {
+    public static <Ex extends RuntimeException> Object getUnchecked(Class<Ex> aClass) {
         throw createEx(aClass);
     }
 
-    public static <Ex extends Exception> Object checked(Class<Ex> aClass) throws Ex {
+    public static <Ex extends Exception> Object getChecked(Class<Ex> aClass) throws Ex {
         throw createEx(aClass);
     }
 
-    public static <Ex extends Error> Object error(Class<Ex> aClass) {
+    public static <Ex extends Error> Object getError(Class<Ex> aClass) {
         throw createEx(aClass);
     }
 

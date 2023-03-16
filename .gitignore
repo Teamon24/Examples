@@ -8,9 +8,15 @@
 
 /java/build
 /java/out
+/java/.idea
 
 /kotlin/build
 /kotlin/out
+/kotlin/.idea
+
+/spring/build
+/spring/out
+/spring/.idea
 
 /java/src/main/resources/.idea
 /java/src/main/resources/jpa/postgres/postgres_data_link

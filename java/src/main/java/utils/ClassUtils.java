@@ -12,7 +12,12 @@ public final class ClassUtils {
     }
 
     public static <T> String joinSimpleNames(Class<? extends T>... classes) {
-        return StringUtils.joinWith(", ", Arrays.stream(classes).map(Class::getSimpleName).collect(Collectors.toList()));
+        return StringUtils.joinWith(", ",
+            Arrays
+                .stream(classes)
+                .map(Class::getSimpleName)
+                .collect(Collectors.toList())
+        );
     }
     public static <T> String joinSimpleNames(List<Class<? extends T>> classes) {
         List<String> simpleNames = classes.stream().map(Class::getSimpleName).collect(Collectors.toList());

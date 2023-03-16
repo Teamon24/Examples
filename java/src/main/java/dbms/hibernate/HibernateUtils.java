@@ -1,18 +1,16 @@
 package dbms.hibernate;
 
+import com.google.common.collect.Lists;
 import core.collection.benchmark.utils.MaxUtils;
-import dbms.jpa.ex1.programmatical.provider.ProviderProperties;
-import dbms.jpa.ex1.programmatical.provider.ProviderPropertiesBuilder;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.boot.Metadata;
-import org.hibernate.boot.MetadataSources;
-import org.hibernate.boot.registry.StandardServiceRegistry;
-import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.query.Query;
-import org.hibernate.service.ServiceRegistry;
+import utils.ClassUtils;
 import utils.IndentUtils;
+import utils.NullUtils;
+import utils.PrintUtils;
 
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -27,73 +25,13 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static utils.ClassUtils.simpleName;
-import static utils.ConcurrencyUtils.syncPrintfln;
+import static org.apache.commons.lang3.StringUtils.SPACE;
 import static utils.ConcurrencyUtils.syncPrintln;
-import static utils.PrintUtils.printfln;
 
 public class HibernateUtils {
 
     public static final String DELIMITER = "  ";
     public static final String LINE_SYMBOL = "-";
-    private static StandardServiceRegistry registry;
-    private static SessionFactory sessionFactory;
-
-    public static SessionFactory getSessionFactory(String resourceName, Class<?>... entitiesClasses) {
-        if(sessionFactory == null) createSessionFactory(resourceName, entitiesClasses);
-        return sessionFactory;
-    }
-
-    private static void createSessionFactory(String resourceName, Class<?> ... entitiesClasses) {
-
-        try {
-            registry = new StandardServiceRegistryBuilder()
-                .configure(resourceName)
-                .build();
-
-            MetadataSources metadataSources = new MetadataSources(registry);
-            Arrays.stream(entitiesClasses)
-                .forEach(metadataSources::addAnnotatedClass);
-
-            Metadata metadata = metadataSources.getMetadataBuilder().build();
-
-            sessionFactory = metadata.getSessionFactoryBuilder().build();
-        } catch (Exception e) {
-            e.printStackTrace();
-            if (registry != null) {
-                StandardServiceRegistryBuilder.destroy(registry);
-            }
-        }
-    }
-
-    public static SessionFactory getSessionFactory(
-        int port,
-        String database,
-        String user, String password, String schema,
-        Class<?>... annotatedClasses
-    ) {
-        ProviderProperties providerProperties = new ProviderPropertiesBuilder()
-            .port(port)
-            .databaseName(database)
-            .userName(user)
-            .password(password)
-            .schema(schema)
-            .build();
-
-        ServiceRegistry serviceRegistry =
-            new StandardServiceRegistryBuilder()
-                .applySettings(providerProperties.getProperties())
-                .build();
-
-        MetadataSources metadataSources = new MetadataSources(serviceRegistry);
-        Arrays.stream(annotatedClasses).forEach(metadataSources::addAnnotatedClass);
-
-
-        return metadataSources
-            .buildMetadata()
-            .getSessionFactoryBuilder()
-            .build();
-    }
 
     public static <T> List<T> findAll(Session session, Class<T> type) {
         CriteriaQuery<T> selectFrom = selectFrom(session, type);
@@ -163,26 +101,73 @@ public class HibernateUtils {
         printTable(title, values);
     }
 
-    public static <T> void printNativeJoin(Session session, String queryString) {
-        printNativeJoin(session, "", queryString);
+    public static void printNativeSelect(Session session, String title, String queryString) {
+        printNativeSelect(session, title, queryString, true);
     }
 
-    public static <T> void printNativeJoin(
+    public static void printNativeSelect(Session session, String queryString) {
+        printNativeSelect(session, "", queryString, true);
+    }
+
+    public static Pair<String, String[][]> getNativeSelectResult(Session session, String queryString) {
+        return getNativeSelectResult(session, "", queryString, true);
+    }
+
+    public static void printNativeSelectWithColumns(Session session, String title, String queryString) {
+        printNativeSelect(session, title, queryString, false);
+    }
+
+    public static void printNativeSelectWithColumns(Session session, String queryString) {
+        printNativeSelect(session, "", queryString, false);
+    }
+
+    public static void printNativeSelect(
         Session session,
         String title,
-        String queryString
+        String queryString,
+        Boolean noColumnsTitle
     ) {
+        String[][] values = createNativeSelectResult(session, title, queryString, noColumnsTitle);
+        if (values == null) return;
+
+        printTable(title, values);
+    }
+
+    public static Pair<String, String[][]> getNativeSelectResult(
+        Session session,
+        String title,
+        String queryString,
+        Boolean noColumnsTitle
+    ) {
+        String[][] values = createNativeSelectResult(session, title, queryString, noColumnsTitle);
+        if (values == null) return null;
+        return Pair.of(title, values);
+    }
+
+    private static String[][] createNativeSelectResult(Session session, String title, String queryString, Boolean noColumnsTitle) {
         Query query = session.createSQLQuery(queryString);
         List<Object[]> list = query.list();
 
+        List<String> columnsTitles = getColumnsTitles(noColumnsTitle, queryString);
+
+        if (list.size() == 0) {
+            printEmptyTable(title, columnsTitles);
+            return null;
+        }
+
         int fieldsAmount = list.get(0).length;
+
+        if (!noColumnsTitle && columnsTitles.size() != fieldsAmount)
+            throw new RuntimeException("Column titles amount should be equal to result fields amount");
+
+        if (!noColumnsTitle) list.add(0, columnsTitles.toArray());
 
         String[][] values = new String[list.size()][fieldsAmount];
 
         String[] longestsColumnsValues = new String[fieldsAmount];
         for (var ref = new Object() { int i = 0; }; ref.i < longestsColumnsValues.length; ref.i++) {
             List<?> columnValues = list.stream()
-                .map(result -> result[ref.i])
+                .map(result -> NullUtils.get("null", result[ref.i]))
                 .collect(Collectors.toList());
 
             String longest = MaxUtils.longest(columnValues);
@@ -192,35 +177,64 @@ public class HibernateUtils {
         for (int i = 0; i < list.size(); i++) {
             for (int j = 0; j < fieldsAmount; j++) {
                 Object[] result = list.get(i);
-                String field = result[j] == null ? "null" : result[j].toString();
+                String field = NullUtils.get("null", result[j]).toString();
                 String fieldWithIndent = IndentUtils.addIndent(field, longestsColumnsValues[j].length());
                 values[i][j] = fieldWithIndent;
             }
         }
-
-        printTable(title, values);
+        return values;
     }
 
-    private static void printTable(String title, String[][] values) {
+    private static void printEmptyTable(String title, List<String> columnsTitles) {
+        syncPrintln(() -> {
+            System.out.println(LINE_SYMBOL.repeat(20));
+            System.out.println(StringUtils.joinWith("|", columnsTitles));
+            System.out.println(title);
+            System.out.println(LINE_SYMBOL.repeat(20));
+        });
+    }
+
+    private static List<String> getColumnsTitles(Boolean noColumnsTitle, String queryString) {
+        if (noColumnsTitle) return Lists.newArrayList();
+
+        List<String> selectSplit = splitNotBlank(queryString, "select");
+        List<String> columnsTitles = splitNotBlank(selectSplit.get(0), "from");
+        List<String> strings = splitNotBlank(columnsTitles.get(0), ",");
+        List<String> collect = strings.stream().map(it -> {
+            List<String> split = splitNotBlank(it, SPACE);
+            if (split.size() == 1) return split.get(0);
+            if (split.size() == 2) return split.get(1);
+            throw new IllegalArgumentException("There should be column title or column title with alias");
+        }).collect(Collectors.toList());
+        return collect;
+    }
+
+    private static List<String> splitNotBlank(String queryString, String regex) {
+        return Arrays.stream(queryString.split(regex)).filter(StringUtils::isNotBlank).collect(Collectors.toList());
+    }
+
+    public static void printTable(String title, String[][] values) {
         if (values.length == 0) {
-            syncPrintln(LINE_SYMBOL.repeat(20));
-            syncPrintln(title);
-            syncPrintln(LINE_SYMBOL.repeat(20));
-            return;
-        };
+            syncPrintln(() -> {
+                System.out.println(LINE_SYMBOL.repeat(title.length()));
+                System.out.println(title);
+                System.out.println(LINE_SYMBOL.repeat(title.length()));
+            });
+        } else {
+            String template = template(values[0].length);
+            Optional<Integer> reduced = Arrays.stream(values[0]).map(String::length).reduce(Integer::sum);
+            Integer lineLength = reduced.get() + 2 + values.length;
 
 
-        String template = template(values[0].length);
-        Optional<Integer> reduced = Arrays.stream(values[0]).map(String::length).reduce(Integer::sum);
-        Integer lineLength = reduced.get() + 2 + values.length;
-        syncPrintln(LINE_SYMBOL.repeat(lineLength));
-        syncPrintln(title);
-
-        for (String[] value : values) {
-            syncPrintfln(template, value);
+            syncPrintln(() -> {
+                System.out.println(LINE_SYMBOL.repeat(lineLength));
+                System.out.println(title);
+                for (String[] value : values) {
+                    PrintUtils.printfln(template, (Object[]) value);
+                }
+                System.out.println(LINE_SYMBOL.repeat(lineLength));
+            });
         }
-
-        syncPrintln(LINE_SYMBOL.repeat(lineLength));
     }
 
     private static String template(int fieldsAmount) {
@@ -228,7 +242,7 @@ public class HibernateUtils {
     }
 
     public static Runnable throwNotFound(AutoGeneratedId<?> entity) {
-        return throwNotFound(simpleName(entity), entity.getId());
+        return throwNotFound(ClassUtils.simpleName(entity), entity.getId());
     }
 
     public static Runnable throwNotFound(String simpleName, Serializable id) {
@@ -244,7 +258,4 @@ public class HibernateUtils {
         };
     }
 
-    public static void printlnRemove(AutoGeneratedId<?> entity) {
-        printfln("%s (id = '%s') was removed", simpleName(entity), entity.getId());
-    }
 }

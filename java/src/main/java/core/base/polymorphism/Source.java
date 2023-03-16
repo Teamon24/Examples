@@ -1,22 +1,20 @@
 package core.base.polymorphism;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 
 import java.util.Arrays;
 import java.util.StringJoiner;
 
-/**
- *
- */
-@AllArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 class Source<T> {
     T value;
 
-    public final void add(T... values) {
+    public final void consume(T... values) {
         Arrays.stream(values).forEach(System.out::println);
     }
 
-    public T get() {
+    public T produce() {
         return this.value;
     }
 

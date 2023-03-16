@@ -1,11 +1,10 @@
 package core.concurrency.thread_pool.forkJoin.ex1;
 
 import org.apache.commons.lang3.tuple.Pair;
-import utils.ConcurrencyUtils;
 import utils.ListGenerator;
+import utils.ConcurrencyUtils;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -16,7 +15,7 @@ import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static utils.PrintUtils.println;
+import static java.lang.System.out;
 
 public class Demo {
 
@@ -25,7 +24,7 @@ public class Demo {
         Random random = new Random();
         int integersAmount = 100;
 
-        ArrayList<Integer> integers = ListGenerator.getRandomIntegerList(random, integersAmount);
+        List<Integer> integers = ListGenerator.getRandomIntegerList(random, integersAmount);
         List<BigInteger> bigIntegers = ListGenerator.getBigIntegers(random, integersAmount);
 
         int availableProcessors = Runtime.getRuntime().availableProcessors();
@@ -53,7 +52,7 @@ public class Demo {
             printResult(task, result);
         });
 
-        ConcurrencyUtils.sleep(100);
+        ConcurrencyUtils.sleep(100L);
     }
 
     private static <T> void assertResult(Reduce<T> task, Object actual) {
@@ -67,7 +66,7 @@ public class Demo {
         } else {
             String template = "For task '%s' expected and actual results are equal - '%s'";
             String message = String.format(template, task.getName(), expected);
-            println(message);
+            out.println(message);
         }
     }
 
@@ -81,9 +80,9 @@ public class Demo {
     private static void printResult(Reduce<?> task, Object result) {
         String message = String.format("Result of '%s': %s", task.getName(), result);
         String line = "-".repeat(message.length());
-        println(line);
-        println(message);
-        println(line.repeat(4));
+        out.println(line);
+        out.println(message);
+        out.println(line.repeat(4));
     }
 
     private static <T> T execute(ForkJoinPool forkJoinPool, ForkJoinTask<T> task) {

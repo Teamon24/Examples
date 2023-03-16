@@ -1,10 +1,10 @@
 package patterns.enterprise.unit_of_work;
 
+import patterns.enterprise.unit_of_work.abstraction.UnitOfWork;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
-import static patterns.enterprise.unit_of_work.abstraction.UnitOfWork.*;
 
 public class Client {
 
@@ -13,7 +13,7 @@ public class Client {
      */
     public static void main(String[] args) {
 
-        HashMap<OperationType, List<Student>> context = new HashMap<>();
+        HashMap<UnitOfWork.OperationType, List<Student>> context = new HashMap<>();
         StudentUnitOfWork studentUnitOfwork =
             new StudentUnitOfWork(context, new StudentDatabase(), new StudentIdentityMap());
 

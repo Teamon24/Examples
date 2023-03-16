@@ -5,8 +5,6 @@ import core.collection.benchmark.utils.MaxUtils;
 import java.util.Arrays;
 import java.util.List;
 
-import static java.lang.Math.abs;
-
 public final class IndentUtils {
 
     public static <T> String withIndent(final T currentValue, final int lengthOfMaxValueToString) {

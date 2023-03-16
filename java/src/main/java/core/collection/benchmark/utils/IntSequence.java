@@ -12,8 +12,8 @@ public class IntSequence extends Sequence<Integer> {
     }
 
     @Override
-    public IntSequence init(Function<Integer, Integer> generateNext) {
-        return (IntSequence) super.init(generateNext);
+    public IntSequence next(Function<Integer, Integer> generateNext) {
+        return (IntSequence) super.next(generateNext);
     }
 
     public Sequence<Integer> fromLast(Integer period, Integer limit) {
@@ -27,7 +27,7 @@ public class IntSequence extends Sequence<Integer> {
         Sequence<Integer> sequence = Sequence.first(current);
         int periods = (limit - current) / period;
         final int[] counter = {0};
-        sequence.init((ignored) -> {
+        sequence.next((ignored) -> {
             if (counter[0] > periods) {
                 counter[0] = 0;
             }
@@ -41,6 +41,6 @@ public class IntSequence extends Sequence<Integer> {
 
     public static IntSequence create() {
         Integer first = 0;
-        return IntSequence.first(first).init((it -> it = it + 1));
+        return IntSequence.first(first).next((it -> it = it + 1));
     }
 }

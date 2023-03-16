@@ -1,11 +1,12 @@
 package patterns.enterprise.unit_of_work;
 
 import patterns.enterprise.unit_of_work.abstraction.Database;
+import utils.PrintUtils;
 
 import java.util.Collection;
 import java.util.HashMap;
 
-import static utils.PrintUtils.println;
+import static java.lang.System.out;
 
 public final class StudentDatabase implements Database<Integer, Student> {
 
@@ -20,7 +21,7 @@ public final class StudentDatabase implements Database<Integer, Student> {
 
     @Override
     public void insert(Student student) {
-        println("Inserting: " + student.toString());
+        System.out.println("Inserting: " + student.toString());
         Integer id = student.getId();
         if (id == null) {
             this.entities.put(findLast().getId() + 1, student);
@@ -30,13 +31,13 @@ public final class StudentDatabase implements Database<Integer, Student> {
     @Override
     public void modify(Student student) {
         this.entities.put(student.getId(), student);
-        println("Modifying: " + student);
+        System.out.println("Modifying: " + student);
     }
 
     @Override
     public void delete(Student student) {
         this.entities.remove(student.getId(), student);
-        println("Deleting: " + student);
+        System.out.println("Deleting: " + student);
     }
 
     @Override
@@ -47,7 +48,7 @@ public final class StudentDatabase implements Database<Integer, Student> {
     @Override
     public Student find(Integer id) {
         Student student = this.entities.get(id);
-        println("Found: " + student.toString());
+        System.out.println("Found: " + student.toString());
         return student;
     }
 }

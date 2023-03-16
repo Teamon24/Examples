@@ -6,26 +6,26 @@ import java.util.Arrays;
 import java.util.List;
 
 public class CompoundShape extends BaseShape {
-    private List<patterns.basic.refactoring.guru.behavioral.memento.ex1.shape.Shape> children = new ArrayList<>();
+    private List<Shape> children = new ArrayList<>();
 
-    public CompoundShape(patterns.basic.refactoring.guru.behavioral.memento.ex1.shape.Shape... components) {
+    public CompoundShape(Shape... components) {
         super(0, 0, Color.BLACK);
         add(components);
     }
 
-    public void add(patterns.basic.refactoring.guru.behavioral.memento.ex1.shape.Shape component) {
+    public void add(Shape component) {
         children.add(component);
     }
 
-    public void add(patterns.basic.refactoring.guru.behavioral.memento.ex1.shape.Shape... components) {
+    public void add(Shape... components) {
         children.addAll(Arrays.asList(components));
     }
 
-    public void remove(patterns.basic.refactoring.guru.behavioral.memento.ex1.shape.Shape child) {
+    public void remove(Shape child) {
         children.remove(child);
     }
 
-    public void remove(patterns.basic.refactoring.guru.behavioral.memento.ex1.shape.Shape... components) {
+    public void remove(Shape... components) {
         children.removeAll(Arrays.asList(components));
     }
 
@@ -39,7 +39,7 @@ public class CompoundShape extends BaseShape {
             return 0;
         }
         int x = children.get(0).getX();
-        for (patterns.basic.refactoring.guru.behavioral.memento.ex1.shape.Shape child : children) {
+        for (Shape child : children) {
             if (child.getX() < x) {
                 x = child.getX();
             }
@@ -53,7 +53,7 @@ public class CompoundShape extends BaseShape {
             return 0;
         }
         int y = children.get(0).getY();
-        for (patterns.basic.refactoring.guru.behavioral.memento.ex1.shape.Shape child : children) {
+        for (Shape child : children) {
             if (child.getY() < y) {
                 y = child.getY();
             }
@@ -65,7 +65,7 @@ public class CompoundShape extends BaseShape {
     public int getWidth() {
         int maxWidth = 0;
         int x = getX();
-        for (patterns.basic.refactoring.guru.behavioral.memento.ex1.shape.Shape child : children) {
+        for (Shape child : children) {
             int childsRelativeX = child.getX() - x;
             int childWidth = childsRelativeX + child.getWidth();
             if (childWidth > maxWidth) {
@@ -79,7 +79,7 @@ public class CompoundShape extends BaseShape {
     public int getHeight() {
         int maxHeight = 0;
         int y = getY();
-        for (patterns.basic.refactoring.guru.behavioral.memento.ex1.shape.Shape child : children) {
+        for (Shape child : children) {
             int childsRelativeY = child.getY() - y;
             int childHeight = childsRelativeY + child.getHeight();
             if (childHeight > maxHeight) {
@@ -91,35 +91,35 @@ public class CompoundShape extends BaseShape {
 
     @Override
     public void drag() {
-        for (patterns.basic.refactoring.guru.behavioral.memento.ex1.shape.Shape child : children) {
+        for (Shape child : children) {
             child.drag();
         }
     }
 
     @Override
     public void drop() {
-        for (patterns.basic.refactoring.guru.behavioral.memento.ex1.shape.Shape child : children) {
+        for (Shape child : children) {
             child.drop();
         }
     }
 
     @Override
     public void moveTo(int x, int y) {
-        for (patterns.basic.refactoring.guru.behavioral.memento.ex1.shape.Shape child : children) {
+        for (Shape child : children) {
             child.moveTo(x, y);
         }
     }
 
     @Override
     public void moveBy(int x, int y) {
-        for (patterns.basic.refactoring.guru.behavioral.memento.ex1.shape.Shape child : children) {
+        for (Shape child : children) {
             child.moveBy(x, y);
         }
     }
 
     @Override
     public boolean isInsideBounds(int x, int y) {
-        for (patterns.basic.refactoring.guru.behavioral.memento.ex1.shape.Shape child : children) {
+        for (Shape child : children) {
             if (child.isInsideBounds(x, y)) {
                 return true;
             }
@@ -130,7 +130,7 @@ public class CompoundShape extends BaseShape {
     @Override
     public void setColor(Color color) {
         super.setColor(color);
-        for (patterns.basic.refactoring.guru.behavioral.memento.ex1.shape.Shape child : children) {
+        for (Shape child : children) {
             child.setColor(color);
         }
     }
@@ -138,13 +138,13 @@ public class CompoundShape extends BaseShape {
     @Override
     public void unSelect() {
         super.unSelect();
-        for (patterns.basic.refactoring.guru.behavioral.memento.ex1.shape.Shape child : children) {
+        for (Shape child : children) {
             child.unSelect();
         }
     }
 
-    public patterns.basic.refactoring.guru.behavioral.memento.ex1.shape.Shape getChildAt(int x, int y) {
-        for (patterns.basic.refactoring.guru.behavioral.memento.ex1.shape.Shape child : children) {
+    public Shape getChildAt(int x, int y) {
+        for (Shape child : children) {
             if (child.isInsideBounds(x, y)) {
                 return child;
             }
@@ -153,7 +153,7 @@ public class CompoundShape extends BaseShape {
     }
 
     public boolean selectChildAt(int x, int y) {
-        patterns.basic.refactoring.guru.behavioral.memento.ex1.shape.Shape child = getChildAt(x,y);
+        Shape child = getChildAt(x,y);
         if (child != null) {
             child.select();
             return true;
@@ -161,9 +161,9 @@ public class CompoundShape extends BaseShape {
         return false;
     }
 
-    public List<patterns.basic.refactoring.guru.behavioral.memento.ex1.shape.Shape> getSelected() {
-        List<patterns.basic.refactoring.guru.behavioral.memento.ex1.shape.Shape> selected = new ArrayList<>();
-        for (patterns.basic.refactoring.guru.behavioral.memento.ex1.shape.Shape child : children) {
+    public List<Shape> getSelected() {
+        List<Shape> selected = new ArrayList<>();
+        for (Shape child : children) {
             if (child.isSelected()) {
                 selected.add(child);
             }

@@ -1,52 +1,58 @@
 package core.collection.benchmark.utils;
 
-import utils.RandomUtils;
-
-import java.util.Collection;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class Sequence<In> {
 
+    protected Supplier<In> firstSupplier;
     protected Function<In, In> generateNext;
     protected In current;
     protected In first;
-    protected Integer counter = 0;
+    protected Integer stepNumber = 0;
+
+    protected Sequence(final Supplier<In> firstSupplier) {
+        this.firstSupplier = firstSupplier;
+    }
 
     protected Sequence(final In first) {
         this.first = first;
         this.current = first;
     }
 
+    public static <In> Sequence<In> first(final Supplier<In> firstSupplier) {
+        return new Sequence<>(firstSupplier);
+    }
+
     public static <In> Sequence<In> first(final In first) {
         return new Sequence<>(first);
     }
 
-    public static <In> Sequence<In> randomFrom(Collection<In> collection) {
-        return Sequence.first(RandomUtils.randomFrom(collection)).init((it -> RandomUtils.randomFrom(collection)));
-    }
-
-    public Sequence<In> init(final Function<In, In> generateNext) {
+    public Sequence<In> next(final Function<In, In> generateNext) {
         this.generateNext = generateNext;
         return this;
     }
 
     public In next() {
-        if (generateNext == null) throw new RuntimeException("Sequence has no logic of next element generation.");
+        if (this.generateNext == null) throw new RuntimeException("Sequence has no logic of next element generation.");
 
-        if (this.counter == 0) {
-            this.counter++;
+        if (this.stepNumber == 0) {
+            this.stepNumber++;
             if (this.first == null) {
-                if (this.current == null) throw new RuntimeException("Sequence has no first element");
-                return generateNext.apply(current);
+                if (this.firstSupplier == null) {
+                    throw new RuntimeException("Sequence has no first element");
+                } else {
+                    return this.firstSupplier.get();
+                }
             } else {
                 return this.first;
             }
         }
 
-        In next = generateNext.apply(current);
+        In next = this.generateNext.apply(this.current);
         this.current = next;
 
-        this.counter++;
+        this.stepNumber++;
         return next;
     }
 

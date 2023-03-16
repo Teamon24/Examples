@@ -1,6 +1,6 @@
 package core.lambda.exception_handling;
 
-import utils.Voider;
+import utils.Invoker;
 
 import java.util.Optional;
 
@@ -17,11 +17,12 @@ public interface ThrowingSupplier<T, E extends Throwable> {
      * <p>- если выброса исключения не произошло, - метод возвращает результат выполнения лямбды.
      * <p>- если произошел выброс ожидаемого исключения, то будет возврат пустого Optional или проброс пойманного исключения (если установлен соответствующий флаг).
      * <p>- если произошел выброс исключения другого типа, то будет проброс.
-     * <p>- catch-блок выполняется в любом случае.
+     * <p>- finally-блок выполняется в любом случае.
      *
      * @param supplier      лямбда, которая может выбросить любое исключние.
      * @param expectedClass класс исключения, выброс которого ожидается при выполенении лямбды.
      * @param rethrows      пробрасывать ли ожидаемое исключние дальше в случае его поимки.
+     * @param finallyBlock  логика finally-блока.
      * @param <R>           тип возвращаемого значения лямбды.
      * @param <Ex>          тип ожидаемого исключения.
      * @return результат выполнения лямбды.
@@ -30,13 +31,14 @@ public interface ThrowingSupplier<T, E extends Throwable> {
         ThrowingSupplier<R, Ex> supplier,
         Class<Ex> expectedClass,
         boolean rethrows,
-        Voider catchBlock
+        Invoker finallyBlock
     ) {
         try {
             return supplier.get();
         } catch (Throwable actualException) {
-            catchBlock.invoke();
             rethrowIfAnotherIsCaught(expectedClass, actualException, rethrows);
+        } finally {
+            finallyBlock.invoke();
         }
         return null;
     }
@@ -46,7 +48,7 @@ public interface ThrowingSupplier<T, E extends Throwable> {
         ThrowingSupplier<T, E> tryBlock
     ) {
         boolean rethrows = true;
-        Voider emptyCatchBlock = () -> {};
+        Invoker emptyCatchBlock = () -> {};
         return ThrowingSupplier.rethrow(tryBlock, expectedExceptionClass, rethrows, emptyCatchBlock);
     }
 
@@ -55,7 +57,7 @@ public interface ThrowingSupplier<T, E extends Throwable> {
         Class<E> expectedExceptionClass
     ) {
         boolean rethrows = false;
-        Voider emptyCatchBlock = () -> {};
+        Invoker emptyCatchBlock = () -> {};
         return Optional.ofNullable(
             ThrowingSupplier.rethrow(
                 tryBlock, expectedExceptionClass, rethrows, emptyCatchBlock));

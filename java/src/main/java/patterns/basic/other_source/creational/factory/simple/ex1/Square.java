@@ -1,11 +1,13 @@
 package patterns.basic.other_source.creational.factory.simple.ex1;
 
-import static utils.PrintUtils.println;
+import utils.PrintUtils;
+
+import static java.lang.System.out;
 
 public class Square implements Shape {
 
    @Override
    public void draw() {
-      println("Inside Square::draw() method.");
+      System.out.println("Inside Square::draw() method.");
    }
 }

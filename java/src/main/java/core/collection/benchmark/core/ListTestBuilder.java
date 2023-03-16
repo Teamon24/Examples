@@ -1,12 +1,11 @@
 package core.collection.benchmark.core;
 
+import core.collection.benchmark.utils.CollectionSuppliers;
 import core.collection.benchmark.utils.ElementSupplier;
 
 import java.util.Collection;
 import java.util.function.Function;
 import java.util.function.Supplier;
-
-import static core.collection.benchmark.utils.CollectionSuppliers.newCollection;
 
 public class ListTestBuilder<E> extends CollectionTestBuilder<E> {
 
@@ -43,7 +42,7 @@ public class ListTestBuilder<E> extends CollectionTestBuilder<E> {
             super.collection,
 
             super.collectionSupplier == null ?
-                newCollection(super.collection) :
+                CollectionSuppliers.newCollection(super.collection) :
                 super.collectionSupplier,
 
             super.newElementSupplier == null ?

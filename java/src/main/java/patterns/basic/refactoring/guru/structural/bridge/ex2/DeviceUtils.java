@@ -1,14 +1,14 @@
 package patterns.basic.refactoring.guru.structural.bridge.ex2;
 
-import static utils.PrintUtils.println;
+import static java.lang.System.out;
 
 public class DeviceUtils {
     public static void message(final String device, boolean isOn, int volume, int channel) {
-        println("---------- " + device + " STATUS ------------");
-        println("| I'm " + device + ".");
-        println("| I'm " + (isOn ? "enabled" : "disabled"));
-        println("| Current volume is " + volume + "%");
-        println("| Current channel is " + channel);
-        println("------------------------------------\n");
+        out.println("---------- " + device + " STATUS ------------");
+        out.println("| I'm " + device + ".");
+        out.println("| I'm " + (isOn ? "enabled" : "disabled"));
+        out.println("| Current volume is " + volume + "%");
+        out.println("| Current channel is " + channel);
+        out.println("------------------------------------\n");
     }
 }

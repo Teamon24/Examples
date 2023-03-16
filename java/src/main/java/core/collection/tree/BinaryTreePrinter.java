@@ -1,7 +1,5 @@
 package core.collection.tree;
 
-import utils.PrintUtils;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -39,7 +37,7 @@ public class BinaryTreePrinter {
 
             BinaryTreePrinter.printWhitespaces(betweenSpaces);
         }
-        PrintUtils.println("");
+        System.out.println("");
 
         for (int i = 1; i <= endgeLines; i++) {
             for (int j = 0; j < nodes.size(); j++) {
@@ -56,7 +54,7 @@ public class BinaryTreePrinter {
                 BinaryTreePrinter.printWhitespaces(endgeLines + endgeLines - i);
             }
 
-            PrintUtils.println("");
+            System.out.println("");
         }
 
         printNodeInternal(newNodes, level + 1, maxLevel);

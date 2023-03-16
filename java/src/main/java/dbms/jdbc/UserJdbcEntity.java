@@ -6,10 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.List;
-import java.util.function.BiConsumer;
 
 @AllArgsConstructor
 @NoArgsConstructor

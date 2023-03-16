@@ -1,5 +1,7 @@
 package utils;
 
+import core.collection.benchmark.utils.Sequence;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -19,9 +21,9 @@ public final class RandomUtils {
         return fromInclusive + (int) (Math.random() * ((toExclusive - fromInclusive)));
     }
 
-    public static Object[] random(int fromInclusive, int toExclusive, int amount) {
-        Object[] objects = new Object[amount];
-        for (int i = 0; i < amount; i++) {
+    public static Object[] random(int fromInclusive, int toExclusive, int size) {
+        Object[] objects = new Object[size];
+        for (int i = 0; i < size; i++) {
             objects[i] = random(fromInclusive, toExclusive);
         }
         return objects;
@@ -53,7 +55,7 @@ public final class RandomUtils {
     }
 
     public static <Ancestor, Descendant extends Ancestor> Descendant randomDescendant(
-        Class<? extends Descendant> ancestorClass,
+        Class<? extends Ancestor> ancestorClass,
         List<Class<? extends Ancestor>> hierarchy,
         Function<Class<?>, Descendant> createObject
     ) {
@@ -70,5 +72,9 @@ public final class RandomUtils {
         }
         printfln("Types (%s) below to class: %s", joinSimpleNames(classes), ancestorClass.getSimpleName());
         return randomFrom(classes, createObject);
+    }
+
+    public static <In> Sequence<In> randomSequenceFrom(Collection<In> collection) {
+        return Sequence.first(randomFrom(collection)).next((it -> randomFrom(collection)));
     }
 }

@@ -3,12 +3,13 @@ package core.collection.benchmark.strategy.abstrct;
 import core.collection.benchmark.pojo.MethodResult;
 import core.collection.benchmark.pojo.MethodType;
 import core.collection.benchmark.utils.PrintResultBuilder;
+import utils.PrintUtils;
 
 import java.util.Collection;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import static utils.PrintUtils.println;
+import static java.lang.System.out;
 
 public abstract class IndexStrategy<E> extends MethodStrategy<E> {
     protected final Function<Collection<E>, Integer> indexGetter;
@@ -47,7 +48,7 @@ public abstract class IndexStrategy<E> extends MethodStrategy<E> {
             .method(methodType.getValue())
             .index(this.index)
             .executionTime(executionTime).build();
-        println(build);
+        System.out.println(build);
     }
 
     public abstract void method(Collection<E> collection, Integer index);

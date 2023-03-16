@@ -14,11 +14,11 @@ public class CallableCollectionTest<E> {
     public List<MethodsTestsTasks<E>> getMethodsTests(boolean enableLog, final int logStep) {
         return this.collectionTest.getMethodsTest()
             .stream()
-            .map(methodTest -> callable(methodTest, enableLog, logStep))
+            .map(methodTest -> callableOf(methodTest, enableLog, logStep))
             .collect(Collectors.toList());
     }
 
-    private MethodsTestsTasks<E> callable(MethodTest<E> methodTest, boolean enableLog, int logStep) {
+    private MethodsTestsTasks<E> callableOf(MethodTest<E> methodTest, boolean enableLog, int logStep) {
         return () -> methodTest.test(enableLog, logStep);
     }
 }

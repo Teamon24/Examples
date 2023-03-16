@@ -1,7 +1,7 @@
 package patterns.basic.refactoring.guru.behavioral.memento.ex1;
 
-import patterns.basic.refactoring.guru.behavioral.memento.ex1.shape.CompoundShape;
 import patterns.basic.refactoring.guru.behavioral.memento.ex1.shape.Circle;
+import patterns.basic.refactoring.guru.behavioral.memento.ex1.shape.CompoundShape;
 import patterns.basic.refactoring.guru.behavioral.memento.ex1.shape.Dot;
 import patterns.basic.refactoring.guru.behavioral.memento.ex1.shape.Rectangle;
 

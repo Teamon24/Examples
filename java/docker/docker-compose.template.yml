@@ -6,48 +6,15 @@ services:
     restart: always
     container_name: ${POSTGRES_CONTAINER_NAME}
     environment:
+      - PGDATA=${CONTAINER_POSTGRES_DATA}
       - POSTGRES_DB=${POSTGRES_DATABASE}
       - POSTGRES_USER=${POSTGRES_USER_NAME}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     volumes:
-      - ${POSTGRES_VOLUME_NAME}:${CONTAINER_POSTGRES_DATA}
+      - ${HOST_POSTGRES_VOLUME_PATH}:${CONTAINER_POSTGRES_DATA}
       - ${POSTGRES_INIT_SCRIPTS_0}:${CONTAINER_POSTGRES_INIT_SCRIPTS_0}
       - ${POSTGRES_INIT_SCRIPTS_1}:${CONTAINER_POSTGRES_INIT_SCRIPTS_1}
       - ${POSTGRES_INIT_SCRIPTS_2}:${CONTAINER_POSTGRES_INIT_SCRIPTS_2}
       - ${POSTGRES_INIT_SCRIPTS_4}:${CONTAINER_POSTGRES_INIT_SCRIPTS_4}
     ports:
       - ${POSTGRES_PORT}:${CONTAINER_POSTGRES_PORT}
-  ${MYSQL_SERVICE_NAME}:
-    image: mysql:5.7
-    restart: always
-    container_name: ${MYSQL_CONTAINER_NAME}
-    environment:
-      - MYSQL_DATABASE=${MYSQL_DATABASE}
-      # So you don't have to use root, but you can if you like
-      - MYSQL_USER=${MYSQL_USER_NAME}
-      # You can use whatever password you like
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
-      # Password for root access
-      - MYSQL_ROOT_PASSWORD=${MYSQL_PASSWORD}
-    ports:
-      # <Port exposed> : < MySQL Port running inside container>
-      - '3306:3306'
-    expose:
-      # Opens port 3306 on the container
-      - '3306'
-    volumes:
-      - ${MYSQL_VOLUME_NAME}:${CONTAINER_MYSQL_DATA}
-
-volumes:
-  ${POSTGRES_VOLUME_NAME}:
-    driver: local
-    driver_opts:
-      device: ${HOST_POSTGRES_VOLUME_PATH}
-      type: none
-      o: bind
-  ${MYSQL_VOLUME_NAME}:
-      driver: local
-      driver_opts:
-        device: ${HOST_MYSQL_VOLUME_PATH}
-        type: none
-        o: bind

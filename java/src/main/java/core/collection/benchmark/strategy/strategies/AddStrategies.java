@@ -1,8 +1,8 @@
 package core.collection.benchmark.strategy.strategies;
 
+import core.collection.benchmark.utils.ListMethods;
 import core.collection.benchmark.strategy.abstrct.MethodStrategy;
 import core.collection.benchmark.strategy.builder.AddStrategyBuilder;
-import core.collection.benchmark.utils.ListMethods;
 
 import java.util.Collection;
 import java.util.function.Function;

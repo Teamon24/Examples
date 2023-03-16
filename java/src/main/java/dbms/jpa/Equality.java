@@ -61,7 +61,7 @@ package dbms.jpa;
  * ---------------------------------------------------------------------------------------------------------------------
  * <p><strong>3.3. Using a Business Key</strong></p>
  * ---------------------------------------------------------------------------------------------------------------------
- * <p>Alternatively, we can use a business key to compare JPA entities. In this case, the object's key is comprised of members of the entity other than the primary key. This key should make the JPA entity unique. Using a business key gives us the same desired outcome when comparing entities without the need for primary or database-generated keys.
+ * <p>Alternatively, we can use a business key to compare JPA entities. In this case, the object's key is comprised of members of the entity org.home.other than the primary key. This key should make the JPA entity unique. Using a business key gives us the same desired outcome when comparing entities without the need for primary or database-generated keys.
  *
  * <p>Let's say we know that an email address is always going to be unique, even if it isn't the @Id field. We can include the email field in hashCode() and equals() methods:
  *

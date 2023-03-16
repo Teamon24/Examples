@@ -2,8 +2,10 @@ package dbms.hibernate.hbm.entity;
 
 import com.github.javafaker.Faker;
 import com.google.common.collect.Sets;
-import utils.RandomUtils;
 import dbms.hibernate.HibernateUtils;
+import dbms.hibernate.SessionFactoryBuilder;
+import dbms.hibernate.TransactionUtils;
+import utils.RandomUtils;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
@@ -12,7 +14,6 @@ import java.time.Instant;
 import java.util.Set;
 import java.util.UUID;
 
-import static dbms.hibernate.HibernateUtils.getSessionFactory;
 import static dbms.hibernate.TransactionUtils.commit;
 
 public class Demo {
@@ -20,7 +21,9 @@ public class Demo {
     public static final Faker FAKER = Faker.instance();
 
     public static void main(String[] args) {
-        SessionFactory sessionFactory = getSessionFactory("/META-INF/hibernate-hbm-entities.cfg.xml");
+        SessionFactory sessionFactory =
+            new SessionFactoryBuilder().resourceName("/META-INF/hibernate-hbm-entities.cfg.xml").build();
+
         Session session = sessionFactory.openSession();
 
         Passport passport = createPassport();
@@ -29,7 +32,7 @@ public class Demo {
         Address address2 = createAddress();
         Person person = createPerson(passport, address, company);
 
-        commit(session, (s) -> {
+        TransactionUtils.commit(session, (s) -> {
             s.save(company);
             s.save(address);
             s.save(address2);
@@ -43,7 +46,7 @@ public class Demo {
         HibernateUtils.findAll(session, Address.class).forEach(System.out::println);
         HibernateUtils.findAll(session, Company.class).forEach(System.out::println);
 
-        commit(session, (s) -> {
+        TransactionUtils.commit(session, (s) -> {
             Person foundPerson = s.find(Person.class, person.getId());
             foundPerson.remove(address);
             s.delete(foundPerson);

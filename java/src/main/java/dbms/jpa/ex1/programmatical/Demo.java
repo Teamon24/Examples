@@ -1,14 +1,13 @@
 package dbms.jpa.ex1.programmatical;
 
-import dbms.jpa.ex1.UserEntity;
 import dbms.jpa.ex1.programmatical.driver.DriverType;
+import dbms.jpa.ex1.UserEntity;
+import utils.PrintUtils;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.util.List;
 import java.util.UUID;
-
-import static utils.PrintUtils.printfln;
 
 public class Demo {
     public static void main(String[] args) {
@@ -71,7 +70,7 @@ public class Demo {
         UUID userId = user.getId();
         UserEntity userEntity = entityManager.find(UserEntity.class, userId);
         if (userEntity == null) {
-            printfln("User (id='%s') was removed.", userId);
+            PrintUtils.printfln("User (id='%s') was removed.", userId);
         }
     }
 

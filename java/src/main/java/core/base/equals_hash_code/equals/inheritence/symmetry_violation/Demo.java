@@ -3,10 +3,9 @@ package core.base.equals_hash_code.equals.inheritence.symmetry_violation;
 import core.base.equals_hash_code.equals.inheritence.A;
 import core.base.equals_hash_code.equals.inheritence.B;
 import utils.ClassUtils;
-import utils.PrintUtils;
 
 import static java.lang.String.*;
-import static utils.PrintUtils.*;
+import static java.lang.System.out;
 
 public class Demo {
     public static void main(String[] args) {
@@ -42,10 +41,10 @@ public class Demo {
                                          final boolean moneyEqualsVoucher, final boolean voucherEqualsMoney)
     {
         String line = "-".repeat(title.length());
-        println(line + "\n" + title + "\n" + line);
-        println("a " + equalSymbol(moneyEqualsVoucher) + " b");
-        println("b " + equalSymbol(voucherEqualsMoney) + " a");
-        println();
+        out.println(line + "\n" + title + "\n" + line);
+        out.println("a " + equalSymbol(moneyEqualsVoucher) + " b");
+        out.println("b " + equalSymbol(voucherEqualsMoney) + " a");
+        out.println();
         return moneyEqualsVoucher && voucherEqualsMoney;
     }
 

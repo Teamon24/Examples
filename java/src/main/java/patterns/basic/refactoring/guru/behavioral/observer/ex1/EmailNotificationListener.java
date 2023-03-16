@@ -2,8 +2,6 @@ package patterns.basic.refactoring.guru.behavioral.observer.ex1;
 
 import java.io.File;
 
-import static utils.PrintUtils.println;
-
 public class EmailNotificationListener implements EventListener {
     private String email;
 
@@ -13,6 +11,6 @@ public class EmailNotificationListener implements EventListener {
 
     @Override
     public void update(String eventType, File file) {
-        println("Email to " + email + ": Someone has performed " + eventType + " operation with the following file: " + file.getName());
+        System.out.println("Email to " + email + ": Someone has performed " + eventType + " operation with the following file: " + file.getName());
     }
 }

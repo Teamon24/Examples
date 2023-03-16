@@ -1,6 +1,6 @@
 package patterns.basic.refactoring.guru.behavioral.template.ex1;
 
-import static utils.PrintUtils.println;
+import static java.lang.System.out;
 
 /**
  * Класс социальной сети.
@@ -12,21 +12,21 @@ public class Facebook extends Network {
     }
 
     public boolean logIn(String userName, String password) {
-        println("\nChecking user's parameters");
-        println("Name: " + this.userName);
+        out.println("\nChecking user's parameters");
+        out.println("Name: " + this.userName);
         System.out.print("Password: ");
         for (int i = 0; i < this.password.length(); i++) {
             System.out.print("*");
         }
         simulateNetworkLatency();
-        println("\n\nLogIn success on Facebook");
+        out.println("\n\nLogIn success on Facebook");
         return true;
     }
 
     public boolean sendData(byte[] data) {
         boolean messagePosted = true;
         if (messagePosted) {
-            println("Message: '" + new String(data) + "' was posted on Facebook");
+            out.println("Message: '" + new String(data) + "' was posted on Facebook");
             return true;
         } else {
             return false;
@@ -34,13 +34,13 @@ public class Facebook extends Network {
     }
 
     public void logOut() {
-        println("User: '" + userName + "' was logged out from Facebook");
+        out.println("User: '" + userName + "' was logged out from Facebook");
     }
 
     private void simulateNetworkLatency() {
         try {
             int i = 0;
-            println();
+            out.println();
             while (i < 10) {
                 System.out.print(".");
                 Thread.sleep(500);

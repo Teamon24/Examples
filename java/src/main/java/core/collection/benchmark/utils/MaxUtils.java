@@ -45,8 +45,8 @@ public final class MaxUtils {
         return t -> seen.add(keyExtractor.apply(t));
     }
 
-    public static <E> Integer getMaxDigitsAmountAfterDot(final List<E> averagedMethodResults,
-                                                         final Function<E, Double> getField)
+    public static <E> Integer getMaxDigitsQuantityAfterDot(final List<E> averagedMethodResults,
+                                                           final Function<E, Double> getField)
     {
         return averagedMethodResults.stream()
             .max(Comparator.comparing(getField))

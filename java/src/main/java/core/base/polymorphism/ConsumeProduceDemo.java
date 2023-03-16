@@ -1,9 +1,9 @@
 package core.base.polymorphism;
 
+import utils.StreamUtils;
+
 import java.util.List;
 import java.util.function.Function;
-
-import static utils.StreamUtils.flat;
 
 public class ConsumeProduceDemo {
     public static void main(String[] args) {
@@ -18,23 +18,23 @@ public class ConsumeProduceDemo {
         Source<? extends B> belowB = Source.C;
         Source<? extends C> belowC = Source.D;
 
-        A a = belowA.get();
-        B b = belowB.get();
-        C c = belowC.get();
+        A a = belowA.produce();
+        B b = belowB.produce();
+        C c = belowC.produce();
 
-        //Contravariance: super => ТОЛЬКО add
+        //Contravariance: super => ТОЛЬКО consume
         Source<? super A> aboveA = Source.O;
         Source<? super B> aboveB = Source.A;
         Source<? super C> aboveC = Source.B;
 
         //Все, что выше А, может принимать все, что равно или ниже A: A,B,C
-        aboveA.add(new A(), new B(), new C());
+        aboveA.consume(new A(), new B(), new C());
 
         //Все, что выше B, может принимать все, что равно или ниже B: B,C
-        aboveB.add(new B(), new C());
+        aboveB.consume(new B(), new C());
 
         //Все, что выше C, может принимать все, что равно или ниже C: C
-        aboveC.add(new C());
+        aboveC.consume(new C());
     }
 
     public static void fullExampleOfVariance() {
@@ -45,32 +45,32 @@ public class ConsumeProduceDemo {
 
         //Всe, что производит типы ниже A, B, C может быть только под ссылкой A;
         sourcesExtendA.forEach(source -> {
-            A a = source.get();
+            A a = source.produce();
         });
 
         //Всe, что производит типы ниже B, C может быть только под ссылкой B;
         sourcesExtendB.forEach(source -> {
-            B b = source.get();
+            B b = source.produce();
         });
 
         //Всe, что производит типы ниже C, может быть только под ссылкой C;
         sourcesExtendC.forEach(source -> {
-            C c = source.get();
+            C c = source.produce();
         });
 
-        //Contravariance: super => ТОЛЬКО add
+        //Contravariance: super => ТОЛЬКО consume
         List<Source<? super A>> sourcesSuperA = List.of(Source.A, Source.O);
         List<Source<? super B>> sourcesSuperB = List.of(Source.B, Source.A, Source.O);
         List<Source<? super C>> sourcesSuperC = List.of(Source.C, Source.B, Source.A, Source.O);
 
         //Все, что выше А, может принимать все, что равно или ниже A: A,B,C
-        sourcesSuperA.forEach(source -> source.add(new A(), new B(), new C() /*, new O() -- не скомпилируется */));
+        sourcesSuperA.forEach(source -> source.consume(new A(), new B(), new C() /*, new O() -- не скомпилируется */));
 
         //Все, что выше B, может принимать все, что равно или ниже B: B,C
-        sourcesSuperB.forEach(source -> source.add(new B(), new C()));
+        sourcesSuperB.forEach(source -> source.consume(new B(), new C()));
 
         //Все, что выше C, может принимать все, что равно или ниже C: C
-        sourcesSuperC.forEach(source -> source.add(new C()));
+        sourcesSuperC.forEach(source -> source.consume(new C()));
     }
 
     /**
@@ -95,6 +95,7 @@ public class ConsumeProduceDemo {
      * Но A не приводится к типам D или С, т.к. A - супертип для D,C.
      */
     private static void fullExampleOfFunctionVariance() {
+        List<Function<? super O, ? extends O>> oos = ConsumeProduceDemoUtils.oos();
         List<Function<? super A, ? extends O>> aos = ConsumeProduceDemoUtils.aos();
         List<Function<? super B, ? extends O>> bos = ConsumeProduceDemoUtils.bos();
         List<Function<? super C, ? extends O>> cos = ConsumeProduceDemoUtils.cos();
@@ -106,17 +107,20 @@ public class ConsumeProduceDemo {
         List<? extends C> belowC = List.of(                           new C(), new D());
         List<? extends D> belowD = List.of(                                    new D());
 
-        flat(belowA, belowB, belowC, belowD).forEach(subA ->
-            flat(aos).forEach(ao -> ao.apply(subA)));
+        StreamUtils.flat(belowO, belowA, belowB, belowC, belowD).forEach(subO ->
+            StreamUtils.flat(oos).forEach(oo -> oo.apply(subO)));
 
-        flat(belowB, belowC, belowD).forEach(subB ->
-            flat(aos, bos).forEach(bo -> bo.apply(subB)));
+        StreamUtils.flat(belowA, belowB, belowC, belowD).forEach(subA ->
+            StreamUtils.flat(oos, aos).forEach(ao -> ao.apply(subA)));
 
-        flat(belowC, belowD).forEach(subC ->
-            flat(aos, bos, cos).forEach(co -> co.apply(subC)));
+        StreamUtils.flat(belowB, belowC, belowD).forEach(subB ->
+            StreamUtils.flat(oos, aos, bos).forEach(bo -> bo.apply(subB)));
 
-        flat(belowD).forEach(subD ->
-            flat(aos, bos, cos, dos).forEach(Do -> Do.apply(subD)));
+        StreamUtils.flat(belowC, belowD).forEach(subC ->
+            StreamUtils.flat(oos, aos, bos, cos).forEach(co -> co.apply(subC)));
+
+        StreamUtils.flat(belowD).forEach(subD ->
+            StreamUtils.flat(oos, aos, bos, cos, dos).forEach(Do -> Do.apply(subD)));
 
     }
 

@@ -1,11 +1,11 @@
 package core.lambda.exception_handling;
 
+import utils.ClassUtils;
+
 import java.util.List;
 
-import static utils.ClassUtils.joinSimpleNames;
-import static utils.ClassUtils.simpleName;
 import static utils.PrintUtils.printfln;
-import static utils.PrintUtils.println;
+import static java.lang.System.out;
 
 public final class ThrowingLambdasEssential {
 
@@ -27,7 +27,7 @@ public final class ThrowingLambdasEssential {
     private static void rethrowIfNeeded(boolean rethrows, Throwable actualException) {
         if (rethrows) {
             String template = "Lambda: rethrow caught exception: '%s'.";
-            printfln(template, simpleName(actualException));
+            printfln(template, ClassUtils.simpleName(actualException));
             throwRTE(actualException);
         };
     }
@@ -75,10 +75,10 @@ public final class ThrowingLambdasEssential {
     {
         String template = "Lambda: %s was thrown but %s was expected. Throwing actual exception further.";
         String message = String.format(template,
-            simpleName(actualException),
-            joinSimpleNames(expectedClasses)
+            ClassUtils.simpleName(actualException),
+            ClassUtils.joinSimpleNames(expectedClasses)
         );
-        println(message);
+        out.println(message);
     }
 
     private static <E extends Throwable> void printSuccessCaughtMessage(
@@ -86,7 +86,7 @@ public final class ThrowingLambdasEssential {
         Throwable actualException)
     {
         String template = "Lambda: expected '%s' and actual '%s' classes are identical.";
-        String message = String.format(template, expectedClass.getSimpleName(), simpleName(actualException));
+        String message = String.format(template, expectedClass.getSimpleName(), ClassUtils.simpleName(actualException));
         System.err.println(message);
     }
 

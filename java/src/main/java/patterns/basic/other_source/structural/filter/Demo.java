@@ -11,7 +11,7 @@ import patterns.basic.other_source.structural.filter.filter.OrFilter;
 import java.util.ArrayList;
 import java.util.List;
 
-import static utils.PrintUtils.println;
+import static java.lang.System.out;
 
 public class Demo {
     public static void main(String[] args) {
@@ -46,16 +46,16 @@ public class Demo {
         Filter seniorFemale = new AndFilter(seniorEmployees, femaleEmployees);
         Filter juniorOrMale = new OrFilter(juniorEmployees, maleEmployees);
         
-        println("Male employees: ");
+        out.println("Male employees: ");
         printEmployeeInfo(maleEmployees.filter(employees));
         
-        println("\nFemale employees: ");
+        out.println("\nFemale employees: ");
         printEmployeeInfo(femaleEmployees.filter(employees));
         
-        println("\nSenior female employees: ");
+        out.println("\nSenior female employees: ");
         printEmployeeInfo(seniorFemale.filter(employees));
         
-        println("\nJunior or male employees: ");
+        out.println("\nJunior or male employees: ");
         printEmployeeInfo(juniorOrMale.filter(employees));
     }
     
@@ -63,7 +63,7 @@ public class Demo {
     //simple method to print out employee info
     public static void printEmployeeInfo(List<Employee> employeeList) {
         for (Employee employee : employeeList) {
-            println("Employee info: | Name: "
+            out.println("Employee info: | Name: "
                     + employee.getName() + ", Gender: " 
                     + employee.getGender() + ", Position: " 
                     + employee.getPosition() + " |");

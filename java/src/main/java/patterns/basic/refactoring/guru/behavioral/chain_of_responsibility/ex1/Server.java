@@ -1,6 +1,6 @@
 package patterns.basic.refactoring.guru.behavioral.chain_of_responsibility.ex1;
 
-import static utils.PrintUtils.println;
+import static java.lang.System.out;
 
 /**
  * Класс сервера.
@@ -23,7 +23,7 @@ public class Server {
      */
     public boolean logIn(String email, String password) {
         if (middleware.process(email, password)) {
-            println("Authorization have been successful!");
+            out.println("Authorization have been successful!");
 
             // Здесь должен быть какой-то полезный код, работающий для
             // авторизированных пользователей.

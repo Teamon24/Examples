@@ -11,9 +11,32 @@ import java.util.StringJoiner;
 @AllArgsConstructor
 public class A implements Comparable<A>, Cloneable {
 
+    private static final List<Comparator<A>> comparators =
+        List.of(
+            Comparator.comparing(A::getA),
+            Comparator.comparing(A::getB),
+            Comparator.comparing(A::getC).reversed()
+        );
+
+    public static final Comparator<A> COMPARATOR = (o1, o2) -> {
+        int result = 0;
+        for (Comparator<A> comparator : comparators) {
+            int compared = comparator.compare(o1, o2);
+            if (compared != 0) {
+                return compared;
+            }
+        }
+        return result;
+    };
+
     Integer a;
     String b;
     C c;
+
+    public static A of(Integer a, String b, C c) {
+        return new A(a, b, c);
+    }
+
     @Override
     public String toString() {
         return new StringJoiner(", ", A.class.getSimpleName() + "[", "]")
@@ -23,33 +46,10 @@ public class A implements Comparable<A>, Cloneable {
             .toString();
     }
 
-    public static A of(Integer a, String b, C c) {
-        return new A(a, b, c);
-    }
-
-    public static List<Comparator<A>> comparators() {
-        return List.of(
-            Comparator.comparing(A::getA),
-            Comparator.comparing(A::getB),
-            Comparator.comparing(A::getC).reversed()
-        );
-    }
-
     @Override
-    public int compareTo(A o) {
-        return COMPARATOR.compare(this, o);
+    public int compareTo(A a) {
+        return COMPARATOR.compare(this, a);
     }
-
-    public static final Comparator<A> COMPARATOR = (o1, o2) -> {
-        int result = 0;
-        for (Comparator<A> comparator : comparators()) {
-            int compared = comparator.compare(o1, o2);
-            if (compared != 0) {
-                return compared;
-            }
-        }
-        return result;
-    };
 
     @Override
     public A clone() {

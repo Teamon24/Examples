@@ -1,0 +1,56 @@
+plugins {
+    id 'java'
+}
+
+group 'org.example'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compileOnly 'org.projectlombok:lombok:1.18.22'
+    annotationProcessor 'org.projectlombok:lombok:1.18.22'
+    testCompileOnly 'org.projectlombok:lombok:1.18.22'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.22'
+
+    def jettyVersion = '9.3.0.M1'
+    implementation "org.eclipse.:jetty-server:${jettyVersion}"
+    implementation "org.eclipse.jetty:jetty-webapp:${jettyVersion}"
+    implementation "org.eclipse.jetty:jetty-annotations:${jettyVersion}"
+    implementation "org.eclipse.jetty:jetty-jsp:${jettyVersion}"
+
+    def springVersion = '5.3.5'
+    def springSecurityVersion = '5.6.2'
+
+    implementation "org.springframework:spring-webmvc:${springVersion}"
+    implementation "org.springframework:spring-orm:${springVersion}"
+
+    implementation "org.springframework.security:spring-security-core:${springSecurityVersion}"
+    implementation "org.springframework.security:spring-security-web:${springSecurityVersion}"
+    implementation "org.springframework.security:spring-security-config:${springSecurityVersion}"
+
+    implementation 'org.hibernate:hibernate-core:5.3.1.Final'
+    implementation 'org.hibernate:hibernate-validator:5.3.1.Final'
+
+    implementation 'org.slf4j:slf4j-log4j12:1.7.5'
+
+    implementation 'org.apache.httpcomponents:httpclient:4.5.13'
+
+    implementation 'org.apache.commons:commons-dbcp2:2.0.1'
+    implementation 'mysql:mysql-connector-java:5.1.31'
+
+    implementation 'javax.annotation:jsr250-api:1.0'
+    implementation 'javax.xml.bind:jaxb-api:2.3.1'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+
+
+    implementation 'org.apache.commons:commons-lang3:3.12.0'
+}
+
+test {
+    useJUnitPlatform()
+}

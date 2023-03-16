@@ -20,7 +20,7 @@ public class AppMediator implements Mediator {
 
     public void send(String message, Colleague originator) {
         originator.receive(message);
-        //let all other screens know that this screen has changed
+        //let all org.home.other screens know that this screen has changed
         for(Colleague colleague: colleagues) {
             //don't tell ourselves
             if(colleague != originator) {

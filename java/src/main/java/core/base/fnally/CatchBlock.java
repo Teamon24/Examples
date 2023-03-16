@@ -27,7 +27,7 @@ public interface CatchBlock<T> extends Function<Exception, T> {
             String simpleName = getSimpleName(exception);
             printfln("Catch block: exception handled - %s (%s)\n", simpleName, message);
             if (exceptionSupplier.get() != null) {
-                PrintUtils.println("Catch block: throwing an exception");
+                System.out.println("Catch block: throwing an exception");
                 throw exceptionSupplier.get();
             }
             return defaultValue;

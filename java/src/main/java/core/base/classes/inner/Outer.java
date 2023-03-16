@@ -1,8 +1,6 @@
 package core.base.classes.inner;
 
-import utils.PrintUtils;
-
-import static utils.PrintUtils.*;
+import static java.lang.System.out;
 
 /**
  * .  .    .
@@ -23,7 +21,7 @@ public class Outer {
     public int _private_6 = new Inner()._private;
 
     public static void static_method() {
-        println("Static method of outer class");
+        out.println("Static method of outer class");
     }
 
     public int[] method() {
@@ -45,11 +43,11 @@ public class Outer {
         public static int public_static = Outer.public_static;
 
         public static void static_method() {
-            println("Static method of nested static class");
+            out.println("Static method of nested static class");
         }
 
         public void method() {
-            println("Non-static method of nested static class");
+            out.println("Non-static method of nested static class");
         }
     }
 
@@ -65,7 +63,7 @@ public class Outer {
         public int i3 = new InnerStatic()._public;
 
         public void method() {
-            println("Non-static method of inner(non-static nested) class");
+            out.println("Non-static method of inner(non-static nested) class");
         }
     }
 }

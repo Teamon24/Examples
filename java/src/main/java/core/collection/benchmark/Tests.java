@@ -3,35 +3,28 @@ package core.collection.benchmark;
 import core.collection.benchmark.core.CollectionTestBuilder;
 import core.collection.benchmark.pojo.AveragedMethodResult;
 import core.collection.benchmark.pojo.MethodResult;
+import core.collection.benchmark.utils.CollectionCreationUtils;
+import core.collection.benchmark.utils.CollectionSuppliers;
+import core.collection.benchmark.utils.ElementSupplier;
 import core.collection.benchmark.utils.HistogramWithIndexUtils;
 import core.collection.benchmark.utils.IndexSuppliers;
 import core.collection.benchmark.utils.IntSequence;
+import core.collection.benchmark.utils.MethodResultGroupingUtils;
 import core.collection.benchmark.utils.MethodsTestsTasks;
 import core.collection.benchmark.utils.Sequence;
-import org.apache.commons.collections4.list.TreeList;
-import utils.ConcurrencyUtils;
+import utils.CallableUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.stream.Collectors;
 
-import static core.collection.benchmark.utils.CollectionCreationUtils.createList;
-import static core.collection.benchmark.utils.CollectionCreationUtils.createSet;
-import static core.collection.benchmark.utils.CollectionSuppliers.newCollection;
-import static core.collection.benchmark.utils.ElementSupplier.periodicallyFrom;
-import static core.collection.benchmark.utils.MethodResultGroupingUtils.averageByElement;
-import static core.collection.benchmark.utils.MethodResultGroupingUtils.averageByIndex;
-
 public class Tests {
-    private static final int size = 15_000;
-    private static final int testsAmount = 75_000;
+    private static final int size = 1_000_000;
+    private static final int testsAmount = 200;
 
     private static final boolean enableLog = true;
     private static final int logStep = testsAmount / 2;
@@ -40,11 +33,11 @@ public class Tests {
 
         List<MethodsTestsTasks<Integer>> methodsTestsTasks =
                 getMethodsTestsTasks(
-                    LinkedList.class, ArrayList.class, TreeList.class,
-                    HashSet.class, LinkedHashSet.class, TreeSet.class);
+                    LinkedList.class, ArrayList.class/*, TreeList.class,
+                    HashSet.class, LinkedHashSet.class, TreeSet.class*/);
 
-        List<MethodResult<Integer>> methodResults = ConcurrencyUtils
-            .getAll(methodsTestsTasks)
+        List<MethodResult<Integer>> methodResults = CallableUtils
+            .getAll(methodsTestsTasks, 1)
             .stream()
             .flatMap(Collection::stream)
             .collect(Collectors.toList());
@@ -54,8 +47,8 @@ public class Tests {
             .stream()
             .collect(Collectors.partitioningBy(it -> it.getIndex() != null));
 
-        List<AveragedMethodResult<Integer>> resultsWithIndex = averageByIndex(partitionedResults.get(true));
-        List<AveragedMethodResult<Integer>> resultsWithNoIndex = averageByElement(partitionedResults.get(false));
+        List<AveragedMethodResult<Integer>> resultsWithIndex = MethodResultGroupingUtils.averageByIndex(partitionedResults.get(true));
+        List<AveragedMethodResult<Integer>> resultsWithNoIndex = MethodResultGroupingUtils.averageByElement(partitionedResults.get(false));
 
         HistogramWithIndexUtils.printHistogram(resultsWithIndex);
         HistogramWithIndexUtils.printHistogramNoIndex(resultsWithNoIndex);
@@ -71,8 +64,9 @@ public class Tests {
             IntSequence sequence = IntSequence.create();
 
             if (List.class.isAssignableFrom(collectionClass)) {
-                tempContainer = listTest(testsAmount,
-                    createList(collectionClass, size, sequence::next),
+                tempContainer = listTest(
+                    testsAmount,
+                    CollectionCreationUtils.createList(collectionClass, size, sequence::next),
                     sequence,
                     period,
                     enableLog,
@@ -80,8 +74,9 @@ public class Tests {
             }
 
             if (Set.class.isAssignableFrom(collectionClass)) {
-                tempContainer = setTest(testsAmount,
-                    createSet(collectionClass, size, sequence::next),
+                tempContainer = setTest(
+                    testsAmount,
+                    CollectionCreationUtils.createSet(collectionClass, size, sequence::next),
                     sequence.fromLast(period, limit),
                     period,
                     enableLog,
@@ -106,9 +101,9 @@ public class Tests {
             .sets()
             .testsAmount(testsAmount)
             .collection(collection)
-            .collectionSupplier(newCollection(collection))
+            .collectionSupplier(CollectionSuppliers.newCollection(collection))
             .newElementSupplier(sequence::next)
-            .existedElementSupplier(periodicallyFrom(collection, period))
+            .existedElementSupplier(ElementSupplier.periodicallyFrom(collection, period))
             .build()
             .callables()
             .getMethodsTests(enableLog, logStep);
@@ -127,9 +122,9 @@ public class Tests {
             .lists()
             .testsAmount(testsAmount)
             .collection(collection)
-            .collectionSupplier(newCollection(collection))
+            .collectionSupplier(CollectionSuppliers.newCollection(collection))
             .newElementSupplier(sequence::next)
-            .existedElementSupplier(periodicallyFrom(collection, period))
+            .existedElementSupplier(ElementSupplier.periodicallyFrom(collection, period))
             .indexSupplier(IndexSuppliers.supplyThreeIndexes())
             .build()
             .callables()

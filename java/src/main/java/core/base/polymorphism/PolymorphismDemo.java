@@ -7,7 +7,7 @@ import java.util.List;
 
 public class PolymorphismDemo {
     public static void main(String[] args) {
-        //1. Полиморфизм не парметризованных типов
+        //1. Полиморфизм непарметризованных типов
         I i = randomDescendant(O.class);
         O o = randomDescendant(O.class);
         A a = randomDescendant(A.class);
@@ -19,7 +19,8 @@ public class PolymorphismDemo {
 
         //2.1. КОВАРИАНТНОСТЬ параметризованных типов
         //2.1.1. Параметризованные типы нековариантны
-        /* HashSet<Number> integers = new HashSet<Integer>(); */
+
+        /** HashSet<Number> integers != new HashSet<Integer>(); **/
 
         //2.1.2. Параметризованные типы ковариантны
         List<Source<? extends I>> subI = List.of(Source.D, Source.C, Source.B, Source.A, Source.O, Source.I);
@@ -39,7 +40,7 @@ public class PolymorphismDemo {
         //2.2. КОНТРВАРИАНТНОСТЬ параметризованных типов
 
         //2.2.1. Параметризованные типы не контрвариантны
-        /* HashSet<Integer> integers1 = new HashSet<Number>(); */
+        /** HashSet<Integer> integers1 != new HashSet<Number>(); **/
 
         //2.1.2. Параметризованные типы контрвариантны
         List<Source<? super I>> superI = List.of(Source.OBJECT, Source.I);

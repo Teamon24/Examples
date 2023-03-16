@@ -4,7 +4,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static utils.ClassUtils.simpleName;
-import static utils.PrintUtils.println;
+import static java.lang.System.out;
 
 public class Client {
     public static void main(String[] args) {
@@ -37,9 +37,9 @@ public class Client {
     }
 
     private static void printTest(final String name) {
-        println("------------------------------------");
-        println("Tests with " + name + " remote.");
-        println("------------------------------------");
+        out.println("------------------------------------");
+        out.println("Tests with " + name + " remote.");
+        out.println("------------------------------------");
     }
 
     private static void doAdvancedCommands(final AdvancedRemote advancedRemote) {

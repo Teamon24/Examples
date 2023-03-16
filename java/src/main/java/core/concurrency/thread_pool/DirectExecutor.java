@@ -2,23 +2,24 @@ package core.concurrency.thread_pool;
 
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
-import core.collection.benchmark.utils.TwoStepSequence;
+import core.collection.benchmark.utils.Sequence;
+import utils.CallableUtils;
 
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static utils.ConcurrencyUtils.invokeAll;
-import static core.concurrency.thread_pool.ThreadPoolExamplesUtils.*;
+import static core.concurrency.thread_pool.ThreadPoolExamplesUtils.getTasks;
 
 public class DirectExecutor {
     public static void main(String[] args) {
         ListeningExecutorService executorService = MoreExecutors.newDirectExecutorService();
         AtomicBoolean executed = new AtomicBoolean();
 
-        List<Callable<String>> tasks = getTasks(TwoStepSequence.first(0).init(it -> it + 5));
+        int tasksSize = 5;
+        List<Callable<String>> tasks = ThreadPoolExamplesUtils.getTasks(Sequence.first(0).next(it -> it + tasksSize));
 
-        invokeAll(executorService, tasks);
+        CallableUtils.invokeAll(executorService, tasks);
 
         assert executed.get();
     }

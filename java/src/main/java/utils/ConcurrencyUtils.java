@@ -1,88 +1,109 @@
 package utils;
 
+import core.concurrency.package_review.thread_factory.CustomThreadFactory;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.BrokenBarrierException;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static utils.PrintUtils.*;
-import static utils.PrintUtils.printfln;
-
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ConcurrencyUtils {
+
+    public static final String THREAD_MESSAGE_TEMPLATE = "%s %s";
+    public static final String THREAD_NAME_TEMPLATE = "[%s]";
 
     public static final int MILLIS_IN_SECOND = 1000;
 
-    public static void threadPrintln(String template, String message) {
-        if (StringUtils.isNotEmpty(message)) {
-            ConcurrencyUtils.syncPrintfln(String.format(template, threadName(), message));
-        }
+    public static void threadPrintfln(String template, Object... args) {
+        String message = String.format(template, args);
+        PrintUtils.printfln(THREAD_MESSAGE_TEMPLATE, threadName(), message);
+    }
+
+    public static void threadPrintlnTitle(String template) {
+        syncPrintln(() -> {
+            threadPrintln("-".repeat(100));
+            ConcurrencyUtils.threadPrintln(template);
+            threadPrintln("-".repeat(100));
+        });
+    }
+
+    public static void threadPrintflnTitle(String template, Object... args) {
+        syncPrintln(() -> {
+            threadPrintln("-".repeat(100));
+            ConcurrencyUtils.threadPrintfln(template, args);
+            threadPrintln("-".repeat(100));
+        });
     }
 
     public static void threadPrintln(String message) {
         if (StringUtils.isNotEmpty(message)) {
-            ConcurrencyUtils.syncPrintfln("%s: %s", threadName(), message);
+            PrintUtils.printfln(THREAD_MESSAGE_TEMPLATE, threadName(), message);
         }
     }
 
-    public static void syncPrintln(String s) {
-        synchronized (System.out) {
-            println(s);
-        }
+    public static void threadPrintln(Object object) {
+        PrintUtils.printfln(THREAD_MESSAGE_TEMPLATE, threadName(), object);
     }
 
-    public static <T> void syncPrintfln(String template, T... args) {
+    public static void syncPrintln(Invoker block) {
         synchronized (System.out) {
-            printfln(template, args);
+            block.invoke();
         }
     }
 
     public static String threadName() {
-        return threadName("[%s]", Thread.currentThread().getName().toUpperCase(Locale.ROOT));
+        return threadName(THREAD_NAME_TEMPLATE, Thread.currentThread().getName());
     }
 
     public static String threadName(String nameTemplate, Object arg) {
         return String.format(nameTemplate, arg);
     }
 
-    public static <T> T call(final Callable<T> callable) {
-        try {
-            return callable.call();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
+    public static void sleep(final int seconds) {
+        ConcurrencyUtils.sleep(seconds * 1000L);
     }
 
     public static void sleep(final long millis) {
-        ConcurrencyUtils.sleep(millis, "");
-    }
-
-    public static void sleep(final long millis, String message) {
         try {
-            threadPrintln(message);
             Thread.sleep(millis);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
 
+    public static void setThreadName(String name) {
+        Thread.currentThread().setName(name);
+    }
+
+
+    public static String getThreadName() {
+        return Thread.currentThread().getName();
+    }
+
+    public static void interrupt() {
+        Thread.currentThread().interrupt();
+        ConcurrencyUtils.threadPrintln("interrupted");
+    }
+
     public static <T extends Thread> List<T> createThreads(
-        final int amount,
+        final int size,
         final Function<Integer, T> constructor
     ) {
         List<T> threads = new ArrayList<>();
-        for (int i = 1; i <= amount; i++) {
+        for (int i = 1; i <= size; i++) {
             threads.add(constructor.apply(i));
         }
         return threads;
@@ -98,80 +119,92 @@ public final class ConcurrencyUtils {
         }
     }
 
-    public static void executeAll(
-        final ExecutorService executorService,
-        final List<Runnable> tasks
-    ) {
-        tasks.forEach(executorService::execute);
-    }
-
-    public static <T> List<Future<T>> submitAll(
-        final ExecutorService executorService,
-        final List<Callable<T>> tasks
-    ) {
-        return tasks.stream().map(executorService::submit).collect(Collectors.toList());
-    }
-
-    public static <T> List<Future<T>> invokeAll(
-        final ExecutorService executorService,
-        final List<? extends Callable<T>> tasks
-    ) {
+    public static void join(final Thread... threads) {
         try {
-            return executorService.invokeAll(tasks);
+            for (Thread thread : threads) {
+                thread.join();
+            }
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        return new ArrayList<>();
-    }
-
-    public static <T> T invokeAny(
-        final ThreadPoolExecutor executor,
-        final List<Callable<T>> tasks
-    ) {
-        try {
-            return executor.invokeAny(tasks);
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 
     @Nullable
     public static <T> T get(final Future<T> task) {
         try {
             return task.get();
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    public static <T> List<T> getAll(
-        final ExecutorService executorService,
-        final List<? extends Callable<T>> tasks
+    public static void terminate(final ExecutorService... executorServices) {
+        if (executorServices.length == 0) throw new RuntimeException("There are no services to terminate");
+        terminate(Long.MAX_VALUE, executorServices);
+    }
+
+    public static void terminate(
+        final long millisTimeout,
+        final ExecutorService... executorServices
     ) {
-        List<Future<T>> futures = invokeAll(executorService, tasks);
-        return futures.stream().map(ConcurrencyUtils::get).collect(Collectors.toList());
+        if (executorServices.length == 0) throw new RuntimeException("There are no services to terminate");
+        Arrays.stream(executorServices).forEach(it -> ConcurrencyUtils.terminate(millisTimeout, it));
     }
 
-    public static <T> List<T> getAll(List<? extends Callable<T>> tasks) {
-        ExecutorService executorService = Executors.newFixedThreadPool(5);
-        List<T> results = getAll(executorService, tasks);
-        shutdown(executorService, 1000);
-        return results;
-    }
-
-    public static void shutdown(
-        final ExecutorService executorService,
-        final int millisTimeout
+    public static void terminate(
+        final long millisTimeout,
+        final ExecutorService executorService
     ) {
         executorService.shutdown();
         try {
-            if (!executorService.awaitTermination(millisTimeout, TimeUnit.MILLISECONDS)) {
+            boolean awaitTermination = executorService.awaitTermination(
+                millisTimeout, TimeUnit.MILLISECONDS);
+
+            if (!awaitTermination) {
                 executorService.shutdownNow();
             }
         } catch (InterruptedException e) {
             executorService.shutdownNow();
         }
     }
+
+    public static void await(CountDownLatch countDownLatch) {
+        try {
+            countDownLatch.await();
+        } catch (InterruptedException e) {
+            ConcurrencyUtils.interrupt();
+            e.printStackTrace();
+        }
+    }
+
+    public static void await(CyclicBarrier cyclicBarrier) {
+        try {
+            cyclicBarrier.await();
+        } catch (InterruptedException | BrokenBarrierException e) {
+            ConcurrencyUtils.interrupt();
+            e.printStackTrace();
+        }
+    }
+
+    public static <T> List<T> getAll(List<? extends Future<T>> futures) {
+        return futures.stream().map(ConcurrencyUtils::get).collect(Collectors.toList());
+    }
+
+    public static ExecutorService fixedThreadPool(int nThreads, String poolName) {
+        return Executors.newFixedThreadPool(nThreads, new CustomThreadFactory(poolName));
+    }
+
+    public static ExecutorService fixedThreadPool(int nThreads) {
+        return Executors.newFixedThreadPool(nThreads, noPoolNameFactory());
+    }
+
+    public static ExecutorService singleThreadPool(String poolName) {
+        return Executors.newSingleThreadExecutor(new CustomThreadFactory(poolName));
+    }
+
+    public static CustomThreadFactory noPoolNameFactory() {
+        return new CustomThreadFactory("");
+    }
+
 }

@@ -47,7 +47,7 @@ public abstract class HistogramUtils {
         int resultsSize = restCollectionTypes.size();
         int marksSize = marks.size();
         if (resultsSize > marksSize) {
-            String template = "Not enough marks for collection types: marks amount - %s, but collection amount - %s";
+            String template = "Not enough marks for collection types: marks number - %s, but collection amount - %s";
             String message = String.format(template, marksSize, resultsSize);
             throw new RuntimeException(message);
         }

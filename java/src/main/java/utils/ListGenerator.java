@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 public final class ListGenerator {
 
-    public static <T> ArrayList<T> getList(int size, Supplier<T> creator) {
+    public static <T> List<T> create(int size, Supplier<T> creator) {
         ArrayList<T> ts = new ArrayList<>();
         for (int i = 0; i < size; i++) {
             ts.add(creator.get());
@@ -21,14 +21,14 @@ public final class ListGenerator {
         return ts;
     }
 
-    public static ArrayList<Integer> getRandomIntegerList(final Random random, int size) {
-        PrintUtils.println("Creating integers");
+    public static List<Integer> getRandomIntegerList(final Random random, int size) {
+        System.out.println("Creating integers");
         ArrayList<Integer> integers = new ArrayList<>();
         for (int i = 0; i < size; i++) {
             integers.add(random.nextInt(100));
         }
-        PrintUtils.println("Done with creating");
-        PrintUtils.println("Elements: " + StringUtils.joinWith(", ", integers));
+        System.out.println("Done with creating");
+        System.out.println("Elements: " + StringUtils.joinWith(", ", integers));
 
         return integers;
     }
@@ -41,7 +41,7 @@ public final class ListGenerator {
         if (possibleArgs.length == 0)
             throw new IllegalArgumentException("Possible arguments arrays should be at least one");
 
-        List<List> product = Cartesian.product(possibleArgs);
+        List<List> product = NullableCartesianProduct.product(possibleArgs);
         return product.stream().map(constructor).collect(Collectors.toList());
     }
 }

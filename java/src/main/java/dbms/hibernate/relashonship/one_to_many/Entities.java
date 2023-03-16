@@ -3,6 +3,7 @@ package dbms.hibernate.relashonship.one_to_many;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.id.enhanced.SequenceStyleGenerator;
 
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
@@ -33,13 +34,17 @@ abstract class ItemAbstract {
     @Id
     @Column(name = "id", updatable = false)
     @Basic(fetch = FetchType.EAGER)
-    @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="entity_item_id_sequence")
+    @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="item_id_sequence_generator")
     @SequenceGenerator(
-        name="entity_item_id_sequence",
+        name="item_id_sequence_generator",
         sequenceName="ITEMS_IDS_SEQUENCE",
         allocationSize = 1
     )
     private Integer id;
+}
+
+class a extends SequenceStyleGenerator {
+
 }
 
 @Getter
@@ -49,9 +54,9 @@ abstract class CartAbstract<T extends ItemAbstract> {
     @Id
     @Column(name = "id", updatable = false)
     @Basic(fetch = FetchType.EAGER)
-    @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="entity_cart_id_sequence")
+    @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="cart_id_sequence_generator")
     @SequenceGenerator(
-        name="entity_cart_id_sequence",
+        name="cart_id_sequence_generator",
         sequenceName="CARTS_IDS_SEQUENCE",
         allocationSize = 1
     )
@@ -83,7 +88,7 @@ class CartUni extends CartAbstract<ItemUni> {
 
     @Getter
     @OneToMany
-    @JoinColumn(name = "cart_id", referencedColumnName="id", nullable = false)
+    @JoinColumn(name = "cart_id", referencedColumnName = "id", nullable = false)
     private Set<ItemUni> items = new HashSet<>();
 }
 
@@ -131,7 +136,7 @@ class ItemAsOwner extends ItemAbstract {
 class CartAsOwner extends CartAbstract<Item> {
 
     @Getter
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "cart_id")
     private Set<Item> items = new HashSet<>();
 }
@@ -143,7 +148,7 @@ class CartAsOwner extends CartAbstract<Item> {
 class Item extends ItemAbstract {
 
     @Getter
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "cart_id")
     private CartAsOwner cart;
 }

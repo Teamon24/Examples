@@ -1,13 +1,15 @@
 package dbms.hibernate.relashonship.one_to_many;
 
 import dbms.hibernate.HibernateUtils;
+import dbms.hibernate.SessionFactoryBuilder;
+import dbms.hibernate.TransactionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import utils.PrintUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -17,7 +19,6 @@ import java.util.stream.Stream;
 import static dbms.hibernate.TransactionUtils.commit;
 import static dbms.hibernate.TransactionUtils.persist;
 import static dbms.hibernate.TransactionUtils.refresh;
-import static utils.PrintUtils.printfln;
 
 /**
  * <pre>
@@ -55,26 +56,37 @@ public interface Bidirectional {
  */
 class OwningAndInverseSavingDemo {
 
-    static void main(String[] args) {
-        String resourceName = "/META-INF/hibernate-postgresql-example.cfg.xml";
-        SessionFactory sessionFactory = HibernateUtils.getSessionFactory(resourceName,
-            Item.class, Cart.class, ItemAsOwner.class, CartAsOwner.class
-        );
+    public static void main(String[] args) {
+        SessionFactory sessionFactory = new SessionFactoryBuilder()
+            .resourceName("/META-INF/hibernate-postgresql-example.cfg.xml")
+            .entitiesClasses(
+                Item.class,
+                Cart.class,
+                ItemAsOwner.class,
+                CartAsOwner.class
+            ).build();
 
         Session session = sessionFactory.openSession();
 
-        int amount = 5;
-        saveAndRefresh(amount, session, ItemAsOwner::new, Cart::new, ItemAsOwner.class);
-        saveAndRefresh(amount, session, Item::new, CartAsOwner::new, CartAsOwner.class);
+        int quantity = 5;
+        List<?> entities = save(quantity, session, ItemAsOwner::new, Cart::new, ItemAsOwner.class);
+        List<?> entities2 = save(quantity, session, Item::new, CartAsOwner::new, CartAsOwner.class);
 
-        commit(session, s -> {
+        TransactionUtils.refresh(session, entities);
+        TransactionUtils.refresh(session, entities2);
+
+        printEntities(session);
+    }
+
+    private static void printEntities(Session session) {
+        TransactionUtils.commit(session, s -> {
             HibernateUtils.findAll(s, Cart.class).forEach(cart ->
-                printfln("Card id = %s, items ids = %s",
+                PrintUtils.printfln(
+                    "Card id = %s, items ids = %s",
                     cart.getId(),
                     StringUtils.joinWith(", ", cart.getItemsIds())
                 ));
         });
-
     }
 
     /**
@@ -82,38 +94,50 @@ class OwningAndInverseSavingDemo {
      * объекту типа С сетит все объекты типа I. В зависимости от того какой тип передан
      * для сохранения (toPersistClass), происходит сохранение, и от того кто является owner'ом зависит,
      * какой будет результат сохранения.
+     * @param <I> подтип типа ItemAbstract.
+     * @param <C> подтип типа CartAbstract.
      * @param session объект сессии.
      * @param createItem логика создания объекта типа I.
      * @param createCart логика создания объекта типа C.
      * @param toPersistClass тип объектов, которые необходимо сохранить.
-     * @param <I> подтип типа ItemAbstract.
-     * @param <C> подтип типа CartAbstract.
+     * @return
      */
-    static <I extends ItemAbstract, C extends CartAbstract<I>> void saveAndRefresh(
-        int amount,
+    static <I extends ItemAbstract, C extends CartAbstract<I>> List<?> save(
+        int quantity,
         Session session,
         Function<C, I> createItem,
-        Supplier<C> createCart, Class<?> toPersistClass
+        Supplier<C> createCart,
+        Class<?> toPersistClass
     ) {
-        List<C> carts = repeat(amount, (i) -> createCart.get());
-        List<I> items = repeat(amount, (i) -> createItem.apply(carts.get(i)));
+        List<C> carts = repeat(quantity, (i) -> createCart.get());
+        List<I> items = repeat(quantity, (i) -> createItem.apply(carts.get(i)));
 
         C firstCart = carts.get(0);
-        firstCart.addItems(new HashSet<>(items));
+        firstCart.addItems(items);
 
-        List<?> entities = Stream.of(carts, items).flatMap(Collection::stream).collect(Collectors.toList());
+        List<?> entities = collectAllEntites(carts, items);
+        List<?> toPersist = chooseEntitiesToPersist(toPersistClass, entities);
 
-        List<?> toPersist = entities.stream()
+        TransactionUtils.persist(session, toPersist);
+        return entities;
+}
+
+    private static List<?> chooseEntitiesToPersist(Class<?> toPersistClass, List<?> entities) {
+        return entities.stream()
             .filter(it -> it.getClass().equals(toPersistClass))
             .collect(Collectors.toList());
-
-        persist(session, toPersist);
-        refresh(session, entities);
     }
 
-    static <E> List<E> repeat(int amount, Function<Integer, E> elementsSupplier) {
+    private static <I extends ItemAbstract, C extends CartAbstract<I>> List<?> collectAllEntites(
+        List<C> carts,
+        List<I> items
+    ) {
+        return Stream.of(carts, items).flatMap(Collection::stream).collect(Collectors.toList());
+    }
+
+    static <E> List<E> repeat(int quantity, Function<Integer, E> elementsSupplier) {
         List<E> elements = new ArrayList<>();
-        for (int i = 0; i < amount; i++) {
+        for (int i = 0; i < quantity; i++) {
             elements.add(elementsSupplier.apply(i));
         }
         return elements;

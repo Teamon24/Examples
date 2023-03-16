@@ -3,13 +3,16 @@ package core.collection.benchmark;
 import core.collection.benchmark.core.CollectionTestBuilder;
 import core.collection.benchmark.pojo.AveragedMethodResult;
 import core.collection.benchmark.pojo.MethodResult;
-import core.collection.benchmark.utils.IntSequence;
-import core.collection.benchmark.utils.MethodsTestsTasks;
+import core.collection.benchmark.utils.CollectionCreationUtils;
+import core.collection.benchmark.utils.CollectionSuppliers;
+import core.collection.benchmark.utils.ElementSupplier;
 import core.collection.benchmark.utils.HistogramWithIndexUtils;
 import core.collection.benchmark.utils.IndexSuppliers;
+import core.collection.benchmark.utils.IntSequence;
 import core.collection.benchmark.utils.MethodResultGroupingUtils;
+import core.collection.benchmark.utils.MethodsTestsTasks;
 import core.collection.benchmark.utils.Sequence;
-import utils.ConcurrencyUtils;
+import utils.CallableUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -17,10 +20,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-
-import static core.collection.benchmark.utils.CollectionCreationUtils.createList;
-import static core.collection.benchmark.utils.CollectionSuppliers.newCollection;
-import static core.collection.benchmark.utils.ElementSupplier.getElementSequentiallyFrom;
 
 public class RandomIndexTests {
     private static final int size = 10_000;
@@ -33,7 +32,7 @@ public class RandomIndexTests {
         List<MethodsTestsTasks<Integer>> methodResultsTasks = getMethodsTestsTasks(LinkedList.class, ArrayList.class);
 
         List<MethodResult<Integer>> methodResults =
-            ConcurrencyUtils.getAll(methodResultsTasks)
+            CallableUtils.getAll(methodResultsTasks, 5)
             .stream()
             .flatMap(Collection::stream)
             .collect(Collectors.toList());
@@ -56,7 +55,7 @@ public class RandomIndexTests {
             tests.addAll(
                 methodsTests(
                     testsAmount,
-                    createList(listClass, size, listSequence::next),
+                    CollectionCreationUtils.createList(listClass, size, listSequence::next),
                     listSequence,
                     enableLog,
                     logStep)
@@ -81,9 +80,9 @@ public class RandomIndexTests {
             .lists()
             .testsAmount(testsAmount)
             .collection(collection)
-            .collectionSupplier(newCollection(collection))
+            .collectionSupplier(CollectionSuppliers.newCollection(collection))
             .newElementSupplier(newElementSequence::next)
-            .existedElementSupplier(getElementSequentiallyFrom(collection))
+            .existedElementSupplier(ElementSupplier.getElementSequentiallyFrom(collection))
             .indexSupplier(IndexSuppliers.supplyRandomIndex())
             .build()
             .callables()

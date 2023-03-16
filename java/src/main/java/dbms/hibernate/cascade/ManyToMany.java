@@ -2,17 +2,19 @@ package dbms.hibernate.cascade;
 
 import com.github.javafaker.Faker;
 import dbms.hibernate.HibernateUtils;
+import dbms.hibernate.SessionFactoryBuilder;
+import dbms.hibernate.TransactionUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import utils.ExceptionUtils;
+import utils.ListGenerator;
 
 import java.util.Optional;
 
-import static dbms.hibernate.HibernateUtils.*;
+import static dbms.hibernate.HibernateUtils.throwNotFound;
 import static dbms.hibernate.TransactionUtils.commit;
-import static dbms.hibernate.TransactionUtils.transact;
-import static dbms.hibernate.cascade.ExampleUtils.findAuthorByName;
-import static utils.ListGenerator.getList;
+import static utils.ListGenerator.create;
 
 public interface ManyToMany {
 
@@ -31,14 +33,16 @@ public interface ManyToMany {
     static void main(String[] args) {
 
         logger.info("Application was started");
-        SessionFactory sessionFactory = getSessionFactory(
-            "/META-INF/hibernate-postgresql-example.cfg.xml",
-            Author.class,
-            AuthorCascadeAll.class,
-            AuthorAndBookCascadeAll.class,
-            Book.class,
-            BookAndAuthorCascadeAll.class
-        );
+
+        SessionFactory sessionFactory = new SessionFactoryBuilder()
+            .resourceName("/META-INF/hibernate-postgresql-example.cfg.xml")
+            .entitiesClasses(
+                Author.class,
+                AuthorCascadeAll.class,
+                AuthorAndBookCascadeAll.class,
+                Book.class,
+                BookAndAuthorCascadeAll.class
+            ).build();
 
         Session session = sessionFactory.openSession();
 
@@ -52,7 +56,7 @@ public interface ManyToMany {
     }
 
     private static void cascadePersist(Session session) {
-        commit(session, ManyToMany::persistInitialData);
+        TransactionUtils.commit(session, ManyToMany::persistInitialData);
         printJoin(session, "cascadePersist");
     }
 
@@ -61,28 +65,28 @@ public interface ManyToMany {
         Book dayDreamingEdition2 = new Book(DAY_DREAMING_2ND_EDITION);
         Faker faker = Faker.instance();
 
-        transact(session,
+        TransactionUtils.operate(session,
             Session::persist,
             new Author(JOHN_SMITH).addBooks(dayDreaming, dayDreamingEdition2),
             new Author(MICHELLE_DIANGELLO).addBooks(dayDreaming, dayDreamingEdition2),
             new Author(MARK_ARMSTRONG)
                 .addBook(dayDreamingEdition2)
-                .addBooks(getList(10, () -> new Book(faker.book().title())))
+                .addBooks(ListGenerator.create(10, () -> new Book(faker.book().title())))
         );
     }
 
     private static void disassociatingDelete(Session session) {
-        commit(session, s -> {
+        TransactionUtils.commit(session, s -> {
             findMarkArmstrong(session, Author.class).ifPresentOrElse(
                 markArmstrong -> session.delete(markArmstrong.removeBooks()),
-                throwNotFound(MARK_ARMSTRONG, Author.class)
+                HibernateUtils.throwNotFound(MARK_ARMSTRONG, Author.class)
             );
         });
 
-        commit(session, s -> {
+        TransactionUtils.commit(session, s -> {
             findJohnSmith(session, AuthorAndBookCascadeAll.class).ifPresentOrElse(
                 johnSmith -> throwIfBooksAmountsAreDifferent(johnSmith, 2),
-                throwNotFound(JOHN_SMITH, Author.class)
+                HibernateUtils.throwNotFound(JOHN_SMITH, Author.class)
             );
         });
 
@@ -91,21 +95,21 @@ public interface ManyToMany {
     }
 
     private static void throwIfBooksAmountsAreDifferent(AuthorEssential author, int expectedBooksAmount) {
-        throwIf(
+        ExceptionUtils.throwIf(
             expectedBooksAmount != author.getBooksAmount(),
             String.format("%s should has %s book(s)", author.fullName, expectedBooksAmount));
     }
 
     private static void deleteCascadeAllByAuthor(Session session) {
-        commit(session, s -> {
+        TransactionUtils.commit(session, s -> {
             findMarkArmstrong(session, AuthorCascadeAll.class).ifPresent(session::delete);
         });
 
-        commit(session, s -> {
+        TransactionUtils.commit(session, s -> {
             findJohnSmith(session, AuthorCascadeAll.class)
                 .ifPresentOrElse(
                     johnSmith -> throwIfBooksAmountsAreDifferent(johnSmith, 1),
-                    throwNotFound(JOHN_SMITH, Author.class)
+                    HibernateUtils.throwNotFound(JOHN_SMITH, Author.class)
                 );
         });
 
@@ -114,11 +118,11 @@ public interface ManyToMany {
     }
 
     private static void deleteCascadeAllByAuthorAndBook(Session session) {
-        commit(session, s -> {
+        TransactionUtils.commit(session, s -> {
             findMarkArmstrong(s, AuthorAndBookCascadeAll.class).ifPresent(s::remove);
         });
 
-        commit(session, s -> {
+        TransactionUtils.commit(session, s -> {
             findJohnSmith(s, AuthorAndBookCascadeAll.class).ifPresent(author -> {
                 throw new RuntimeException(author.fullName + " should be deleted");
             });
@@ -128,32 +132,26 @@ public interface ManyToMany {
         restoreData(session);
     }
 
-    private static void throwIf(boolean conditionIsTrue, String message) {
-        if (conditionIsTrue) {
-            throw new RuntimeException(message);
-        }
-    }
-
     private static void restoreData(Session session) {
-        commit(session, s -> {
+        TransactionUtils.commit(session, s -> {
             s.createNativeQuery("truncate table examples.books_authors cascade").executeUpdate();
             s.createNativeQuery("truncate table examples.books cascade").executeUpdate();
             s.createNativeQuery("truncate table examples.authors cascade").executeUpdate();
         });
 
-        commit(session, ManyToMany::persistInitialData);
+        TransactionUtils.commit(session, ManyToMany::persistInitialData);
         printJoin(session, "restored database");
     }
 
     private static <A extends AuthorEssential> Optional<A> findMarkArmstrong(Session session, Class<A> authorClass) {
-        return findAuthorByName(session, authorClass, MARK_ARMSTRONG).flatMap(it -> {
+        return ExampleUtils.findAuthorByName(session, authorClass, MARK_ARMSTRONG).flatMap(it -> {
             session.refresh(it);
             return Optional.of(it);
         });
     }
 
     private static <A extends AuthorEssential> Optional<A> findJohnSmith(Session session, Class<A> authorClass) {
-        return findAuthorByName(session, authorClass, JOHN_SMITH).flatMap(it -> {
+        return ExampleUtils.findAuthorByName(session, authorClass, JOHN_SMITH).flatMap(it -> {
             session.refresh(it);
             return Optional.of(it);
         });

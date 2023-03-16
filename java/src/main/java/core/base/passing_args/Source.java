@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import java.util.function.Consumer;
 
 import static utils.PrintUtils.printfln;
-import static utils.PrintUtils.println;
+import static java.lang.System.out;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -29,27 +29,27 @@ class Driver {
         String title = "Reference before passing: ";
         String refWithClassName = refNumber(original);
         printlnLine(title.length() + refWithClassName.length());
-        println(title + refWithClassName);
+        out.println(title + refWithClassName);
         setter.accept(original);
         printfln("Before setting a new value: %s", valueBeforeReplacing);
         printfln("After setting a new value: %s", original.value);
     }
 
     public static void replaceObject(Source copy, String methodName) {
-        println("\"" + methodName + "\": reference after passing - " + refNumber(copy));
-        println("\"" + methodName + "\": changing reference's object");
+        out.println("\"" + methodName + "\": reference after passing - " + refNumber(copy));
+        out.println("\"" + methodName + "\": changing reference's object");
         copy = new Source();
-        println("\"" + methodName + "\": set a new value - " + NEW_VALUE);
+        out.println("\"" + methodName + "\": set a new value - " + NEW_VALUE);
         copy.value = NEW_VALUE;
     }
 
     public static void updateObject(Source copy, String methodName) {
-        println("\"" + methodName + "\": reference after passing - " + refNumber(copy));
+        out.println("\"" + methodName + "\": reference after passing - " + refNumber(copy));
         copy.value = NEW_VALUE;
     }
 
     private static void printlnLine(int length) {
-        println("-".repeat(length));
+        out.println("-".repeat(length));
     }
 
     private static String refNumber(Source copy) {

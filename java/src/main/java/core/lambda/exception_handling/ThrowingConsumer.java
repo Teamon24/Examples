@@ -1,6 +1,6 @@
 package core.lambda.exception_handling;
 
-import utils.Voider;
+import utils.Invoker;
 
 import java.util.function.Consumer;
 
@@ -21,14 +21,15 @@ public interface ThrowingConsumer<T, E extends Throwable> {
         ThrowingConsumer<T, E> tryBlock,
         Class<E> expectedClass,
         boolean rethrows,
-        Voider catchBlock)
+        Invoker finallyBlock)
     {
         return (arg) -> {
             try {
                 tryBlock.accept(arg);
             } catch (Throwable actualException) {
                 rethrowIfAnotherIsCaught(expectedClass, actualException, rethrows);
-                catchBlock.invoke();
+            } finally {
+                finallyBlock.invoke();
             }
         };
     }
@@ -36,9 +37,9 @@ public interface ThrowingConsumer<T, E extends Throwable> {
     static <T, E extends Throwable> Consumer<T> wrap(
         ThrowingConsumer<T, E> tryBlock,
         Class<E> expectedClass,
-        Voider catchBlock)
+        Invoker finallyBlock)
     {
-        return ThrowingConsumer.wrap(tryBlock, expectedClass, true, catchBlock);
+        return ThrowingConsumer.wrap(tryBlock, expectedClass, true, finallyBlock);
     }
 }
 

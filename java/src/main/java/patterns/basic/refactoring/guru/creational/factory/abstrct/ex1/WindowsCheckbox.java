@@ -1,6 +1,6 @@
 package patterns.basic.refactoring.guru.creational.factory.abstrct.ex1;
 
-import static utils.PrintUtils.println;
+import static java.lang.System.out;
 
 /**
  * Все семейства продуктов имеют одинаковые вариации (MacOS/Windows).
@@ -11,6 +11,6 @@ public class WindowsCheckbox implements Checkbox {
 
     @Override
     public void paint() {
-        println("You have created WindowsCheckbox.");
+        out.println("You have created WindowsCheckbox.");
     }
 }

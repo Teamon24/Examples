@@ -1,14 +1,12 @@
 package patterns.basic.refactoring.guru.behavioral.strategy.ex1;
 
-import utils.PrintUtils;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 
-import static utils.PrintUtils.*;
+import static java.lang.System.out;
 
 /**
  * Конкретная стратегия. Реализует оплату корзины интернет магазина через
@@ -38,9 +36,9 @@ public class PayByPayPal implements PayStrategy {
                 System.out.print("Enter the password: ");
                 this.password = READER.readLine();
                 if (verify()) {
-                    println("Data verification has been successful.");
+                    out.println("Data verification has been successful.");
                 } else {
-                    println("Wrong email or password!");
+                    out.println("Wrong email or password!");
                 }
             }
         } catch (IOException ex) {
@@ -60,7 +58,7 @@ public class PayByPayPal implements PayStrategy {
     @Override
     public boolean pay(int paymentAmount) {
         if (this.signedIn) {
-            println("Paying " + paymentAmount + " using PayPal.");
+            out.println("Paying " + paymentAmount + " using PayPal.");
             return true;
         } else {
             return false;

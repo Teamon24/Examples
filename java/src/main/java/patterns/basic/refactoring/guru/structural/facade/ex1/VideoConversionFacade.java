@@ -1,17 +1,19 @@
 package patterns.basic.refactoring.guru.structural.facade.ex1;
 
+import utils.PrintUtils;
+
 import java.io.File;
 
-import static utils.PrintUtils.println;
+import static java.lang.System.out;
 
 public class VideoConversionFacade {
     public File convertVideo(String fileName, String format) {
-        println("VideoConversionFacade: conversion started.");
+        System.out.println("VideoConversionFacade: conversion started.");
         VideoFile file = new VideoFile(fileName);
         Codec sourceCodec = CodecFactory.extract(file);
         Codec destinationCodec = getCodec(format);
         File result = convert(file, sourceCodec, destinationCodec);
-        println("VideoConversionFacade: conversion completed.");
+        System.out.println("VideoConversionFacade: conversion completed.");
         return result;
     }
 

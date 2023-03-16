@@ -3,8 +3,8 @@ package core.collection.benchmark.utils;
 import core.collection.benchmark.pojo.AveragedMethodResult;
 import core.collection.benchmark.pojo.Histogram;
 import core.collection.benchmark.pojo.MethodType;
+import utils.CollectionUtils;
 import utils.IndentUtils;
-import utils.StreamUtils;
 
 import java.util.Comparator;
 import java.util.HashMap;
@@ -13,19 +13,19 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static utils.StreamUtils.getUniques;
-import static utils.PrintUtils.println;
+import static utils.CollectionUtils.getUniques;
+import static java.lang.System.out;
 
 public final class HistogramWithIndexUtils extends HistogramUtils {
 
     public static <E extends Comparable<E>> void printHistogram(final List<AveragedMethodResult<E>> results) {
         StringBuilder stringBuilder = getStringHistograms(results, Histogram::getIndex);
-        println(stringBuilder);
+        out.println(stringBuilder);
     }
 
     public static <E extends Comparable<E>> void printHistogramNoIndex(final List<AveragedMethodResult<E>> results) {
         StringBuilder stringBuilder = HistogramWithIndexUtils.getStringHistograms(results, Histogram::getElement);
-        println(stringBuilder);
+        out.println(stringBuilder);
     }
 
     public static <E extends Comparable<E>, G extends Comparable<? super G>> StringBuilder getStringHistograms(
@@ -36,7 +36,7 @@ public final class HistogramWithIndexUtils extends HistogramUtils {
             return new StringBuilder().append("No results");
         }
 
-        Set<String> collectionTypes = StreamUtils.getUniques(results, AveragedMethodResult::getCollectionClass);
+        Set<String> collectionTypes = CollectionUtils.getUniques(results, AveragedMethodResult::getCollectionClass);
         checkSize(collectionTypes);
 
         HashMap<String, String> collectionTypeAndMark = mapToMarks(collectionTypes);

@@ -5,7 +5,7 @@
  *
  * This pattern involves an interface which acts as a bridge which makes the functionality of concrete classes
  * independent of interface implementer classes. Both types of classes can be altered structurally without
- * affecting each other.
+ * affecting each org.home.other.
  *
  * We are demonstrating use of Bridge pattern via following example in which a circle can be drawn in different
  * colors using same abstract class method but different bridge implementer classes.

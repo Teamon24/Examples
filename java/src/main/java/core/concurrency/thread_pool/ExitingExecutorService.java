@@ -12,11 +12,11 @@ import static core.concurrency.thread_pool.ThreadPoolExamplesUtils.*;
 public class ExitingExecutorService {
     public static void main(String[] args) {
         int threads = 5;
-        int terminationTimeout = 5000;
+        int terminationTimeout = 7;
 
         ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(threads);
         ExecutorService executorService =
-            MoreExecutors.getExitingExecutorService(executor, terminationTimeout, TimeUnit.MILLISECONDS);
+            MoreExecutors.getExitingExecutorService(executor, terminationTimeout, TimeUnit.SECONDS);
 
         executorService.submit(infiniteLoop());
     }

@@ -2,7 +2,7 @@ package core.string;
 
 import java.util.Formatter;
 
-import static utils.PrintUtils.println;
+import static java.lang.System.out;
 
 /**
  * 24.12.2016.
@@ -20,6 +20,6 @@ public class FormatterExample {
         formatter.format("4. (%%#o) %#o%n", i1);
         formatter.format("5. (%%#a) %#a%n", d1);
         formatter.format("6. (%%#x) %#x%n", i1);
-        println(formatter);
+        out.println(formatter);
     }
 }

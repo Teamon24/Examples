@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
 
 import static utils.PrintUtils.printfln;
-import static utils.PrintUtils.println;
+import static java.lang.System.out;
 
 public class Reduce<T> extends RecursiveTask<T> {
 
@@ -78,7 +78,7 @@ public class Reduce<T> extends RecursiveTask<T> {
 
     private List<Reduce<T>> getSubtasksWithNewSize(int newSize) {
         List<Reduce<T>> tasks = new ArrayList<>();
-        println("Task's list: " + elements(this.elements));
+        out.println("Task's list: " + elements(this.elements));
 
         for (int i = 0; i < this.forksAmount; i++) {
             int fromInclusively = newSize * i;

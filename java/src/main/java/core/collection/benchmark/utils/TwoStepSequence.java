@@ -8,7 +8,7 @@ public final class TwoStepSequence<In> extends Sequence<In> {
 
     public TwoStepSequence(In first) {
         super(first);
-        super.counter = 0;
+        super.stepNumber = 0;
     }
 
     public static <In> TwoStepSequence<In> first(final In first) {
@@ -23,24 +23,24 @@ public final class TwoStepSequence<In> extends Sequence<In> {
         return this;
     }
 
-    public TwoStepSequence<In> init(final Function<In, In> secondStep) {
+    public TwoStepSequence<In> next(final Function<In, In> secondStep) {
         return this.init(Function.identity(), secondStep);
     }
 
     public In next() {
         throwNoGenerator(super.generateNext, "sequence has no logic of first step generation");
         throwNoGenerator(this.generateSecond, "sequence has no logic of second step generation");
-        if (super.counter == 0) {
-            super.counter = 2;
+        if (super.stepNumber == 0) {
+            super.stepNumber = 2;
             return super.first;
         }
 
-        if (super.counter == 1) {
+        if (super.stepNumber == 1) {
             super.current = super.generateNext.apply(super.current);
-            super.counter = 2;
+            super.stepNumber = 2;
         } else {
             super.current = this.generateSecond.apply(super.current);
-            super.counter = 1;
+            super.stepNumber = 1;
         }
         return super.current;
     }
@@ -50,20 +50,20 @@ public final class TwoStepSequence<In> extends Sequence<In> {
     }
 
     public TwoStepSequence<In> firstStep() {
-        super.counter = 1;
+        super.stepNumber = 1;
         return this;
     }
 
     public In get(final int steps) {
         if (steps == 0) return super.current;
-        final int counter = super.counter;
+        final int counter = super.stepNumber;
         final In current = super.current;
         In result = null;
         for (int i = 0; i < steps; i++) {
             result = this.next();
         }
 
-        super.counter = counter;
+        super.stepNumber = counter;
         super.current = current;
 
         return result;

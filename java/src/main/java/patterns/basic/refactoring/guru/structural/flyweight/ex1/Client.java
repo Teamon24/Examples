@@ -1,9 +1,8 @@
 package patterns.basic.refactoring.guru.structural.flyweight.ex1;
 
-import java.awt.*;
+import utils.PrintUtils;
 
-import static utils.PrintUtils.printfln;
-import static utils.PrintUtils.println;
+import java.awt.*;
 
 public class Client {
     static int CANVAS_SIZE = 500;
@@ -23,14 +22,14 @@ public class Client {
         forest.setSize(CANVAS_SIZE, CANVAS_SIZE);
         forest.setVisible(true);
 
-        println(TREES_TO_DRAW + " trees drawn");
-        println("---------------------------");
-        println("Memory usage:");
-        printfln("Tree      size (8 bytes)   * %s +", TREES_TO_DRAW);
-        printfln("TreeTypes size (~30 bytes) * %s", TREE_TYPES);
-        println("---------------------------");
-        printfln("Total: %sMB", ((TREES_TO_DRAW * 8 + TREE_TYPES * 30) / 1024 / 1024));
-        printfln("(instead of %sMB)", ((TREES_TO_DRAW * 38) / 1024 / 1024));
+        System.out.println(TREES_TO_DRAW + " trees drawn");
+        System.out.println("---------------------------");
+        System.out.println("Memory usage:");
+        PrintUtils.printfln("Tree      size (8 bytes)   * %s +", TREES_TO_DRAW);
+        PrintUtils.printfln("TreeTypes size (~30 bytes) * %s", TREE_TYPES);
+        System.out.println("---------------------------");
+        PrintUtils.printfln("Total: %sMB", ((TREES_TO_DRAW * 8 + TREE_TYPES * 30) / 1024 / 1024));
+        PrintUtils.printfln("(instead of %sMB)", ((TREES_TO_DRAW * 38) / 1024 / 1024));
     }
 
     private static int coordinates(int canvasSize) {

@@ -15,31 +15,26 @@ class ComaparatorsTest {
 
     @Test
     void comparators() {
-        int uniqueAmount = 15;
+        int uniquesSize = 15;
         int repeated = 5;
 
-        List<A> as = createList(uniqueAmount, repeated);
+        List<A> as = createList(uniquesSize, repeated);
         Collections.shuffle(as);
 
         List<A> objects = new ArrayList<>(as);
         objects.sort(A.COMPARATOR);
-        Assertions.assertEquals(objects.size(), uniqueAmount + repeated);
+        Assertions.assertEquals(objects.size(), uniquesSize + repeated);
 
         TreeSet<A> treeSet = new TreeSet<>(as);
-        Assertions.assertEquals(treeSet.size(), uniqueAmount);
-
+        Assertions.assertEquals(treeSet.size(), uniquesSize);
     }
 
-    static List<A> createList(int uniqueAmount, int repeated) {
-        List<Object[]> values = values(uniqueAmount);
+    static List<A> createList(int uniquesSize, int repeated) {
+        List<Object[]> values = values(uniquesSize);
         List<A> collect = values.stream()
             .map(it ->
-                A.of(
-                    (Integer) it[0],
-                    it[1].toString(),
-                    C.of(
-                        (Integer) it[2],
-                        it[3].toString())))
+                A.of((Integer) it[0], it[1].toString(),
+                    C.of((Integer) it[2],it[3].toString())))
             .collect(Collectors.toList());
 
         A first = collect.get(0);
@@ -51,10 +46,10 @@ class ComaparatorsTest {
         return collect;
     }
 
-    public static final List<Object[]> values(Integer amount) {
+    public static final List<Object[]> values(Integer size) {
         List<Object[]> result = new ArrayList<>();
         Object[] randomValues = RandomUtils.random(1, 4, 4);
-        for (int i = 0; i < amount; i++) {
+        for (int i = 0; i < size; i++) {
             while (contains(result, randomValues)) {
                 randomValues = RandomUtils.random(1, 4, 4);
             }

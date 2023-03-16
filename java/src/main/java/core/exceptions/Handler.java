@@ -1,8 +1,10 @@
 package core.exceptions;
 
+import utils.PrintUtils;
+
 import java.io.FileNotFoundException;
 
-import static utils.PrintUtils.println;
+import static java.lang.System.out;
 
 public interface Handler {
     void throwable() throws Throwable;
@@ -13,16 +15,16 @@ public interface Handler {
 class HandlerImpl implements Handler {
 
     public void throwable() throws RuntimeException, Exception {
-        println("throws Throwable descendants");
+        System.out.println("throws Throwable descendants");
     }
 
     @Override
     public void checked() throws FileNotFoundException, ClassNotFoundException  {
-        println("throws Exception descendants");
+        System.out.println("throws Exception descendants");
     }
 
     @Override
     public void unchecked() throws ArithmeticException, ArrayIndexOutOfBoundsException  {
-        println("throws RuntimeException descendants");
+        System.out.println("throws RuntimeException descendants");
     }
 }

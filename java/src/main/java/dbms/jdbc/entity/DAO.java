@@ -7,6 +7,7 @@ import dbms.jdbc.StatementSetter;
 import dbms.jdbc.dbms.SQLStrategy;
 import lombok.Getter;
 import org.apache.commons.lang3.tuple.Pair;
+import utils.PrintUtils;
 
 import java.sql.Array;
 import java.sql.Connection;
@@ -20,7 +21,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import static utils.PrintUtils.println;
+import static java.lang.System.out;
 
 public abstract class DAO<Id, E extends JdbcEntity<Id>> {
 
@@ -60,7 +61,7 @@ public abstract class DAO<Id, E extends JdbcEntity<Id>> {
         Statement stmt = con.createStatement();
 
         int inserted = stmt.executeUpdate("TRUNCATE " + tableName);
-        println(inserted > 0 ? "Successfully Inserted" : "Insert Failed");
+        System.out.println(inserted > 0 ? "Successfully Inserted" : "Insert Failed");
     }
 
     public Optional<E> selectById(Connection connection, Id id) throws SQLException {

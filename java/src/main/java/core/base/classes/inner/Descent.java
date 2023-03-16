@@ -1,11 +1,11 @@
 package core.base.classes.inner;
 
-import static utils.PrintUtils.println;
+import static java.lang.System.out;
 
 class Descent extends Outer {
     public static void static_method() {
         Outer.static_method();
-        println("Static method of outer class");
+        out.println("Static method of outer class");
     }
 
     @Override

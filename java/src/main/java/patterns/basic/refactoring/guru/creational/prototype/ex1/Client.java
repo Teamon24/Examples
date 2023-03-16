@@ -3,7 +3,7 @@ package patterns.basic.refactoring.guru.creational.prototype.ex1;
 import java.util.ArrayList;
 import java.util.List;
 
-import static utils.PrintUtils.println;
+import static java.lang.System.out;
 
 public class Client {
     public static void main(String[] args) {
@@ -36,14 +36,14 @@ public class Client {
 
         for (int i = 0; i < shapes.size(); i++) {
             if (shapes.get(i) != shapesCopy.get(i)) {
-                println(i + ": Shapes are different objects (yay!)");
+                out.println(i + ": Shapes are different objects (yay!)");
                 if (shapes.get(i).equals(shapesCopy.get(i))) {
-                    println(i + ": And they are identical (yay!)");
+                    out.println(i + ": And they are identical (yay!)");
                 } else {
-                    println(i + ": But they are not identical (booo!)");
+                    out.println(i + ": But they are not identical (booo!)");
                 }
             } else {
-                println(i + ": Shape objects are the same (booo!)");
+                out.println(i + ": Shape objects are the same (booo!)");
             }
         }
     }

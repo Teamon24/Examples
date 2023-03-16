@@ -5,16 +5,18 @@ import org.apache.commons.lang3.tuple.Pair;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import static com.google.common.collect.Lists.cartesianProduct;
+import static com.google.common.collect.Lists.newArrayList;
 import static core.base.fnally.CatchBlock.catchBlock;
 import static core.base.fnally.FinallyBlock.finallyBlock;
 import static utils.ClassUtils.simpleName;
 import static utils.PrintUtils.printfln;
-import static utils.PrintUtils.println;
+import static java.lang.System.out;
 
 public class TryCatchFinallyDemo {
 
-    protected static final int FB = -2;
-    protected static final int CB = -1;
+    protected static final int FINALLY_RETURN = -2;
+    protected static final int CATCH_RETURN = -1;
 
     public static void main(String args[]) {
         Supplier<Integer> divideByZero = () ->  TryCatchFinallyDemo.divide(1, 0);
@@ -23,32 +25,39 @@ public class TryCatchFinallyDemo {
         Class<NullPointerException> npe = NullPointerException.class;
         Class<ArithmeticException> ae = ArithmeticException.class;
 
-        tryBlock(divide,       catchBlock(CB),            finallyBlock(),               ae);
-        tryBlock(divideByZero, catchBlock(CB),            finallyBlock(),               ae);
-        tryBlock(divide,       catchBlock(CB),            finallyBlock(),               ae);
-        tryBlock(divide,       catchBlock(CB),            finallyBlock(FB),             ae);
-        tryBlock(divideByZero, catchBlock(CB),            finallyBlock(),               ae);
-        tryBlock(divideByZero, catchBlock(CB),            finallyBlock(FB),             ae);
-        tryBlock(divideByZero, catchBlock(rte("catch")),  finallyBlock(FB),             ae);
-        tryBlock(divideByZero, catchBlock(CB),            finallyBlock(rte("finally")), ae);
-        tryBlock(divideByZero, catchBlock(rte("catch")),  finallyBlock(rte("finally")), ae);
-        tryBlock(divideByZero, catchBlock(CB),            finallyBlock(FB),             npe);
-        tryBlock(divideByZero, catchBlock(rte("catch")),  finallyBlock(rte("finally")), npe);
-    }
+        cartesianProduct(
+            newArrayList(divide, divideByZero),
+            newArrayList(catchBlock(CATCH_RETURN), catchBlock(rte("catch"))),
+            newArrayList(finallyBlock(), finallyBlock(FINALLY_RETURN), finallyBlock(rte("finally"))),
+            newArrayList(ae, npe)
+        ).forEach(objects ->
+            tryBlock(
+                (Supplier<Integer>) objects.get(0),
+                (CatchBlock<Integer>) objects.get(1),
+                (FinallyBlock<Integer>) objects.get(2),
+                (Class<? extends Exception>) objects.get(3)
+            )
+        );
+   }
 
     public static <T> T tryBlock(
         Supplier<T> tryBlock,
         CatchBlock<T> catchBlock,
         FinallyBlock<T> finallyBlock,
-        Class<? extends Exception> expectedExceptionClass
+        Class<? extends Exception> catchBlockExpectedExceptionClass
     ) {
         try {
-            Pair<T, String> resultAndMessage = tryCatchFinally(tryBlock, catchBlock, finallyBlock, expectedExceptionClass);
-            printfln(Global("Try") + ": %s\n\n", resultAndMessage.getRight());
+            Pair<T, String> resultAndMessage = tryCatchFinally(tryBlock,
+                catchBlock,
+                finallyBlock,
+                catchBlockExpectedExceptionClass);
+
+            printfln(Global("Try", "expected exception in catch %s"), catchBlockExpectedExceptionClass.getSimpleName());
+            printfln(Global("Try", "%s\n\n"), resultAndMessage.getRight());
             return resultAndMessage.getLeft();
         } catch (Throwable throwable) {
             printfln(
-                Global("Catch") + ": %s (\"%s\") was handled\n\n",
+                Global("Catch", "%s (%s) was handled\n\n"),
                 simpleName(throwable),
                 throwable.getMessage());
         }
@@ -80,8 +89,8 @@ public class TryCatchFinallyDemo {
         }
     }
 
-    private static String Global(String blockName) {
-        return "|Global " + blockName + " Block|";
+    private static String Global(String blockName, String blockMessage) {
+        return "|Global " + blockName + " Block|: " + blockMessage;
     }
 
     private static <T> String returnMessage(String blockName, T result) {
@@ -89,7 +98,7 @@ public class TryCatchFinallyDemo {
     }
 
     private static int divide(int a, int value) {
-        println("------------------------------------");
+        out.println("------------------------------------");
         printfln("Try block: %s / %s", a, value);
         int result = a / value;
         printfln("Try block: %s / %s = %s", a, value, result);

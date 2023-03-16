@@ -1,14 +1,13 @@
 package core.collection.benchmark.strategy.strategies;
 
+import core.collection.benchmark.utils.CollectionSuppliers;
+import core.collection.benchmark.utils.ListMethods;
 import core.collection.benchmark.strategy.builder.RemoveStrategyBuilder;
 import core.collection.benchmark.strategy.abstrct.MethodStrategy;
-import core.collection.benchmark.utils.ListMethods;
 
 import java.util.Collection;
 import java.util.function.Function;
 import java.util.function.Supplier;
-
-import static core.collection.benchmark.utils.CollectionSuppliers.newCollection;
 
 public final class RemoveStrategies {
 
@@ -16,7 +15,7 @@ public final class RemoveStrategies {
         final Collection<E> collection,
         final Function<Collection<E>, Integer> indexGetter
     ) {
-        return removeByIndexStrategy(collection.getClass(), newCollection(collection), indexGetter);
+        return removeByIndexStrategy(collection.getClass(), CollectionSuppliers.newCollection(collection), indexGetter);
     }
 
     public static <E> MethodStrategy<E> removeByIndexStrategy(
@@ -35,7 +34,7 @@ public final class RemoveStrategies {
         final Collection<E> collection,
         final Supplier<E> removableElementSupplier
     ) {
-        return removeElementStrategy(collection.getClass(), newCollection(collection), removableElementSupplier);
+        return removeElementStrategy(collection.getClass(), CollectionSuppliers.newCollection(collection), removableElementSupplier);
     }
 
     public static <E> MethodStrategy<E> removeElementStrategy(

@@ -1,7 +1,5 @@
 package patterns.enterprise.identity_map;
 
-import static patterns.enterprise.identity_map.IdentityMapUtility.addPerson;
-
 public class PersonDatabase {
 
     public Person finder(int key) {

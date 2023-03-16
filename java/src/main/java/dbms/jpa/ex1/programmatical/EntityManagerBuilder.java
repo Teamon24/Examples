@@ -1,12 +1,10 @@
 package dbms.jpa.ex1.programmatical;
 
-import dbms.jpa.ex1.UserEntity;
 import dbms.jpa.ex1.programmatical.driver.DriverType;
 
 import javax.persistence.EntityManager;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class EntityManagerBuilder {
 

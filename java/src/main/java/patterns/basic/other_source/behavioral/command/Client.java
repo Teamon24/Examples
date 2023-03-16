@@ -2,10 +2,9 @@ package patterns.basic.other_source.behavioral.command;
 
 import patterns.basic.other_source.behavioral.command.commands.DecrementCommand;
 import patterns.basic.other_source.behavioral.command.commands.IncrementCommand;
+import utils.PrintUtils;
 
 import java.util.Random;
-
-import static utils.PrintUtils.printfln;
 
 public class Client {
 
@@ -31,6 +30,6 @@ public class Client {
             counter.click();
         }
 
-        printfln("увеличено раз: %d;\nуменьшено раз: %d;\nрезультат: %d", incr, decr, incrementer.getI());
+        PrintUtils.printfln("увеличено раз: %d;\nуменьшено раз: %d;\nрезультат: %d", incr, decr, incrementer.getI());
     }
 }

@@ -3,9 +3,7 @@ package dbms.jdbc.entity;
 import dbms.jdbc.ResultGetter;
 import dbms.jdbc.StatementSetter;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.function.Function;
 
 public class JDBCUtils {
     public static ResultGetter getString(String column) {

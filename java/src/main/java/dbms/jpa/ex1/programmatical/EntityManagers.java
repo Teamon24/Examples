@@ -1,18 +1,19 @@
 package dbms.jpa.ex1.programmatical;
 
 import dbms.jpa.ex1.programmatical.driver.DriverProperties;
+import dbms.jpa.ex1.programmatical.driver.DriverPropertiesFactory;
 import dbms.jpa.ex1.programmatical.driver.DriverType;
 import dbms.jpa.ex1.programmatical.persistence_unit.AbstractPersistenceUnitObject;
+import dbms.jpa.ex1.programmatical.persistence_unit.PersistenceUnitFactory;
 import dbms.jpa.ex1.programmatical.provider.ProviderProperties;
+import dbms.jpa.ex1.programmatical.provider.ProviderPropertiesFactory;
 import dbms.jpa.ex1.programmatical.provider.ProviderType;
-import dbms.jpa.ex1.programmatical.driver.DriverPropertiesFactory;
 import org.hibernate.jpa.HibernatePersistenceProvider;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import java.util.List;
 
-import static dbms.jpa.ex1.programmatical.persistence_unit.PersistenceUnitFactory.createPersistenceInfo;
 import static dbms.jpa.ex1.programmatical.provider.ProviderPropertiesFactory.createProps;
 
 public class EntityManagers {
@@ -32,9 +33,9 @@ public class EntityManagers {
             type, host, port, databaseName, userName, password, schema
         );
 
-        ProviderProperties providerProperties = createProps(ProviderType.HIBERNATE, driverProperties);
+        ProviderProperties providerProperties = ProviderPropertiesFactory.createProps(ProviderType.HIBERNATE, driverProperties);
 
-        AbstractPersistenceUnitObject persistenceUnitInfo = createPersistenceInfo(providerProperties, managedClasses);
+        AbstractPersistenceUnitObject persistenceUnitInfo = PersistenceUnitFactory.createPersistenceInfo(providerProperties, managedClasses);
         return EntityManagers.createEntityManager(persistenceUnitInfo);
     }
 

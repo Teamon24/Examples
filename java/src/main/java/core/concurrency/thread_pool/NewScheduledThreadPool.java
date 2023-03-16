@@ -36,6 +36,6 @@ public class NewScheduledThreadPool {
 
 
         future.cancel(true);
-        ConcurrencyUtils.shutdown(executor, 1000);
+        ConcurrencyUtils.terminate(1000, executor);
     }
 }
