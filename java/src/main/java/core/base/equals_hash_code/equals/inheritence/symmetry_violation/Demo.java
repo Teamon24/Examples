@@ -1,7 +1,7 @@
 package core.base.equals_hash_code.equals.inheritence.symmetry_violation;
 
-import core.base.equals_hash_code.equals.inheritence.A;
-import core.base.equals_hash_code.equals.inheritence.B;
+import core.base.equals_hash_code.equals.inheritence.X;
+import core.base.equals_hash_code.equals.inheritence.Y;
 import utils.ClassUtils;
 
 import static java.lang.String.*;
@@ -9,43 +9,57 @@ import static java.lang.System.out;
 
 public class Demo {
     public static void main(String[] args) {
-        A a = new A(42, "abc");
-        B b = new B(a, "123456");
-        checkSymmetry("Symmetry violation", a.equals(b), b.equals(a));
+        X x = new X(42, "abc");
+        Y y = new Y(x, "123456");
+        symmetry("Symmetry violation", x, y);
 
 
-        A a2 = new A(a);
-        B_CompositionFix voucher2 = new B_CompositionFix(b);
-        String message2 = format("Composition fix (%s does not extend %s)", name(voucher2), name(a2));
-        checkSymmetry(message2, a2.equals(voucher2), voucher2.equals(a2));
+        X x2 = new X(x);
+        Y_CompositionFix y_compositionFix = new Y_CompositionFix(y);
+        String message2 = compositionFixMessage(x2, y_compositionFix);
+        symmetry(message2, x2, y_compositionFix);
 
 
-        A_ClassComparisonFix money3 = new A_ClassComparisonFix(a);
-        B_ClassComparisonFix voucher3 = new B_ClassComparisonFix(b);
-        String message3 = format("Strict class comparison fix (%s extends %s)", name(voucher3), name(money3));
-        checkSymmetry(message3, money3.equals(voucher3), voucher3.equals(money3));
+        X_ComparisonFix x_comparisonFix = new X_ComparisonFix(x);
+        Y_ComparisonFix y_comparisonFix = new Y_ComparisonFix(y);
+        String message3 = strictClassComparisonFIxMessage(x_comparisonFix, y_comparisonFix);
+        symmetry(message3, x_comparisonFix, y_comparisonFix);
 
 
-        A a4 = new A(a);
-        B_FewInstanceOf voucher4 = new B_FewInstanceOf(b);
-        String message4 = format("Ascending hierarchy checks fix (%s extends %s)", name(voucher3), name(a4));
-        checkSymmetry(message4, a4.equals(voucher4), voucher4.equals(a4));
+        X x4 = new X(x);
+        Y_FewInstanceOf y_fewInstanceOf = new Y_FewInstanceOf(y);
+        String message4 = format("Ascending hierarchy checks fix (%s extends %s)", name(y_comparisonFix), name(x4));
 
+        symmetry(message4, x4, y_fewInstanceOf);
+
+    }
+
+    private static String strictClassComparisonFIxMessage(X_ComparisonFix x_comparisonFix, Y_ComparisonFix y_comparisonFix) {
+        String message3 = format("Strict class comparison fix (%s extends %s)", name(y_comparisonFix), name(x_comparisonFix));
+        return message3;
+    }
+
+    private static String compositionFixMessage(X x2, Y_CompositionFix y_compositionFix) {
+        String message2 = format("Composition fix (%s does not extend %s)", name(y_compositionFix), name(x2));
+        return message2;
     }
 
     private static String name(Object o) {
         return ClassUtils.simpleName(o);
     }
 
-    private static boolean checkSymmetry(final String title,
-                                         final boolean moneyEqualsVoucher, final boolean voucherEqualsMoney)
+    private static boolean symmetry(final String title,
+                                    final Object o1,
+                                    final Object o2)
     {
         String line = "-".repeat(title.length());
         out.println(line + "\n" + title + "\n" + line);
-        out.println("a " + equalSymbol(moneyEqualsVoucher) + " b");
-        out.println("b " + equalSymbol(voucherEqualsMoney) + " a");
+        boolean o1EqualsO2 = o1.equals(o2);
+        boolean o2EqualsO2 = o2.equals(o1);
+        out.println("a " + equalSymbol(o1EqualsO2) + " b");
+        out.println("b " + equalSymbol(o2EqualsO2) + " a");
         out.println();
-        return moneyEqualsVoucher && voucherEqualsMoney;
+        return o1EqualsO2 && o2EqualsO2;
     }
 
     private static String equalSymbol(boolean moneyEqualsVoucher) {

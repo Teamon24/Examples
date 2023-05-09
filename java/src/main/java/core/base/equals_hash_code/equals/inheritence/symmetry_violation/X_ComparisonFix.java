@@ -1,6 +1,6 @@
 package core.base.equals_hash_code.equals.inheritence.symmetry_violation;
 
-import core.base.equals_hash_code.equals.inheritence.A;
+import core.base.equals_hash_code.equals.inheritence.X;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -8,20 +8,20 @@ import java.util.Objects;
 
 @Getter
 @AllArgsConstructor
-public class A_ClassComparisonFix {
+public class X_ComparisonFix {
     private int a1;
     private String a2;
 
-    public A_ClassComparisonFix(final A a) {
-        this.a1 = a.a1;
-        this.a2 = a.a2;
+    public X_ComparisonFix(final X x) {
+        this.a1 = x.x1;
+        this.a2 = x.x2;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (haveDifferentClass(this, o)) return false;
-        A_ClassComparisonFix other = (A_ClassComparisonFix) o;
+        X_ComparisonFix other = (X_ComparisonFix) o;
         return
             this.a1 == other.a1 &&
             Objects.equals(this.a2, other.a2);

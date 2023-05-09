@@ -1,19 +1,20 @@
 package core.concurrency.package_review.completable_future;
 
 import lombok.val;
-import utils.RandomUtils;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static java.util.concurrent.CompletableFuture.allOf;
 import static java.util.concurrent.Executors.newCachedThreadPool;
 import static utils.ConcurrencyUtils.get;
+import static utils.ConcurrencyUtils.sleep;
 import static utils.ConcurrencyUtils.terminate;
 import static utils.ConcurrencyUtils.threadPrintfln;
 import static utils.ConcurrencyUtils.threadPrintln;
+import static utils.ConcurrencyUtils.threadPrintlnTitle;
 
 public class Demo {
     public static void main(String[] args) {
@@ -22,134 +23,160 @@ public class Demo {
         processResultOfAsyncComputation();
         combiningFutures();
         runningMultipleFuturesParallel();
-        handingErrors();
-        example();
+        handlingErrors();
+        exceptionHandling();
     }
 
     private static void asFuture() {
+        threadPrintlnTitle("asFuture");
         val future = new CompletableFuture<>();
 
         val executorService = newCachedThreadPool();
+
         executorService.submit(() -> {
             Thread.sleep(500);
             future.complete("Hello");
             return null;
         });
 
-        threadPrintfln("\"asFuture\": %s", get(future));
+        threadPrintfln("result: %s", get(future));
         terminate(executorService);
+        System.out.println();
     }
 
     private static void withEncapsulatedLogic() {
+        threadPrintlnTitle("withEncapsulatedLogic");
         val future = supplyAsync(() -> "Hello");
-        threadPrintfln("\"withEncapsulatedLogic\": %s", get(future));
+        threadPrintfln("result: %s", get(future));
+        System.out.println();
     }
 
     private static void processResultOfAsyncComputation() {
+        threadPrintlnTitle("processResultOfAsyncComputation");
         val task =
-            supplyAsync(() -> "Hello")
+            supplyAsync(1, () -> "Hello")
                 .thenApply(s -> s + " World");
 
-        threadPrintfln("\"processResultOfAsyncComputation\": %s", get(task));
+        threadPrintfln("result: %s", get(task));
 
-        get(supplyAsync(() -> "Hello")
-            .thenAccept(s -> threadPrintfln("\"processResultOfAsyncComputation\": " + s)));
+        get(supplyAsync(2, () -> "Hello")
+            .thenAccept(s -> threadPrintfln("thenAccept result: %s", s)));
 
-        get(supplyAsync(() -> "Hello")
-            .thenRun(() -> threadPrintln("\"processResultOfAsyncComputation\": computation finished.")));
+        get(supplyAsync(3, () -> "Hello")
+            .thenRun(() -> threadPrintln("thenRun result: computation finished.")));
+
+        System.out.println();
     }
 
     private static void combiningFutures() {
+        threadPrintlnTitle("combiningFutures");
         val future =
-            supplyAsync(() -> "Hello")
-                .thenCompose(s -> supplyAsync(() -> s + " World 1"));
+            supplyAsync(1, () -> "Hello")
+                .thenCompose(s -> supplyAsync(2, () -> s + " World 1"));
 
-        val async1 = supplyAsync(() -> "Hello");
-        val async2 = supplyAsync(() -> " World 2");
-
-        val future2 = async1.thenCombine(async2, (s1, s2) -> s1 + s2);
+        val future2 =
+            supplyAsync(3, () -> "Hello")
+                .thenCombine(
+                    supplyAsync(4, () -> " World 2"),
+                    String::concat);
 
         val future3 =
-            supplyAsync(() -> "Hello")
+            supplyAsync(5, () -> "Hello")
                 .thenAcceptBoth(
-                    supplyAsync(() -> " World 3"),
-                    (s1, s2) -> threadPrintfln("\"combiningFutures\": %s", s1 + s2));
+                    supplyAsync(6, () -> " World 3"),
+                    (s1, s2) -> threadPrintfln("result: %s", s1 + s2));
 
-        threadPrintfln("\"combiningFutures\": %s", get(future));
-        threadPrintfln("\"combiningFutures\": %s", get(future2));
-        threadPrintfln("\"combiningFutures\": %s", get(future3));
+        threadPrintfln("future  result: %s", get(future));
+        threadPrintfln("future2 result: %s", get(future2));
+        threadPrintfln("future3 result: %s", get(future3));
+        System.out.println();
     }
 
     private static void runningMultipleFuturesParallel() {
-        val future1 = supplyAsync(() -> "Hello");
-        val future2 = supplyAsync(() -> "Beautiful");
-        val future3 = supplyAsync(() -> "World");
+        threadPrintlnTitle("runningMultipleFuturesParallel");
 
-        val combinedFuture = allOf(future1, future2, future3);
+        val future2 = supplyAsync(2, sleep(1600, () -> "Beautiful"));
+        val future1 = supplyAsync(1, sleep(500, () -> "Hello"));
+        val future3 = supplyAsync(3, sleep(800, () -> "World"));
 
-        get(combinedFuture);
+        CompletableFuture.allOf(future1, future2, future3);
 
-        threadPrintfln("\"runningMultipleFuturesParallel\": done - %s, result - %s" , future1.isDone(), get(future1));
-        threadPrintfln("\"runningMultipleFuturesParallel\": done - %s, result - %s" , future2.isDone(), get(future2));
-        threadPrintfln("\"runningMultipleFuturesParallel\": done - %s, result - %s" , future3.isDone(), get(future3));
+        threadPrintfln("result: %s" , get(future1));
+        threadPrintfln("result: %s" , get(future2));
+        threadPrintfln("result: %s" , get(future3));
 
         String combined = Stream.of(future1, future2, future3)
             .map(CompletableFuture::join)
             .collect(Collectors.joining(" "));
 
-        threadPrintfln("\"runningMultipleFuturesParallel\": stream map result - %s", combined);
+        threadPrintfln("stream map result - %s", combined);
+        System.out.println();
     }
 
-    private static void handingErrors() {
-        String name = null;
+    private static void handlingErrors() {
+        threadPrintlnTitle("handlingErrors");
 
         val future =
             supplyAsync(() -> {
-                if (name == null) {
-                    throw new RuntimeException("Computation error!");
-                }
-                return "Hello, " + name;
-            }).handle((result, throwable) -> result != null ? result : "Error has happened");
+                throw new RuntimeException("Computation error!");
+            }).handle((result, throwable) -> {
+                sleep(5);
+                return result != null ? result : "\"" + throwable.getMessage() + "\"";
+            });
 
-        threadPrintfln("\"handingErrors\": %s", get(future));
+        threadPrintfln("handingErrors: %s", get(future));
 
-        val future1 = supplyAsync(() -> "Exception");
+        val future1 = supplyAsync(() -> null);
         future1.completeExceptionally(new RuntimeException("completed exceptionally"));
 
-        threadPrintfln("\"handingErrors\": %s", get(future1));
+        threadPrintfln("result: %s", get(future1));
+        System.out.println();
     }
 
-    private static <U> CompletableFuture<U> supplyAsync(Supplier<U> supplier) {
-        return CompletableFuture.supplyAsync(() -> {
-            threadPrintfln("supplyAsync execution");
-            return supplier.get();
-        });
-    }
+    private static void exceptionHandling() {
+        threadPrintlnTitle("Exception handling");
+        int initialValue = 0;
+        threadPrintfln("initialValue: %s", initialValue);
+        String methodName = "thenApplyAsync";
 
-    private static void example() {
-        get(supplyAsync(randomInt())
-            .thenApplyAsync((i) -> {
-                threadPrintfln("thenApplyAsync execution: " + i);
-                return randomInt().get() + i;
-            })
-            .thenApplyAsync((i) -> {
-                threadPrintfln("thenApplyAsync execution: " + i);
-                return randomInt().get() + i;
-            })
-            .thenApplyAsync((i) -> {
-                threadPrintfln("thenApplyAsync execution: " + i);
-                return i / 0;
-            })
+        Function<Integer, Integer> increment = (i) -> {
+            threadPrintfln(methodName + " executions: " + i);
+            return ++i;
+        };
+
+        Function<Integer, Integer> divideByZero = (i) -> {
+            threadPrintfln(methodName + " executions: " + i);
+            return i / 0;
+        };
+
+        Integer handlingResult = get(supplyAsync(() -> initialValue)
+            .thenApplyAsync(increment)
+            .thenApplyAsync(increment)
+            .thenApplyAsync(divideByZero)
+            .thenApplyAsync(increment)
             .handleAsync((i, throwable) -> {
                     threadPrintfln("handleAsync execution");
                     threadPrintln("stackTrace:");
                     throwable.printStackTrace();
-                    return 6;
+                    return Integer.MAX_VALUE;
                 }
             ));
+
+        threadPrintfln("result after exception handling: %s", handlingResult);
     }
 
-    private static Supplier<Integer> randomInt() {
-        return () -> RandomUtils.random(1, 10);
+    private static <U> CompletableFuture<U> supplyAsync(Supplier<U> supplier) {
+        return supplyAsync(null, supplier);
+    }
+
+    private static <U> CompletableFuture<U> supplyAsync(Integer number, Supplier<U> supplier) {
+        return CompletableFuture.supplyAsync(() -> {
+            if (number != null) {
+                threadPrintfln("supplyAsync #%s execution", number);
+            } else {
+                threadPrintln("supplyAsync execution");
+            }
+            return supplier.get();
+        });
     }
 }

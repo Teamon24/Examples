@@ -12,10 +12,6 @@ import utils.ListGenerator;
 
 import java.util.Optional;
 
-import static dbms.hibernate.HibernateUtils.throwNotFound;
-import static dbms.hibernate.TransactionUtils.commit;
-import static utils.ListGenerator.create;
-
 public interface ManyToMany {
 
     Logger logger = Logger.getLogger(ManyToMany.class);

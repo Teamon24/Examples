@@ -24,7 +24,10 @@ public final class CollectionCreationUtils {
         }
 
         if (listClass.equals(LinkedList.class)) {
-            return (LinkedList<T>) fillCollection(size, new LinkedList<>(), supplier);
+            LinkedList<T> ts = (LinkedList<T>) fillCollection(size, new LinkedList<>(), supplier);
+            //переводим указатель на начало списка
+            ts.getFirst();
+            return ts;
         }
 
         if (listClass.equals(TreeList.class)) {

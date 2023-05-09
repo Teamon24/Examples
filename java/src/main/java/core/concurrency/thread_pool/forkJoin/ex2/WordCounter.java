@@ -31,9 +31,11 @@ public class WordCounter {
         for (Folder subFolder : folder.getSubFolders()) {
             count = count + countWordOnSingleThread(subFolder, searchedWord);
         }
+
         for (Document document : folder.getDocuments()) {
             count = count + countWord(document, searchedWord);
         }
+
         return count;
     }
 

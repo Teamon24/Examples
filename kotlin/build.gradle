@@ -10,16 +10,23 @@ repositories {
     mavenCentral()
 }
 
+
+def ktorVersion = '2.2.4'
+
 dependencies {
+    implementation "io.ktor:ktor-client-cio-jvm:$ktorVersion"
+    implementation "io.ktor:ktor-client-okhttp:$ktorVersion"
+    implementation "io.ktor:ktor-client-core:$ktorVersion"
+
     implementation 'org.jetbrains.kotlin:kotlin-stdlib'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0'
     implementation 'com.google.code.gson:gson:2.8.9'
     implementation 'com.xenoamess.x8l:spring-context:0.0.3'
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.2'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.2'
     implementation 'org.apache.commons:commons-lang3:3.0'
-
     implementation 'ch.qos.logback:logback-classic:1.2.6'
+
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.2'
 }
 
 test {

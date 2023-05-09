@@ -2,6 +2,7 @@ package core.concurrency.package_review.cyclic_barrier;
 
 import core.concurrency.package_review.Task;
 import utils.ConcurrencyUtils;
+import utils.RandomUtils;
 import utils.RunnableUtils;
 
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.function.Supplier;
 import static utils.ConcurrencyUtils.fixedThreadPool;
 import static utils.ConcurrencyUtils.setThreadName;
 import static utils.ConcurrencyUtils.singleThreadPool;
+import static utils.ConcurrencyUtils.*;
 import static utils.ConcurrencyUtils.terminate;
 import static utils.ConcurrencyUtils.threadPrintfln;
 import static utils.ConcurrencyUtils.threadPrintln;
@@ -52,11 +54,11 @@ public class CyclicBarrierDemo {
     }
 
     private static Runnable scanBarrierTask(CyclicBarrier cyclicBarrier) {
-        return new Task<>(cyclicBarrier, Task::scanBarrier);
+        return new Task<>(cyclicBarrier, CyclicBarrierDemo::scanBarrier);
     }
 
     private static Supplier<Runnable> waitBarrierTask(CyclicBarrier cyclicBarrier) {
-        return () -> new Task<>(cyclicBarrier, Task::awaitBarrier);
+        return () -> new Task<>(cyclicBarrier, CyclicBarrierDemo::awaitBarrier);
     }
 
     private static void printOnBehalfOf(String onBehalfName, String message) {
@@ -65,5 +67,39 @@ public class CyclicBarrierDemo {
         threadPrintln(message);
         setThreadName(name);
     }
+
+    public static void awaitBarrier(CyclicBarrier cyclicBarrier) {
+        if (!cyclicBarrier.isBroken()) {
+            threadPrintln("job is awaiting at barrier ...");
+            await(cyclicBarrier);
+            threadPrintln("job is executing");
+            sleep(RandomUtils.random(3, 7));
+            threadPrintln("job is done");
+        } else {
+            throw new RuntimeException("Cyclic Barrier was broken.");
+        }
+    }
+
+    public static void scanBarrier(CyclicBarrier cyclicBarrier) {
+        int waiting;
+        int parties;
+        while (true) {
+            waiting = cyclicBarrier.getNumberWaiting();
+            parties = cyclicBarrier.getParties();
+            String message = String.format("threads in barrier: %s/%s", waiting, parties);
+            threadPrintln(message);
+            if (waiting == parties) {
+                threadPrintln("scanning is done");
+                break;
+            }
+            try {
+                Thread.sleep(250L);
+            } catch (InterruptedException e) {
+                break;
+            }
+        }
+    }
+
+
 
 }

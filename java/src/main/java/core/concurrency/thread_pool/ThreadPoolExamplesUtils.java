@@ -15,7 +15,6 @@ import static utils.ConcurrencyUtils.MILLIS_IN_SECOND;
 import static utils.ConcurrencyUtils.sleep;
 import static utils.ConcurrencyUtils.threadName;
 import static utils.ConcurrencyUtils.threadPrintln;
-import static java.lang.System.out;
 
 public final class ThreadPoolExamplesUtils {
 
@@ -66,7 +65,8 @@ public final class ThreadPoolExamplesUtils {
     {
         final List<Future<String>> futureTasks = new ArrayList<>();
         for (int number = 0; number < taskAmount; number++) {
-            futureTasks.add(executor.submit(getCallable.apply(number)));
+            Future<String> future = executor.submit(getCallable.apply(number));
+            futureTasks.add(future);
         }
         return futureTasks;
     }

@@ -3,13 +3,10 @@ package core.collection.benchmark.strategy.abstrct;
 import core.collection.benchmark.pojo.MethodResult;
 import core.collection.benchmark.pojo.MethodType;
 import core.collection.benchmark.utils.PrintResultBuilder;
-import utils.PrintUtils;
 
 import java.util.Collection;
 import java.util.function.Function;
 import java.util.function.Supplier;
-
-import static java.lang.System.out;
 
 public abstract class IndexStrategy<E> extends MethodStrategy<E> {
     protected final Function<Collection<E>, Integer> indexGetter;
@@ -37,14 +34,13 @@ public abstract class IndexStrategy<E> extends MethodStrategy<E> {
     public void printTestResult(
         int testsAmount,
         int testNumber,
-        String collectionType,
         MethodType methodType,
         long executionTime
     ) {
         String build = new PrintResultBuilder<E>()
             .testAmount(testsAmount)
             .testNumber(testNumber)
-            .collection(collectionType)
+            .collection(super.collectionClass.getSimpleName())
             .method(methodType.getValue())
             .index(this.index)
             .executionTime(executionTime).build();

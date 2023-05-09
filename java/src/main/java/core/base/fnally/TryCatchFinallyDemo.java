@@ -15,8 +15,8 @@ import static java.lang.System.out;
 
 public class TryCatchFinallyDemo {
 
-    protected static final int FINALLY_RETURN = -2;
-    protected static final int CATCH_RETURN = -1;
+    protected static final int CATCH_RETURN = 11;
+    protected static final int FINALLY_RETURN = 22;
 
     public static void main(String args[]) {
         Supplier<Integer> divideByZero = () ->  TryCatchFinallyDemo.divide(1, 0);
@@ -31,7 +31,7 @@ public class TryCatchFinallyDemo {
             newArrayList(finallyBlock(), finallyBlock(FINALLY_RETURN), finallyBlock(rte("finally"))),
             newArrayList(ae, npe)
         ).forEach(objects ->
-            tryBlock(
+            GlobalTryBlock(
                 (Supplier<Integer>) objects.get(0),
                 (CatchBlock<Integer>) objects.get(1),
                 (FinallyBlock<Integer>) objects.get(2),
@@ -40,19 +40,19 @@ public class TryCatchFinallyDemo {
         );
    }
 
-    public static <T> T tryBlock(
+    public static <T> T GlobalTryBlock(
         Supplier<T> tryBlock,
         CatchBlock<T> catchBlock,
         FinallyBlock<T> finallyBlock,
         Class<? extends Exception> catchBlockExpectedExceptionClass
     ) {
         try {
-            Pair<T, String> resultAndMessage = tryCatchFinally(tryBlock,
+            Pair<T, String> resultAndMessage = testedTryCatchFinally(tryBlock,
                 catchBlock,
                 finallyBlock,
                 catchBlockExpectedExceptionClass);
 
-            printfln(Global("Try", "expected exception in catch %s"), catchBlockExpectedExceptionClass.getSimpleName());
+            printfln(Global("Try", "expected exception in catch \"%s\""), catchBlockExpectedExceptionClass.getSimpleName());
             printfln(Global("Try", "%s\n\n"), resultAndMessage.getRight());
             return resultAndMessage.getLeft();
         } catch (Throwable throwable) {
@@ -64,21 +64,17 @@ public class TryCatchFinallyDemo {
         return null;
     }
 
-    private static <T> Pair<T, String> tryCatchFinally(
+    private static <T> Pair<T, String> testedTryCatchFinally(
         Supplier<T> tryBlock,
         Function<Exception, T> catchBlock,
         FinallyBlock<T> finallyBlock,
         Class<? extends Exception> expectedExceptionClass
-    ) {
+    ) throws Exception {
         try {
             T result = tryBlock.get();
             return Pair.of(result, returnMessage("try", result));
         } catch (Exception e) {
-            try {
-                expectedExceptionClass.cast(e);
-            } catch (ClassCastException ex) {
-                throw e;
-            }
+            cast(expectedExceptionClass, e);
             T result = catchBlock.apply(e);
             return Pair.of(result, returnMessage("catch", result));
         } finally {
@@ -101,11 +97,18 @@ public class TryCatchFinallyDemo {
         out.println("------------------------------------");
         printfln("Try block: %s / %s", a, value);
         int result = a / value;
-        printfln("Try block: %s / %s = %s", a, value, result);
         return result;
     }
 
     private static Supplier<RuntimeException> rte(String blockName) {
         return () -> new RuntimeException("thrown in " + blockName + " block");
+    }
+
+    private static void cast(Class<? extends Exception> expectedExceptionClass, Exception e) throws Exception {
+        try {
+            expectedExceptionClass.cast(e);
+        } catch (ClassCastException ex) {
+            throw e;
+        }
     }
 }

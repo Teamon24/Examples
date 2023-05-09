@@ -28,11 +28,12 @@ public class ListTest<E> extends CollectionTest<E> {
 
     @Override
     public List<MethodTest<E>> getMethodsTest() {
+        Class<? extends Collection> collectionClass = collection.getClass();
         return List.of(
-            new MethodTest<>(testsAmount, removeByIndexStrategy(collection, indexSupplier)),
-            new MethodTest<>(testsAmount, addByIndexStrategy(collection.getClass(), collectionSupplier, indexSupplier, newElementSupplier)),
-            new MethodTest<>(testsAmount, setByIndexStrategy(collection, indexSupplier, newElementSupplier)),
-            new MethodTest<>(testsAmount, getByIndexStrategy(collection, indexSupplier))
+            new MethodTest<>(testsAmount, removeByIndexStrategy(collectionClass, collectionSupplier, indexSupplier)),
+            new MethodTest<>(testsAmount, addByIndexStrategy(collectionClass, collectionSupplier, indexSupplier, newElementSupplier)),
+            new MethodTest<>(testsAmount, setByIndexStrategy(collectionClass, collectionSupplier, indexSupplier, newElementSupplier)),
+            new MethodTest<>(testsAmount, getByIndexStrategy(collectionClass, collectionSupplier, indexSupplier))
         );
     }
 }

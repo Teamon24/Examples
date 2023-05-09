@@ -1,6 +1,5 @@
 package core.concurrency.thread_pool;
 
-import utils.PrintUtils;
 import utils.ConcurrencyUtils;
 
 import java.util.List;
@@ -10,7 +9,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 import static core.concurrency.thread_pool.ThreadPoolExamplesUtils.printPoolAndQueueSizes;
 import static core.concurrency.thread_pool.ThreadPoolExamplesUtils.submitAll;
-import static java.lang.System.out;
 
 public class NewCachedThreadPool {
     public static void main(String[] args) {

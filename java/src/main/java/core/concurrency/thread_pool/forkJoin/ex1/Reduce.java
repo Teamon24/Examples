@@ -28,7 +28,8 @@ public class Reduce<T> extends RecursiveTask<T> {
         final String name,
         final List<T> elements,
         final BiFunction<T, T, T> reducer,
-        int threshold, int forksAmount)
+        int threshold,
+        int forksAmount)
     {
         this.name = name;
         this.elements = elements;

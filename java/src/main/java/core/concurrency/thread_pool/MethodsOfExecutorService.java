@@ -9,10 +9,6 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
-import static core.concurrency.thread_pool.ThreadPoolExamplesUtils.getTasks;
-import static utils.CallableUtils.submitAll;
-import static utils.ConcurrencyUtils.fixedThreadPool;
-
 public class MethodsOfExecutorService {
     public static void main(String[] args) {
 

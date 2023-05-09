@@ -21,6 +21,7 @@ public class HashTables {
 }
 
 class A {
+
     int a;
     int b;
     int c;

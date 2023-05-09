@@ -10,7 +10,7 @@ import java.util.function.Supplier;
 
 public abstract class MethodStrategy<E> {
     protected final Supplier<Collection<E>> collectionSupplier;
-    private final Class<?> collectionClass;
+    protected final Class<?> collectionClass;
     protected Timer timer;
 
     public MethodStrategy(
@@ -28,8 +28,8 @@ public abstract class MethodStrategy<E> {
     public abstract MethodType getMethodType();
 
     public abstract void printTestResult(
-        int testsAmount, int testNumber,
-        String collectionType,
+        int testsAmount,
+        int testNumber,
         MethodType methodType,
         long executionTime
     );

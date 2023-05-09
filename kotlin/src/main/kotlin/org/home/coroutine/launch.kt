@@ -1,10 +1,10 @@
 package org.home.coroutine
 
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
@@ -16,28 +16,29 @@ fun main() {
 private fun launchMany() {
     runBlocking {
         val jobs: List<Job> = (1..5).map {
-            launch(context = Dispatchers.Default) {
-                threadPrint("Launched coroutine: $it")
+            launch(start = CoroutineStart.LAZY, context = Dispatchers.Default) {
+                threadPrintln("Launched coroutine: $it")
                 delay(100)
-                threadPrint("Finished coroutine: $it")
+                threadPrintln("Finished coroutine: $it")
             }
         }
-        threadPrint("Created all coroutines")
-        jobs.joinAll()
-        threadPrint("Finished all coroutines")
+        threadPrintln("Created all coroutines")
+        jobs.onEach { it.start() }.onEach { it.join() }
+        threadPrintln("Finished all coroutines")
     }
 }
 
 private fun launchOneInScope() {
     val job = CoroutineScope(Dispatchers.Default).launch {
-        threadPrint("coroutine is being executed")
+        threadPrintln("coroutine is being executed")
         delay(5000)
-        threadPrint("coroutine is executed")
+        threadPrintln("coroutine is executed")
     }
-    threadPrint("dispatched coroutine")
+
+    threadPrintln("dispatched coroutine")
     runBlocking {
-        threadPrint("waiting for coroutine")
+        threadPrintln("waiting for coroutine")
         job.join()
-        threadPrint("going further")
+        threadPrintln("going further")
     }
 }

@@ -21,9 +21,10 @@ public class SetTest<E> extends CollectionTest<E> {
 
     @Override
     public List<MethodTest<E>> getMethodsTest() {
+        Class<? extends Collection> collectionClass = collection.getClass();
         return List.of(
-            new MethodTest<>(testsAmount, removeElementStrategy(collection, existedElementSupplier)),
-            new MethodTest<>(testsAmount, addElementStrategy(collection.getClass(), collectionSupplier, newElementSupplier))
+            new MethodTest<>(testsAmount, removeElementStrategy(collectionClass, collectionSupplier, existedElementSupplier)),
+            new MethodTest<>(testsAmount, addElementStrategy(collectionClass, collectionSupplier, newElementSupplier))
         );
     }
 

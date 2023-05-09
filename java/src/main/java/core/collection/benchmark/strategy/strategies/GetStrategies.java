@@ -76,12 +76,14 @@ public final class GetStrategies {
     }
 
     public static <E> MethodStrategy<E> getByIndexStrategy(
-        final Collection<E> collection,
+        Class<? extends Collection> collectionClass,
+        Supplier<Collection<E>> collectionSupplier,
         final Function<Collection<E>, Integer> indexGetter
     ) {
+
         return new GetStrategy<>(
-            collection.getClass(),
-            CollectionSuppliers.sameCollection(collection),
+            collectionClass,
+            collectionSupplier,
             ListMethods.getByIndex(),
             indexGetter
         );

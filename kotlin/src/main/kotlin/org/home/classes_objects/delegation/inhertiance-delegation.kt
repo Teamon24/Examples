@@ -1,51 +1,51 @@
 package org.home.classes_objects.delegation
 
-interface Base {
+interface A {
     val message: String
     fun method1(): String
     fun method2(): String
 }
 
-class BaseImpl : Base {
-    override val message = "message of BaseImpl"
-    override fun method1(): String = "method1 of BaseImpl"
-    override fun method2(): String = "method2 of BaseImpl"
+class B : A {
+    override val message = "message of B"
+    override fun method1(): String = "method1 of B"
+    override fun method2(): String = "method2 of B"
 }
 
-class Derived(b: Base) : Base by b {
-    override val message = "message of Derived"
-    override fun method1(): String = "method1 of Derived"
+class C(b: A) : A by b {
+    override val message = "message of C"
+    override fun method1(): String = "method1 of C"
     // method "override fun println()" will be delegated from b
 }
 
-class DerivedImpl(b: BaseImpl) : Base by b {
-    override val message = "message of DerivedImpl"
-    override fun method1(): String = "method1 of DerivedImpl"
+class D(b: B) : A by b {
+    override val message = "message of D"
+    override fun method1(): String = "method1 of D"
     // method "override fun println()" will be delegated from b
 }
 
 fun main() {
-    val b = BaseImpl()
-    val derived = Derived(b)
-    val derivedImpl = DerivedImpl(b)
-    val derived2 = Derived(derivedImpl)
+    val b = B()
+    val c = C(b)
+    val d = D(b)
+    val c2 = C(d)
 
     val delegatingAndDelegated = hashMapOf(
         b to b,
-        derived to b,
-        derivedImpl to b,
-        derived2 to derivedImpl
+        c to b,
+        d to b,
+        c2 to d
     )
 
     delegatingAndDelegated.forEach { (delegating, delegated) ->
+        sout(delegating, delegated) { it.message }
         sout(delegating, delegated) { delegating.method1() }
         sout(delegating, delegated) { delegating.method2() }
-        sout(delegating, delegated) { it.message }
         println()
     }
 }
 
-private fun <T: Base> sout(t: T, delegating: T, method: (T) -> Any) {
+private fun <T: A> sout(t: T, delegating: T, method: (T) -> Any) {
     if (t == delegating) {
         println("${simpleName(t)} invoke: ${method(t)}")
     } else {
@@ -53,7 +53,7 @@ private fun <T: Base> sout(t: T, delegating: T, method: (T) -> Any) {
     }
 }
 
-private fun <T : Base> simpleName(t: T) = t::class.simpleName
+private fun <T : A> simpleName(t: T) = t::class.simpleName
 
 
 

@@ -12,6 +12,7 @@ import core.collection.benchmark.utils.IntSequence;
 import core.collection.benchmark.utils.MethodResultGroupingUtils;
 import core.collection.benchmark.utils.MethodsTestsTasks;
 import core.collection.benchmark.utils.Sequence;
+import org.apache.commons.collections4.list.TreeList;
 import utils.CallableUtils;
 
 import java.util.ArrayList;
@@ -23,8 +24,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class Tests {
-    private static final int size = 1_000_000;
-    private static final int testsAmount = 200;
+    private static final int size = 2_000_000;
+    private static final int testsAmount = 1000;
 
     private static final boolean enableLog = true;
     private static final int logStep = testsAmount / 2;
@@ -32,26 +33,42 @@ public class Tests {
     public static void main(String[] args) {
 
         List<MethodsTestsTasks<Integer>> methodsTestsTasks =
-                getMethodsTestsTasks(
-                    LinkedList.class, ArrayList.class/*, TreeList.class,
-                    HashSet.class, LinkedHashSet.class, TreeSet.class*/);
+            getMethodsTestsTasks(
+                ArrayList.class,
+                TreeList.class,
+                LinkedList.class/*,
+                HashSet.class,
+                LinkedHashSet.class,
+                TreeSet.class*/
+            );
 
         List<MethodResult<Integer>> methodResults = CallableUtils
-            .getAll(methodsTestsTasks, 1)
+            .getAll(methodsTestsTasks, 4)
             .stream()
             .flatMap(Collection::stream)
             .collect(Collectors.toList());
 
-
-        Map<Boolean, List<MethodResult<Integer>>> partitionedResults = methodResults
+        Map<Boolean, List<MethodResult<Integer>>> resultsByIndex = methodResults
             .stream()
             .collect(Collectors.partitioningBy(it -> it.getIndex() != null));
 
-        List<AveragedMethodResult<Integer>> resultsWithIndex = MethodResultGroupingUtils.averageByIndex(partitionedResults.get(true));
-        List<AveragedMethodResult<Integer>> resultsWithNoIndex = MethodResultGroupingUtils.averageByElement(partitionedResults.get(false));
+        List<AveragedMethodResult<Integer>> resultsWithIndex = MethodResultGroupingUtils.averageByIndex(takeWithIndex(resultsByIndex));
+        List<AveragedMethodResult<Integer>> resultsWithNoIndex = MethodResultGroupingUtils.averageByElement(takeWithNoIndex(resultsByIndex));
 
         HistogramWithIndexUtils.printHistogram(resultsWithIndex);
         HistogramWithIndexUtils.printHistogramNoIndex(resultsWithNoIndex);
+    }
+
+    private static List<MethodResult<Integer>> takeWithIndex(
+        Map<Boolean, List<MethodResult<Integer>>> resultsByIndex
+    ) {
+        return resultsByIndex.get(true);
+    }
+
+    private static List<MethodResult<Integer>> takeWithNoIndex(
+        Map<Boolean, List<MethodResult<Integer>>> resultsByIndex
+    ) {
+        return resultsByIndex.get(false);
     }
 
     private static List<MethodsTestsTasks<Integer>> getMethodsTestsTasks(Class<? extends Collection>... collectionClasses) {
@@ -59,37 +76,42 @@ public class Tests {
         final int period = (int) (size * 0.2);
         int limit = size * 2;
         List<MethodsTestsTasks<Integer>> tests = new ArrayList<>();
-        List<MethodsTestsTasks<Integer>> tempContainer = new ArrayList<>();
         for (Class<?> collectionClass : collectionClasses) {
-            IntSequence sequence = IntSequence.create();
+            IntSequence elementsSupplier = IntSequence.create();
 
             if (List.class.isAssignableFrom(collectionClass)) {
-                tempContainer = listTest(
-                    testsAmount,
-                    CollectionCreationUtils.createList(collectionClass, size, sequence::next),
-                    sequence,
-                    period,
-                    enableLog,
-                    logStep);
+                tests.addAll(
+                    listTests(
+                        testsAmount,
+                        CollectionCreationUtils.createList(collectionClass, size, elementsSupplier::next),
+                        elementsSupplier,
+                        period,
+                        enableLog,
+                        logStep));
+
+                continue;
             }
 
             if (Set.class.isAssignableFrom(collectionClass)) {
-                tempContainer = setTest(
-                    testsAmount,
-                    CollectionCreationUtils.createSet(collectionClass, size, sequence::next),
-                    sequence.fromLast(period, limit),
-                    period,
-                    enableLog,
-                    logStep);
+                tests.addAll(
+                    setTests(
+                        testsAmount,
+                        CollectionCreationUtils.createSet(collectionClass, size, elementsSupplier::next),
+                        elementsSupplier.fromLast(period, limit),
+                        period,
+                        enableLog,
+                        logStep));
+                continue;
             }
 
-            tests.addAll(tempContainer);
-
+            String format = "There is no test creation logic for collection type %s";
+            String message = String.format(format, collectionClass.getSimpleName());
+            throw new RuntimeException(message);
         }
         return tests;
     }
 
-    private static <E> List<MethodsTestsTasks<E>> setTest(
+    private static <E> List<MethodsTestsTasks<E>> setTests(
         final int testsAmount,
         final Collection<E> collection,
         final Sequence<E> sequence,
@@ -109,7 +131,7 @@ public class Tests {
             .getMethodsTests(enableLog, logStep);
     }
 
-    private static <E> List<MethodsTestsTasks<E>> listTest(
+    private static <E> List<MethodsTestsTasks<E>> listTests(
         final int testsAmount,
         final Collection<E> collection,
         final Sequence<E> sequence,

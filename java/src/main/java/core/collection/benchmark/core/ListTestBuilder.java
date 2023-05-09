@@ -7,6 +7,8 @@ import java.util.Collection;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+
 public class ListTestBuilder<E> extends CollectionTestBuilder<E> {
 
     private Function<Collection<E>, Integer> indexSupplier;
@@ -40,19 +42,9 @@ public class ListTestBuilder<E> extends CollectionTestBuilder<E> {
         return new ListTest<>(
             super.testsAmount,
             super.collection,
-
-            super.collectionSupplier == null ?
-                CollectionSuppliers.newCollection(super.collection) :
-                super.collectionSupplier,
-
-            super.newElementSupplier == null ?
-                ElementSupplier.getElementSequentiallyFrom(super.collection) :
-                super.newElementSupplier,
-
-            super.existedElementSupplier == null ?
-                ElementSupplier.getElementSequentiallyFrom(super.collection) :
-                super.existedElementSupplier,
-
+            defaultIfNull(super.collectionSupplier, CollectionSuppliers.newCollection(super.collection)),
+            defaultIfNull(super.newElementSupplier, ElementSupplier.getElementSequentiallyFrom(super.collection)),
+            defaultIfNull(super.existedElementSupplier, ElementSupplier.getElementSequentiallyFrom(super.collection)),
             this.indexSupplier
         );
     }

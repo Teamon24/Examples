@@ -17,6 +17,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -129,6 +130,17 @@ public final class ConcurrencyUtils {
         }
     }
 
+    public static void start(final Thread... threads) {
+        for (Thread thread : threads) {
+            thread.start();
+        }
+    }
+
+    public static void startWithDelay(final Thread thread, final long delay) {
+        sleep(delay);
+        thread.start();
+    }
+
     @Nullable
     public static <T> T get(final Future<T> task) {
         try {
@@ -158,8 +170,8 @@ public final class ConcurrencyUtils {
     ) {
         executorService.shutdown();
         try {
-            boolean awaitTermination = executorService.awaitTermination(
-                millisTimeout, TimeUnit.MILLISECONDS);
+            boolean awaitTermination =
+                executorService.awaitTermination(millisTimeout, TimeUnit.MILLISECONDS);
 
             if (!awaitTermination) {
                 executorService.shutdownNow();
@@ -207,4 +219,10 @@ public final class ConcurrencyUtils {
         return new CustomThreadFactory("");
     }
 
+    public static <T> Supplier<T> sleep(long millis, Supplier<T> action) {
+        return () -> {
+            sleep(millis);
+            return action.get();
+        };
+    }
 }

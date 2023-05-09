@@ -21,20 +21,20 @@ public final class ListGenerator {
         return ts;
     }
 
-    public static List<Integer> getRandomIntegerList(final Random random, int size) {
+    public static List<BigInteger> getBigIntegers(Random random, int integersAmount) {
+        return getRandomIntegerList(random, integersAmount, 100).stream().map(BigInteger::valueOf).collect(Collectors.toList());
+    }
+
+    public static List<Integer> getRandomIntegerList(final Random random, int size, int bound) {
         System.out.println("Creating integers");
         ArrayList<Integer> integers = new ArrayList<>();
         for (int i = 0; i < size; i++) {
-            integers.add(random.nextInt(100));
+            integers.add(random.nextInt(bound + 1));
         }
         System.out.println("Done with creating");
         System.out.println("Elements: " + StringUtils.joinWith(", ", integers));
 
         return integers;
-    }
-
-    public static List<BigInteger> getBigIntegers(Random random, int integersAmount) {
-        return getRandomIntegerList(random, integersAmount).stream().map(BigInteger::valueOf).collect(Collectors.toList());
     }
 
     public static <T> List<T> create(Function<List, T> constructor, List<?>... possibleArgs) {

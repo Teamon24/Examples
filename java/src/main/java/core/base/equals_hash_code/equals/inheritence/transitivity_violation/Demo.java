@@ -1,58 +1,58 @@
 package core.base.equals_hash_code.equals.inheritence.transitivity_violation;
 
 
-import core.base.equals_hash_code.equals.inheritence.A;
-import core.base.equals_hash_code.equals.inheritence.B;
-import core.base.equals_hash_code.equals.inheritence.C;
+import core.base.equals_hash_code.equals.inheritence.X;
+import core.base.equals_hash_code.equals.inheritence.Y;
+import core.base.equals_hash_code.equals.inheritence.Z;
 import utils.ClassUtils;
 
 import static java.lang.String.format;
 
 public class Demo {
     public static void main(String[] args) {
-        A a = new A(1, "a2");
-        B b = new B(a, "b2");
-        C c = new C(b, "c1");
+        X x = new X(1, "a2");
+        Y y = new Y(x, "b2");
+        Z z = new Z(y, "c1");
 
-        B_Fixed bFixed = new B_Fixed(a, "b2");
-        C_Fixed cFixed = new C_Fixed(bFixed, "c1");
+        Y_Fixed y_fixed = new Y_Fixed(x, "b2");
+        Z_Fixed z_fixed = new Z_Fixed(y_fixed, "c1");
 
-        symmetry(a, b);
-        symmetry(b, c);
-        symmetry(a, c);
+        symmetry(x, y);
+        symmetry(y, z);
+        symmetry(x, z);
 
-        transitivity(a, b, c, "Transitivity was violated");
-        transitivity(c, b, a, "Reversed transitivity was violated");
+        transitivity(x, y, z, "Transitivity was violated");
+        transitivity(z, y, x, "Reversed transitivity was violated");
 
 
-        symmetry(a, bFixed);
-        symmetry(bFixed, cFixed);
-        symmetry(a, cFixed);
+        symmetry(x,       y_fixed);
+        symmetry(y_fixed, z_fixed);
+        symmetry(x,       z_fixed);
 
-        transitivity(a, bFixed, cFixed, "Transitivity was violated");
-        transitivity(cFixed, bFixed, a, "Reversed Transitivity was violated");
+        transitivity(x,       y_fixed, z_fixed, "Transitivity was violated");
+        transitivity(z_fixed, y_fixed, x, "Reversed Transitivity was violated");
     }
 
-    public static void symmetry(Object o1, Object o2) {
+    public static void symmetry(Object o1,
+                                Object o2)
+    {
         String message = format("Symmetry of: '%s' and '%s'", name(o1), name(o2));
         String line = "-".repeat(message.length());
         System.out.println(line + "\n" + message + "\n" + line);
-        printIfViolated(
-            equals(o1, o2) &&
-                equals(o2, o1),
-            "Symmetry was violated"
-        );
+        boolean symmetryCheck = equals(o1, o2) && equals(o2, o1);
+        printIfViolated(symmetryCheck, "Symmetry was violated");
     }
 
-    public static void transitivity(Object o1, Object o2, Object o3, String transitivityViolationMessage) {
+    public static void transitivity(Object o1,
+                                    Object o2,
+                                    Object o3,
+                                    String violationMessage)
+    {
         String message = format("Transitivity of: '%s', '%s' and '%s'", name(o1), name(o2), name(o3));
         String line = "-".repeat(message.length());
         System.out.println(line + "\n" + message + "\n" + line);
-        printIfViolated(
-            equals(o1, o2) &
-                equals(o2, o3) &
-                equals(o1, o3),
-            transitivityViolationMessage);
+        boolean transitivityCheck = equals(o1, o2) & equals(o2, o3) & equals(o1, o3);
+        printIfViolated(transitivityCheck, violationMessage);
     }
 
     private static void printIfViolated(boolean isCorrect, String message) {

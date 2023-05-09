@@ -26,19 +26,18 @@ public final class IndexSuppliers {
     }
 
     public static <E> Function<Collection<E>, Integer> supplyThreeIndexes() {
-        final AtomicInteger counter = new AtomicInteger(0);
+        final AtomicInteger counter = new AtomicInteger(1);
         return (collection) -> {
             int count = counter.get();
             if (count == 1) {
-                counter.set(count + 1);
+                counter.set(2);
+                return getFirst(collection);
+            } else if (count == 2) {
+                counter.set(3);
                 return getMiddle(collection);
-            }
-            else if (count == 2) {
-                counter.set(count+1);
-                return getLast(collection);
             } else {
                 counter.set(1);
-                return getFirst(collection);
+                return getLast(collection);
             }
         };
     }

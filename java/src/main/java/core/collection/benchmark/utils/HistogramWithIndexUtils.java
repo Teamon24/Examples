@@ -103,6 +103,7 @@ public final class HistogramWithIndexUtils extends HistogramUtils {
             .append(groupingFieldIndent).append(groupingField).append(" ")
             .append(collectionTypeIndent).append(histogram.getCollectionType()).append(" ")
             .append(executionTimeIndent).append(histogram.getAverageExecutionTime()).append(" ")
+//            .append(histogram.getHistogramColumn()).append(" ")
             .append("\n");
     }
 

@@ -1,6 +1,7 @@
 package core.concurrency.package_review.count_down_latch;
 
 import core.concurrency.package_review.Task;
+import utils.ConcurrencyUtils;
 import utils.ListGenerator;
 import utils.RunnableUtils;
 
@@ -29,7 +30,7 @@ public class ThreadPoolWaitingForStart {
         List<Future<?>> futures = RunnableUtils.submitAll(executorService, tasks);
 
         ExecutorService singleExecutorService = singleThreadPool("counter");
-        singleExecutorService.submit(() -> Task.execCountDown(count, countDownLatch));
+        singleExecutorService.submit(() -> execCountDown(count, countDownLatch));
 
         threadPrintlnTitle("AWAITING FOR COUNT DOWN");
         await(countDownLatch);
@@ -41,6 +42,26 @@ public class ThreadPoolWaitingForStart {
     }
 
     private static Supplier<Runnable> awaitingTask(CountDownLatch countDownLatch) {
-        return () -> new Task<>(countDownLatch, Task::awaitLatch);
+        return () -> new Task<>(countDownLatch, ThreadPoolWaitingForStart::awaitLatch);
     }
+
+    public static void awaitLatch(CountDownLatch it) {
+        if (it.getCount() != 0) {
+            ConcurrencyUtils.threadPrintln("job is awaiting for count down ...");
+            ConcurrencyUtils.await(it);
+            ConcurrencyUtils.threadPrintln("job completed awaiting.");
+        }
+    }
+
+    public static void execCountDown(int limit, CountDownLatch countDownLatch) {
+        long count;
+        for (int i = 0; i < limit; i++) {
+            countDownLatch.countDown();
+            count = countDownLatch.getCount();
+            String message = String.format("is counting down: %s/%s", limit - count, limit);
+            ConcurrencyUtils.threadPrintln(message);
+            ConcurrencyUtils.sleep(1000L);
+        }
+    }
+
 }

@@ -17,7 +17,7 @@ mainClassName = 'core.concurrency.thread.ex2.Demo'
 compileJava.options.encoding = 'UTF-8'
 compileTestJava.options.encoding = 'UTF-8'
 
-// the working dir is $PROJECTDIR/build/tmp/compileJava, hence the ../../.. to get to $$PROJECTDIR
+// the working dir is $PROJECTDIR/build/tmp/compileJava, hence the ../../.. to get to $PROJECTDIR
 compileJava.ajc.options.compilerArgs = ["-sourceroots", "../../../src/main/java/core/concurrency/thread/ex2"]
 
 dependencies {

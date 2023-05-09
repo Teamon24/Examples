@@ -1,15 +1,15 @@
 package core.base.equals_hash_code.equals.inheritence;
 
-import core.base.equals_hash_code.equals.inheritence.symmetry_violation.A_ClassComparisonFix;
-import core.base.equals_hash_code.equals.inheritence.symmetry_violation.B_CompositionFix;
-import core.base.equals_hash_code.equals.inheritence.symmetry_violation.B_FewInstanceOf;
+import core.base.equals_hash_code.equals.inheritence.symmetry_violation.X_ComparisonFix;
+import core.base.equals_hash_code.equals.inheritence.symmetry_violation.Y_CompositionFix;
+import core.base.equals_hash_code.equals.inheritence.symmetry_violation.Y_FewInstanceOf;
 import nl.jqno.equalsverifier.EqualsVerifier;
 
 public class EqualsVerifierDemo {
     public static void main(String[] args) {
-        EqualsVerifier.forClass(A_ClassComparisonFix.class).verify();
-        EqualsVerifier.forClass(B.class).verify();
-        EqualsVerifier.forClass(B_FewInstanceOf.class).verify();
-        EqualsVerifier.forClass(B_CompositionFix.class).verify();
+        EqualsVerifier.forClass(X_ComparisonFix.class).verify();
+        EqualsVerifier.forClass(Y.class).verify();
+        EqualsVerifier.forClass(Y_FewInstanceOf.class).verify();
+        EqualsVerifier.forClass(Y_CompositionFix.class).verify();
    }
 }

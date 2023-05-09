@@ -25,14 +25,13 @@ public final class MethodTest<E> {
         for (int testNumber = 0; testNumber < this.testsAmount; testNumber++) {
             long executionTime = this.methodStrategy.executeAndGetTime(this.timeMeasureStrategy);
 
-            String collectionType = this.methodStrategy.getCollectionType();
             MethodType methodType = this.methodStrategy.getMethodType();
             MethodResult<E> methodResult = this.methodStrategy.createResult(executionTime);
             testResults.add(methodResult);
 
             if (enableLog) {
                 if (testNumber % logStep == 0) {
-                    this.methodStrategy.printTestResult(this.testsAmount, testNumber, collectionType, methodType, executionTime);
+                    this.methodStrategy.printTestResult(this.testsAmount, testNumber, methodType, executionTime);
                 }
             }
         }

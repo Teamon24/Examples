@@ -1,12 +1,10 @@
 package core.collection.benchmark.core;
 
-import core.collection.benchmark.pojo.MethodResult;
 import lombok.AllArgsConstructor;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 @AllArgsConstructor
 public abstract class CollectionTest<E> {
@@ -21,13 +19,6 @@ public abstract class CollectionTest<E> {
 
     public CallableCollectionTest<E> callables() {
         return new CallableCollectionTest<>(this);
-    }
-
-    public List<MethodResult<E>> getMethodsResults(boolean enableLog, int logStep) {
-        return this.getMethodsTest().stream()
-            .map(methodTest -> methodTest.test(enableLog, logStep))
-            .flatMap(Collection::stream)
-            .collect(Collectors.toList());
     }
 }
 

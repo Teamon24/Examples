@@ -1,10 +1,11 @@
 package core.concurrency.thread_pool.forkJoin.ex1;
 
 import org.apache.commons.lang3.tuple.Pair;
-import utils.ListGenerator;
 import utils.ConcurrencyUtils;
+import utils.ListGenerator;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -13,7 +14,6 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static java.lang.System.out;
 
@@ -24,7 +24,7 @@ public class Demo {
         Random random = new Random();
         int integersAmount = 100;
 
-        List<Integer> integers = ListGenerator.getRandomIntegerList(random, integersAmount);
+        List<Integer> integers = ListGenerator.getRandomIntegerList(random, integersAmount, 100000);
         List<BigInteger> bigIntegers = ListGenerator.getBigIntegers(random, integersAmount);
 
         int availableProcessors = Runtime.getRuntime().availableProcessors();
@@ -40,12 +40,21 @@ public class Demo {
         Reduce<Integer> sum = new Reduce<>("Sum", integers, Integer::sum, threshold, forksAmount);
 
         final ForkJoinPool forkJoinPool = new ForkJoinPool(parallelism);
-
-        Map<Reduce<? extends Number>, Object> results = Stream.of(sum, max, min, mult, sub)
-            .map(task -> {
-                Object result = execute(forkJoinPool, task);
-                return Pair.of(task, result);
-            }).collect(Collectors.toMap(Pair::getKey, Pair::getValue));
+        List<Reduce> tasks = tasks(mult, sub, min, max, sum);
+        List<Reduce> exclusions = new ArrayList<>() {{
+            add(sub);
+            add(min);
+            add(max);
+            add(sum);
+        }};
+        Map<Reduce<? extends Number>, Object> results =
+            tasks
+                .stream()
+                .filter(fork -> !exclusions.contains(fork))
+                .map(task -> {
+                    Object result = execute(forkJoinPool, task);
+                    return Pair.of(task, result);
+                }).collect(Collectors.toMap(Pair::getKey, Pair::getValue));
 
         results.forEach((task, result) -> {
             assertResult(task, result);
@@ -53,6 +62,22 @@ public class Demo {
         });
 
         ConcurrencyUtils.sleep(100L);
+    }
+
+    private static List<Reduce> tasks(
+        Reduce<BigInteger> mult,
+        Reduce<BigInteger> sub,
+        Reduce<Integer> min,
+        Reduce<Integer> max,
+        Reduce<Integer> sum
+    ) {
+        List<Reduce> tasks = new ArrayList<>();
+        tasks.add(mult);
+        tasks.add(sub);
+        tasks.add(min);
+        tasks.add(max);
+        tasks.add(sum);
+        return tasks;
     }
 
     private static <T> void assertResult(Reduce<T> task, Object actual) {

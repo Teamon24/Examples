@@ -3,7 +3,6 @@ package core.collection.benchmark.strategy.abstrct;
 import core.collection.benchmark.pojo.MethodResult;
 import core.collection.benchmark.pojo.MethodType;
 import core.collection.benchmark.utils.PrintResultBuilder;
-import utils.PrintUtils;
 
 import java.util.Collection;
 import java.util.function.Function;
@@ -41,18 +40,18 @@ public abstract class IndexAndElementStrategy<E> extends MethodStrategy<E> {
     public void printTestResult(
         int testsAmount,
         int testNumber,
-        String collectionType,
         MethodType methodType,
         long executionTime
     ) {
         String build = new PrintResultBuilder<E>()
             .testAmount(testsAmount)
             .testNumber(testNumber)
-            .collection(collectionType)
+            .collection(super.collectionClass.getSimpleName())
             .method(methodType.getValue())
             .element(this.element)
             .index(this.index)
             .executionTime(executionTime).build();
+
         System.out.println(build);
     }
 

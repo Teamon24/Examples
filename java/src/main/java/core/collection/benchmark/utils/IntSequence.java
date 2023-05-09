@@ -2,8 +2,8 @@ package core.collection.benchmark.utils;
 
 import java.util.function.Function;
 
-public class IntSequence extends Sequence<Integer> {
-    protected IntSequence(Integer first) {
+public final class IntSequence extends Sequence<Integer> {
+    private IntSequence(Integer first) {
         super(first);
     }
 

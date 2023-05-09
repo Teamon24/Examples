@@ -67,7 +67,7 @@ public final class CallableUtils {
         final List<? extends Callable<T>> tasks
     ) {
         List<Future<T>> futures = invokeAll(executorService, tasks);
-        return futures.stream().map(ConcurrencyUtils::get).collect(Collectors.toList());
+        return getAll(futures);
     }
 
     public static <T> List<T> getAll(
@@ -75,7 +75,6 @@ public final class CallableUtils {
         final Callable<T>... tasks
     ) {
         List<Callable<T>> tasksList = Arrays.stream(tasks).collect(Collectors.toList());
-        List<Future<T>> futures = invokeAll(executorService, tasksList);
-        return futures.stream().map(ConcurrencyUtils::get).collect(Collectors.toList());
+        return getAll(executorService, tasksList);
     }
 }

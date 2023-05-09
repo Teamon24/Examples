@@ -9,7 +9,7 @@ import java.util.Map;
  * <ul>
  * <strong>Три критерия в определении hash code:</strong>
  * <li> hash code меняется, если указанное в #equals(Object) свойство объекта меняется</li>
- * <li> equals-сосгласованность: X.equals(Y) => X.hashCode() == Y.hashCode().</li>
+ * <li> equals-согласованность: X.equals(Y) => X.hashCode() == Y.hashCode().</li>
  * <li> X.hashCode() != Y.hashCode() => X.equals(Y) != true.</li>
  * <li> коллизия: X.equals(Y) != true, то может быть X.hashCode() == Y.hashCode().</li>
  * </ul>

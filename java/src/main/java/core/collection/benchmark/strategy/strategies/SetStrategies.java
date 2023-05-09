@@ -67,13 +67,15 @@ public final class SetStrategies {
     }
 
     public static <E> MethodStrategy<E> setByIndexStrategy(
-        final Collection<E> collection,
+        Class<? extends Collection> collectionClass,
+        Supplier<Collection<E>> collectionSupplier,
         final Function<Collection<E>, Integer> indexGetter,
-        final Supplier<E> elementSupplier)
+        final Supplier<E> elementSupplier
+    )
     {
         return new SetStrategy<>(
-            collection.getClass(),
-            CollectionSuppliers.sameCollection(collection),
+            collectionClass,
+            collectionSupplier,
             ListMethods.setter(),
             indexGetter,
             elementSupplier
