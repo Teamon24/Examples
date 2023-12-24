@@ -5,7 +5,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import static utils.ConcurrencyUtils.sleep;
-import static java.lang.System.out;
+import static utils.ConcurrencyUtils.threadPrintln;
 
 /**
  * <p>Livelock is another concurrency problem and is similar to deadlock. In livelock, two or more threads keep on transferring states between one another instead of waiting infinitely as we saw in the deadlock example. Consequently, the threads are not able to perform their respective tasks.
@@ -20,37 +20,50 @@ import static java.lang.System.out;
  */
 public class LivelockExample {
 
-    private Lock lock1 = new ReentrantLock(true);
-    private Lock lock2 = new ReentrantLock(true);
+    private static final Lock lock1 = new ReentrantLock(true);
+    private static final Lock lock2 = new ReentrantLock(true);
 
     public static void main(String[] args) {
-        LivelockExample livelock = new LivelockExample();
-        new Thread(livelock::operation1, "T1").start();
-        new Thread(livelock::operation2, "T2").start();
+        new Thread(LivelockExample::operation1, "T1").start();
+        new Thread(LivelockExample::operation2, "T2").start();
     }
 
-    public void operation1() {
+    public static void operation(
+        Lock lockFirst,
+        Lock lockSecond,
+        String lockFirstName,
+        String lockSecondName,
+        String opName
+    ) {
         while (true) {
-            tryLock(lock1, 50);
-            out.println("lock1 acquired, trying to acquire lock2.");
-            sleep(50L);
+            tryLock(lockFirst, 50);
+            threadPrintln(lockFirstName + " acquired, trying to acquire " + lockSecondName + ".");
+            sleep(500L);
 
-            if (tryLock(lock2)) {
-                out.println("lock2 acquired.");
+            if (tryLock(lockSecond)) {
+                threadPrintln(lockSecondName + " acquired.");
             } else {
-                out.println("cannot acquire lock2, releasing lock1.");
-                lock1.unlock();
+                threadPrintln("cannot acquire " + lockSecondName + ", releasing " + lockFirstName + ".");
+                lockFirst.unlock();
                 continue;
             }
 
-            out.println("executing first operation.");
+            threadPrintln("executing " + opName + " operation.");
             break;
         }
-        lock2.unlock();
-        lock1.unlock();
+        lockSecond.unlock();
+        lockFirst.unlock();
     }
 
-    private boolean tryLock(Lock lock, int i) {
+    public static void operation2() {
+        operation (lock2, lock1, "lock2", "lock1", "second");
+    }
+
+    public static void operation1() {
+        operation (lock1, lock2, "lock1", "lock2", "first");
+    }
+
+    private static boolean tryLock(Lock lock, int i) {
         try {
             return lock.tryLock(i, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
@@ -59,31 +72,7 @@ public class LivelockExample {
         }
     }
 
-    private boolean tryLock(Lock lock) {
+    private static boolean tryLock(Lock lock) {
         return lock.tryLock();
     }
-
-    public void operation2() {
-        while (true) {
-            tryLock(lock2, 50);
-            out.println("lock2 acquired, trying to acquire lock1.");
-            sleep(50L);
-
-            if (tryLock(lock1)) {
-                out.println("lock1 acquired.");
-            } else {
-                out.println("cannot acquire lock1, releasing lock2.");
-                lock2.unlock();
-                continue;
-            }
-
-            out.println("executing second operation.");
-            break;
-        }
-        lock1.unlock();
-        lock2.unlock();
-    }
-
-    // helper methods
-
 }

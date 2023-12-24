@@ -47,9 +47,9 @@ import utils.RunnableUtils;
  * <ul>
  * <p><strong>Asynchronous (multi-threaded):</strong></p>
  * <pre>{@code
- * thread A --->  |<---A---->|
- * thread B ------->  |<----B---------->|
- * thread C ----------->  |<------C--------->|
+ * thread A --->|<---A---->|
+ * thread B ------->|<----B---------->|
+ * thread C ----------->|<------C--------->|
  * }</pre>
  * </ul>
  * Technically, the concept of <strong>synchronous/asynchronous really does not have anything to do with threads</strong>. Although, in general, it is unusual to find asynchronous tasks running on the same thread, it is possible, (see below for examples) and it is common to find two or more tasks executing synchronously on separate threads... No, the concept of synchronous/asynchronous has to do solely with whether or not a second or subsequent task can be initiated before the org.home.other (first) task has completed, or whether it must wait. That is all. What thread (or threads), or processes, or CPUs, or indeed, what hardware, the task[s] are executed on is not relevant. Indeed, to make this point I have edited the graphics to show this.

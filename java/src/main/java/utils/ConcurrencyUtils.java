@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CountDownLatch;
@@ -199,7 +200,7 @@ public final class ConcurrencyUtils {
         }
     }
 
-    public static <T> List<T> getAll(List<? extends Future<T>> futures) {
+    public static <T> List<T> getAll(Collection<? extends Future<T>> futures) {
         return futures.stream().map(ConcurrencyUtils::get).collect(Collectors.toList());
     }
 

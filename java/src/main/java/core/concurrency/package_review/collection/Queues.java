@@ -78,10 +78,10 @@ public class Queues {
         run("blocking", linkedBlockingQueue, elementsNumber);
         run("concurrent", concurrentLinkedQueue, elementsNumber);
 
-        poll("blocking", "poll", linkedBlockingQueue, Queue::poll);
-        poll("concurrent", "poll", concurrentLinkedQueue, Queue::poll);
+        execute("blocking", "poll", linkedBlockingQueue, Queue::poll);
+        execute("concurrent", "poll", concurrentLinkedQueue, Queue::poll);
 
-        poll("blocking", "take", linkedBlockingQueue, Queues::take);
+        execute("blocking", "take", linkedBlockingQueue, Queues::take);
 
     }
 
@@ -96,7 +96,7 @@ public class Queues {
 
     private static
     <Q extends Queue<Integer>>
-    void poll(String adderName, String consumer, Q collection, Function<Q, Integer> poll) {
+    void execute(String adderName, String consumer, Q collection, Function<Q, Integer> poll) {
         collection.clear();
         setThreadName(consumer);
         Thread adder = adder(adderName, collection, 1);

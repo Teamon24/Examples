@@ -20,10 +20,6 @@ public class Sequence<In> {
         this.current = first;
     }
 
-    public static <In> Sequence<In> first(final Supplier<In> firstSupplier) {
-        return new Sequence<>(firstSupplier);
-    }
-
     public static <In> Sequence<In> first(final In first) {
         return new Sequence<>(first);
     }
@@ -55,5 +51,4 @@ public class Sequence<In> {
         this.stepNumber++;
         return next;
     }
-
 }

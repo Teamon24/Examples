@@ -24,7 +24,7 @@ function replace() {
 
 LINE_LIMIT="60"
 
-function command() {
+function log() {
   commandString=$1
   word="EXECUTING"
   line="$(repeat '=' "$(("${#word}" + 1))")$(repeat '-' "${#commandString}")"

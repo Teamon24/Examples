@@ -29,7 +29,7 @@ public final class CallableUtils {
 
     public static <T> List<Future<T>> invokeAll(
         final ExecutorService executorService,
-        final List<? extends Callable<T>> tasks
+        final Collection<? extends Callable<T>> tasks
     ) {
         try {
             return executorService.invokeAll(tasks);

@@ -24,7 +24,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class Tests {
-    private static final int size = 2_000_000;
+    private static final int size = 100_000;
     private static final int testsAmount = 1000;
 
     private static final boolean enableLog = true;

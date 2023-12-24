@@ -72,15 +72,6 @@ object PrintUtils {
 
     private fun align(align: Int) = " ".repeat(align)
 
-    private fun getDelimiterAlign(isCellAlignRight: Boolean, isDelimiterAlignRight: Boolean) =
-        if (isCellAlignRight) true else isDelimiterAlignRight
-
-    private fun java.lang.StringBuilder.appendAlign(maxLength: Int) {
-        for (i in 0 until maxLength + 3) {
-            append(" ")
-        }
-    }
-
     @JvmStatic
     fun main(args: Array<String>) {
         val rows: MutableList<List<String>> = ArrayList()

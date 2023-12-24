@@ -30,12 +30,12 @@ public class TryCatchFinallyDemo {
             newArrayList(catchBlock(CATCH_RETURN), catchBlock(rte("catch"))),
             newArrayList(finallyBlock(), finallyBlock(FINALLY_RETURN), finallyBlock(rte("finally"))),
             newArrayList(ae, npe)
-        ).forEach(objects ->
+        ).forEach(tryCatchBlockObjects ->
             GlobalTryBlock(
-                (Supplier<Integer>) objects.get(0),
-                (CatchBlock<Integer>) objects.get(1),
-                (FinallyBlock<Integer>) objects.get(2),
-                (Class<? extends Exception>) objects.get(3)
+                (Supplier<Integer>) tryCatchBlockObjects.get(0),
+                (CatchBlock<Integer>) tryCatchBlockObjects.get(1),
+                (FinallyBlock<Integer>) tryCatchBlockObjects.get(2),
+                (Class<? extends Exception>) tryCatchBlockObjects.get(3)
             )
         );
    }

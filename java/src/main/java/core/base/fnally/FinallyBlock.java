@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import java.util.function.Supplier;
 
 import static java.lang.System.out;
+import static utils.ClassUtils.simpleName;
 
 @AllArgsConstructor
 public class FinallyBlock<T> implements Supplier<T>{
@@ -39,7 +40,7 @@ public class FinallyBlock<T> implements Supplier<T>{
     ) {
         return new FinallyBlock<>(returns, () -> {
             if (exceptionSupplier.get() != null) {
-                out.println("Finally block: throwing an exception\n");
+                out.printf("Finally block: throwing an %s\n", simpleName(exceptionSupplier.get()));
                 throw exceptionSupplier.get();
             }
             out.println("Finally block: execution was done\n");

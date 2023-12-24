@@ -25,7 +25,8 @@ package dbms.hibernate.equals_hashcode;
  * ---------------------------------------------------------------------------------------------------------------------
  * <p><strong>Object’s equals() and hashCode() are not good enough, if …</strong></p>
  * ---------------------------------------------------------------------------------------------------------------------
- * <p>Java’s default implementation of the equals() and hashCode() methods are based on the object’s identity.
+ *
+ * Java’s default implementation of the equals() and hashCode() methods are based on the object’s identity.
  * That means that no two objects are equal and all of them have a different hash code value.
  *
  * <p>Hibernate makes sure to return the same object if you read the same entity twice within a Session.
@@ -65,7 +66,7 @@ package dbms.hibernate.equals_hashcode;
  * ---------------------------------------------------------------------------------------------------------------------
  * <p><strong>Requirements for equals() and hashCode()</strong></p>
  * ---------------------------------------------------------------------------------------------------------------------
- * Java’s language specification defines strict contracts for the equals() and hashCode() methods.
+ * <p></p>Java’s language specification defines strict contracts for the equals() and hashCode() methods.
  * You can find them in the Javadoc of the Object class. If you override these methods, you need to make sure that your
  * implementation fulfills these contracts.
  *

@@ -77,8 +77,7 @@ public class Demo {
         val future2 =
             supplyAsync(3, () -> "Hello")
                 .thenCombine(
-                    supplyAsync(4, () -> " World 2"),
-                    String::concat);
+                    supplyAsync(4, () -> " World 2"), String::concat);
 
         val future3 =
             supplyAsync(5, () -> "Hello")
