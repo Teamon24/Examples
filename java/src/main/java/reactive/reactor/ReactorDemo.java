@@ -14,7 +14,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -23,6 +25,7 @@ import static java.lang.Long.MAX_VALUE;
 import static java.lang.System.out;
 import static org.assertj.core.api.Assertions.assertThat;
 import static reactive.reactor.Utils.list;
+import static utils.ConcurrencyUtils.sleep;
 
 interface ReactorDemo {}
 
@@ -243,43 +246,85 @@ interface p5__Operating_on_streams {
  * <p>Currently, we’ve focused primarily on <strong>cold streams</strong>. These are <strong>static, fixed-length streams</strong> that are easy to deal with. A more realistic use case for reactive might be something that happens infinitely.
  *
  * <p>For example, we could have a stream of mouse movements that constantly needs to be reacted to or a Twitter feed. These types of streams are called <strong>hot streams</strong>, as they <strong>are always running and can be subscribed to at any point in time, missing the start of the data</strong>.
+ *
+ * <p>A Hot stream <strong>doesn't necessarily need a Subscriber to start pumping data</strong>.
+ * <p>A Hot stream <strong>does not create new data for each new subscription</strong>.
+ *
  */
 interface p6__Hot_and_Cold_streams {
 
+     static void main(String[] args) throws InterruptedException {
+
+         Supplier<Flux<Long>> coldStream = () -> Flux.interval(Duration.ofMillis(500));
+         cold(coldStream.get().takeWhile(second -> second < 6));
+         share(coldStream.get().takeWhile(second -> second < 6));
+         publish(coldStream.get());
+     }
+
     /**
-     * <p>One way to create a hot stream is by converting a cold stream into one. Let’s create a Flux that lasts forever, outputting the results to the console, which would simulate an infinite stream of data coming from an external resource.
-     *
-     * <p>By calling {@link ConnectableFlux#publish} we are given a {@link ConnectableFlux}. This means that <strong>calling {@link Flux#subscribe} won’t cause it to start emitting</strong>, allowing us to add multiple subscriptions.
+     * <p>One way to create a hot stream is by converting a cold stream into one.
+     * <p>By calling {@link ConnectableFlux#publish} we are given a {@link ConnectableFlux}.
+     * This means that <strong>calling {@link Flux#subscribe} won’t cause it to start emitting</strong>,
+     * allowing us to add multiple subscriptions.
      *
      * <p>On {@link ConnectableFlux#connect}, a flux will start emitting.
      *
-     * <p>{@link Flux#sample} method with an interval of two seconds. Now values will only be pushed to our subscriber every two seconds, meaning the console will be a lot less hectic.
+     * <p>{@link Flux#sample} method with an interval of two seconds. Now values will only be pushed
+     * to our subscriber in the period.
      */
-    static void main(String[] args) throws InterruptedException {
-        List target1 = new ArrayList();
-        List target2 = new ArrayList();
-        double seconds = 2.5;
-        double end = System.currentTimeMillis() + 1000L * seconds;
-        Flux<Object> coldStream = Flux.create(
-            fluxSink -> {
-                while (end - System.currentTimeMillis() >= 0) {
-                    fluxSink.next(System.currentTimeMillis());
-                }
-            })
-            .sample(Duration.ofMillis((long) (seconds * 100)));
+    static void publish(Flux<Long> coldStream) throws InterruptedException {
+        List<Long> target1 = new ArrayList<>();
+        List<Long> target2 = new ArrayList<>();
+        List<Long> target3 = new ArrayList<>();
+        List<Long> target4 = new ArrayList<>();
 
+        int seconds = 2;
 
-        ConnectableFlux<Object> hotStream = coldStream.publish();
+        ConnectableFlux<Long> hotStream = coldStream.publish();
 
-        hotStream.subscribe(target1::add);
-        hotStream.subscribe(target2::add);
+        hotStream.subscribe(subscriber(target1, "target1"));
         hotStream.connect();
+        sleep(seconds);
 
-        assertThat(target1).isNotEmpty();
-        assertThat(target2).isNotEmpty();
+        hotStream.subscribe(subscriber(target2, "target2"));
+        sleep(seconds);
+
+        hotStream.subscribe(subscriber(target3, "target3"));
+        sleep(seconds);
+
+        hotStream.subscribe(subscriber(target4, "target4"));
+        sleep(seconds);
 
         out.println(target1);
         out.println(target2);
+        out.println(target3);
+        out.println(target4);
+        assertThat(target1).isNotEmpty();
+        assertThat(target2).isNotEmpty();
+        assertThat(target3).isNotEmpty();
+    }
+
+    private static Consumer<Long> subscriber(List<Long> target, String name) {
+        return (it) -> {
+            target.add(it);
+            out.println(it + " -> " + name);
+        };
+    }
+
+    static void share(Flux<Long> cold) throws InterruptedException {
+        Flux<Long> clockTicks = cold.share();
+        subscribeTwo(clockTicks, "hot#1", "hot#2");
+    }
+
+    static void cold(Flux<Long> cold) throws InterruptedException {
+        subscribeTwo(cold, "cold#1", "cold#2");
+    }
+
+    private static void subscribeTwo(Flux<Long> cold, String firstName, String secondName) throws InterruptedException {
+        cold.subscribe(tick -> System.out.println(firstName + " <-" + tick));
+        Thread.sleep(2000);
+        cold.subscribe(tick -> System.out.println("\t\t\t" + tick + "-> " + secondName));
+        Thread.sleep(4000);
     }
 }
 
