@@ -19,12 +19,12 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 import static java.lang.Long.MAX_VALUE;
 import static java.lang.System.out;
 import static org.assertj.core.api.Assertions.assertThat;
 import static reactive.reactor.Utils.list;
+import static reactive.reactor.Utils.source;
 import static utils.ConcurrencyUtils.sleep;
 
 interface ReactorDemo {}
@@ -100,7 +100,6 @@ interface p2__Subscribing_to_astream {
      */
     static void main(String[] args) {
         List<Integer> target = new ArrayList<>();
-        List<Integer> source = List.of(1, 2, 3, 4);
 
         Flux.fromIterable(source)
             .log()
@@ -131,7 +130,7 @@ interface p3__Comparison_to_java_8_streams {
      * <p>The next thing to notice is a <strong>Streams terminal operator is pulling all the data and returning a result</strong>. With Reactive we could have an infinite stream coming in from an external resource, with multiple subscribers attached and removed on an ad hoc basis. We can also do things like combine streams, throttle streams, and apply backpressure.
      */
     static void main(String[] args) {
-        List<Integer> collected = Stream.of(1, 2, 3, 4).collect(Collectors.toList());
+        source.stream().map(it -> it * 2).collect(Collectors.toList());
     }
 }
 
@@ -164,8 +163,8 @@ interface p4__Backpressure {
                     backpressing.request(backpressureAmount);
                 }
 
-                @Override public void onError(Throwable t) { }
-                @Override public void onComplete() { }
+                @Override public void onError(Throwable t) {}
+                @Override public void onComplete() {}
             });
     }
 }
@@ -173,7 +172,6 @@ interface p4__Backpressure {
 interface p5__Operating_on_streams {
     List<Integer> integers = new ArrayList<>();
     List<String> strings = new ArrayList<>();
-    List<Integer> source = list(10);
     Flux<Integer> firstFlux = Flux.fromIterable(source);
 
     static void main(String[] args) {
@@ -243,9 +241,14 @@ interface p5__Operating_on_streams {
 }
 
 /**
- * <p>Currently, we’ve focused primarily on <strong>cold streams</strong>. These are <strong>static, fixed-length streams</strong> that are easy to deal with. A more realistic use case for reactive might be something that happens infinitely.
+ * <p>Currently, we’ve focused primarily on <strong>cold streams</strong>.
+ * Cold stream <strong>does not start new emitting on new subscription</strong>.
+ * These are <strong>static, fixed-length streams</strong> that are easy to deal with.
+ * A more realistic use case for reactive might be something that happens infinitely.
  *
- * <p>For example, we could have a stream of mouse movements that constantly needs to be reacted to or a Twitter feed. These types of streams are called <strong>hot streams</strong>, as they <strong>are always running and can be subscribed to at any point in time, missing the start of the data</strong>.
+ * <p>For example, we could have a stream of mouse movements that constantly needs to be reacted to or a Twitter feed.
+ * These types of streams are called <strong>hot streams</strong>,
+ * as they <strong>are always running and can be subscribed to at any point in time, missing the start of the data</strong>.
  *
  * <p>A Hot stream <strong>doesn't necessarily need a Subscriber to start pumping data</strong>.
  * <p>A Hot stream <strong>does not create new data for each new subscription</strong>.
@@ -254,12 +257,20 @@ interface p5__Operating_on_streams {
 interface p6__Hot_and_Cold_streams {
 
      static void main(String[] args) throws InterruptedException {
-
          Supplier<Flux<Long>> coldStream = () -> Flux.interval(Duration.ofMillis(500));
          cold(coldStream.get().takeWhile(second -> second < 6));
-         share(coldStream.get().takeWhile(second -> second < 6));
-         publish(coldStream.get());
+         hotByShare(coldStream.get().takeWhile(second -> second < 6));
+         hotByPublish(coldStream.get());
      }
+
+    static void cold(Flux<Long> cold) throws InterruptedException {
+        subscribeTwo(cold, "cold#1", "cold#2");
+    }
+
+    static void hotByShare(Flux<Long> cold) throws InterruptedException {
+        Flux<Long> clockTicks = cold.share();
+        subscribeTwo(clockTicks, "hot#1", "hot#2");
+    }
 
     /**
      * <p>One way to create a hot stream is by converting a cold stream into one.
@@ -272,7 +283,7 @@ interface p6__Hot_and_Cold_streams {
      * <p>{@link Flux#sample} method with an interval of two seconds. Now values will only be pushed
      * to our subscriber in the period.
      */
-    static void publish(Flux<Long> coldStream) throws InterruptedException {
+    static void hotByPublish(Flux<Long> coldStream) {
         List<Long> target1 = new ArrayList<>();
         List<Long> target2 = new ArrayList<>();
         List<Long> target3 = new ArrayList<>();
@@ -295,13 +306,15 @@ interface p6__Hot_and_Cold_streams {
         hotStream.subscribe(subscriber(target4, "target4"));
         sleep(seconds);
 
+        assertThat(target1).isNotEmpty();
+        assertThat(target2).isNotEmpty();
+        assertThat(target3).isNotEmpty();
+        assertThat(target4).isNotEmpty();
+
         out.println(target1);
         out.println(target2);
         out.println(target3);
         out.println(target4);
-        assertThat(target1).isNotEmpty();
-        assertThat(target2).isNotEmpty();
-        assertThat(target3).isNotEmpty();
     }
 
     private static Consumer<Long> subscriber(List<Long> target, String name) {
@@ -309,15 +322,6 @@ interface p6__Hot_and_Cold_streams {
             target.add(it);
             out.println(it + " -> " + name);
         };
-    }
-
-    static void share(Flux<Long> cold) throws InterruptedException {
-        Flux<Long> clockTicks = cold.share();
-        subscribeTwo(clockTicks, "hot#1", "hot#2");
-    }
-
-    static void cold(Flux<Long> cold) throws InterruptedException {
-        subscribeTwo(cold, "cold#1", "cold#2");
     }
 
     private static void subscribeTwo(Flux<Long> cold, String firstName, String secondName) throws InterruptedException {
@@ -347,7 +351,6 @@ interface p7__Concurrency {
      */
     static void main(String[] args) {
         List<Integer> target = new ArrayList<>();
-        List<Integer> source = list(10);
         Flux.fromIterable(source)
             .log()
             .subscribeOn(Schedulers.parallel())
@@ -356,6 +359,7 @@ interface p7__Concurrency {
 }
 
 interface Utils {
+    List<Integer> source = list(10);
     static List<Integer> list(int endExclusive) {
         return IntStream.range(1, endExclusive).boxed().collect(Collectors.toList());
     }
