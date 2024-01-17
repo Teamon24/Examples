@@ -1,4 +1,4 @@
-package org.home.coroutine.base
+package org.home.coroutine.comparison
 
 import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.delay
@@ -10,19 +10,19 @@ import java.util.concurrent.Executors
 import kotlin.concurrent.thread
 
 
-private const val sleepTime = 10L
+private const val sleepTime = 100L
 
 fun main() {
 
     val comparisonsTable = arrayListOf<List<Any>>()
-    val stepsNumber = 50
+    val stepsNumber = 20
 
     val coroutinesHeader = "coroutines time"
     val threadsHeader = "threads time"
     val threadPoolTaskHeader = "thread pool tasks time"
 
     val start = 4000
-    val tasksNumbers = 5000
+    val tasksNumbers = 4100
 
     val step = (tasksNumbers - start) / stepsNumber
 
@@ -32,7 +32,7 @@ fun main() {
         println("times: $i")
     }
 
-    comparisonsTable.add(0, listOf("sleep time", "times", coroutinesHeader, threadsHeader, threadPoolTaskHeader))
+    comparisonsTable.add(0, listOf("sleep time", "times", coroutinesHeader, threadPoolTaskHeader, threadsHeader))
     PrintUtils.printAsTable(comparisonsTable, alignLeft = false, delimiter = " | ")
 }
 
@@ -40,7 +40,7 @@ private fun comparison(times: Int): ArrayList<Any> {
     val coroutinesTime = timer { coroutines(times) }
     val threadTimes = timer { threads(times) }
     val threadPoolTasksTime = timer { threadPoolTasks(times) }
-    return arrayListOf(times, coroutinesTime, threadTimes, threadPoolTasksTime)
+    return arrayListOf(times, coroutinesTime, threadPoolTasksTime, threadTimes)
 }
 
 private fun threads(times: Int) {

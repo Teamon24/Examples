@@ -24,15 +24,15 @@ val uri = URI("http://localhost:8080")
 
 
 fun main() {
-    withJdkClientBlocking("Running with JDK11 client using blocking send()")
-    withJdkClientNonBlocking("Running with JDK11 client using non-blocking sendAsync()")
+    withJdkClientBlocking()
+    withJdkClientNonBlocking()
     withKtorHttpClient()
 }
 
-fun withJdkClientBlocking(s: String) {
+fun withJdkClientBlocking() {
 
     val client = HttpClient.newHttpClient()
-    runExample {
+    runExample("Running with JDK11 client using blocking send()") {
         // Sometimes you can't avoid coroutines with blocking I/O methods.
         // These must be always be dispatched by Dispatchers.IO.
         withContext(Dispatchers.IO) {
@@ -46,18 +46,20 @@ fun withJdkClientBlocking(s: String) {
         }
     }
 }
-fun withJdkClientNonBlocking(s: String) {
-    println(s)
+
+fun withJdkClientNonBlocking() {
 
     val httpExecutor = Executors.newSingleThreadExecutor()
     val client = HttpClient.newBuilder().executor(httpExecutor).build()
     try {
-        runExample {
+        runExample("Running with JDK11 client using non-blocking sendAsync()") {
             // We use `.await()` for interoperability with `CompletableFuture`.
-            val response = client.sendAsync(
+            val completableFuture = client.sendAsync(
                 HttpRequest.newBuilder(uri).build(),
                 HttpResponse.BodyHandlers.ofString()
-            ).await()
+            )
+
+            val response = completableFuture.await()
             // Return status code.
             response.statusCode()
         }
@@ -66,15 +68,15 @@ fun withJdkClientNonBlocking(s: String) {
     }
 }
 
-fun withKtorHttpClient() {
-    println("Running with Ktor client")
+private const val maxConnectionCount = 48
 
+fun withKtorHttpClient() {
     // Non-blocking I/O does not imply unlimited connections to a host.
     // You are still limited by the number of ephemeral ports (an other limits like file descriptors).
     // With no configurable thread limit, you can configure the max number of connections.
     // Note that HTTP/2 allows concurrent requests with a single connection.
-    HttpClient(CIO) { engine { maxConnectionsCount = 128 } }.use { client ->
-        runExample {
+    HttpClient(CIO) { engine { maxConnectionsCount = maxConnectionCount } }.use { client ->
+        runExample("Running with Ktor client") {
             // KtorClient.get() is a suspend fun, so suspension is implicit here
             val response = client.get(HttpRequestBuilder(uri.toURL()))
             // Return status code.
@@ -83,7 +85,8 @@ fun withKtorHttpClient() {
     }
 }
 
-fun runExample(block: suspend () -> Int) {
+fun runExample(title: String, block: suspend () -> Int) {
+    println(title)
     var successCount = 0
     var failCount = 0
 
@@ -92,6 +95,7 @@ fun runExample(block: suspend () -> Int) {
             runBlocking(dispatcher) {
                 requests(block).awaitAll().forEach {
                     if (it in 200..399) ++successCount else ++failCount
+//                    println("${Thread.currentThread().name}: response came back.")
                 }
             }
         }.also {
@@ -101,7 +105,13 @@ fun runExample(block: suspend () -> Int) {
 }
 
 private fun CoroutineScope.requests(block: suspend () -> Int): MutableList<Deferred<Int>> {
-    val responses = mutableListOf<Deferred<Int>>()
-    repeat(128) { responses += async { block() } }
-    return responses
+    return mutableListOf<Deferred<Int>>().apply {
+        repeat(maxConnectionCount) {
+            this += async {
+//                println("${Thread.currentThread().name}: request#$it was sent.")
+                val result = block()
+                result
+            }
+        }
+    }
 }
