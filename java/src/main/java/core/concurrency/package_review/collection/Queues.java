@@ -6,6 +6,7 @@ import utils.RandomUtils;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -15,7 +16,6 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static utils.ConcurrencyUtils.join;
-import static utils.ConcurrencyUtils.setThreadName;
 import static utils.ConcurrencyUtils.sleep;
 import static utils.ConcurrencyUtils.startWithDelay;
 import static utils.ConcurrencyUtils.threadPrintfln;
@@ -75,13 +75,12 @@ public class Queues {
         LinkedBlockingQueue<Integer> linkedBlockingQueue = new LinkedBlockingQueue<>(initialValues);
 
         int elementsNumber = 2;
-        run("blocking", linkedBlockingQueue, elementsNumber);
+        run("  blocking", linkedBlockingQueue, elementsNumber);
         run("concurrent", concurrentLinkedQueue, elementsNumber);
 
-        execute("blocking", "poll", linkedBlockingQueue, Queue::poll);
+        execute("  blocking", "poll", linkedBlockingQueue, Queue::poll);
         execute("concurrent", "poll", concurrentLinkedQueue, Queue::poll);
-
-        execute("blocking", "take", linkedBlockingQueue, Queues::take);
+        execute("  blocking", "take", linkedBlockingQueue, Queues::take);
 
     }
 
@@ -94,23 +93,6 @@ public class Queues {
         }
     }
 
-    private static
-    <Q extends Queue<Integer>>
-    void execute(String adderName, String consumer, Q collection, Function<Q, Integer> poll) {
-        collection.clear();
-        setThreadName(consumer);
-        Thread adder = adder(adderName, collection, 1);
-
-        startWithDelay(adder, 1000L);
-
-        threadPrintfln("size = %s", collection.size());
-        Integer element = poll.apply(collection);
-        threadPrintfln("get: %s", element);
-
-        join(adder);
-    }
-
-
     private static void run(
         String name,
         Collection<Integer> collection,
@@ -118,14 +100,26 @@ public class Queues {
     ) {
         val go = new AtomicBoolean(true);
         val iterator = iterator(go, name, collection);
-        val consumer = adder(go, name, collection, addedElementsNumber);
+        val adder = adder(go, name, collection, addedElementsNumber);
 
         iterator.start();
         sleep(100L);
-        consumer.start();
+        adder.start();
 
-        join(iterator, consumer);
+        join(iterator, adder);
     }
+
+    private static
+    <Q extends Queue<Integer>>
+    void execute(String queueName, String methodName, Q collection, Function<Q, Integer> get) {
+        collection.clear();
+        threadPrintln("=".repeat(25) + "> " + methodName.toUpperCase(Locale.ROOT));
+        Thread adder = adder(queueName, collection, 1);
+        getter(queueName, collection, get).start();
+        startWithDelay(adder, 1000L);
+        join(adder);
+    }
+
 
 
     private static Thread adder(
@@ -134,7 +128,7 @@ public class Queues {
         Collection<Integer> collection,
         Integer i
     ) {
-        return thread(queue, () -> {
+        return thread(queue + ":adder", () -> {
                 for (int c = i; c > 0; c--) {
                     Integer integer = random.get();
                     threadPrintln("+ " + integer);
@@ -146,12 +140,27 @@ public class Queues {
         );
     }
 
+    private static
+    <Q extends Queue<Integer>>
+    Thread getter(
+        String queue,
+        Q collection,
+        Function<Q, Integer> get
+    ) {
+        return thread(queue + ":getter", () -> {
+            threadPrintfln("size = %s", collection.size());
+            Integer element = get.apply(collection);
+            threadPrintfln("get: %s", element);
+            }
+        );
+    }
+
     private static Thread adder(
         String queue,
         Collection<Integer> collection,
         Integer i
     ) {
-        return thread(queue, () -> {
+        return thread( queue + ":adder", () -> {
                 for (int c = i; c > 0; c--) {
                     Integer integer = random.get();
                     threadPrintln("+ " + integer);
@@ -168,7 +177,7 @@ public class Queues {
         Collection<Integer> collection
     ) {
 
-        return thread(queue, () -> {
+        return thread(queue + ":iterator", () -> {
                 int i = Thread.currentThread().getName().length() * 2;
                 while (go.get()) {
                     threadPrintln("-".repeat(i));
@@ -179,11 +188,7 @@ public class Queues {
                 }
                 threadPrintln("-".repeat(i));
                 threadPrintln("last iteration: adder finished");
-                collection.forEach(it -> {
-                    threadPrintln(it);
-                    sleep(ITERATOR_SLEEP);
-                });
-
+                threadPrintln(collection);
             }
         );
     }
